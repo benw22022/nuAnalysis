@@ -1,0 +1,56 @@
+#include <TFile.h>
+#include <TTree.h>
+#include <TString.h>
+#include <TChain.h>
+#include <ROOT/RDataFrame.hxx>
+#include <iostream>
+#include <vector>
+#include <stdio.h>
+#include <optional>
+#include <unordered_map>
+
+class Analysis {
+    public:
+        Analysis();
+        Analysis(TString mainFileTreeName, const std::vector<TString>& mainFiles);
+        Analysis(TString mainFileTreeName, TString auxFileTreeName, const std::vector<TString>& mainFiles, const std::vector<TString>& auxFiles);
+
+        Analysis(TString mainFileTreeName, TString mainFiles);
+        Analysis(TString mainFileTreeName, TString auxFileTreeName, TString mainFiles, TString auxFiles);
+        
+
+        void addMainFiles(TString mainFileTreeName, std::vector<TString> mainFiles);
+        void addAuxFiles(TString auxFileTreeName, std::vector<TString> auxFiles);
+        
+        void addMainFiles(TString mainFileTreeName, TString mainFile);
+        void addAuxFiles(TString auxFileTreeName, TString auxFile);
+        
+        void BuildDataFrame();
+
+        void applyCut(std::string cutExpression, std::string cutName);
+
+        void Run(TString outputFileName = "");
+
+        void setGRL(const std::vector<TString>& grlJsons, const std::vector<TString>& grlCSVs);
+    
+    private:
+        TString m_mainFileTreeName;
+        TString m_auxFileTreeName;
+
+        bool m_mainChainSet{false};
+        bool m_auxChainSet{false};
+
+        std::vector<TString> m_mainFileNames{};
+        std::vector<TString> m_auxFileNames{};
+
+        TChain *m_mainChain = nullptr;
+        TChain *m_auxChain = nullptr;
+
+        std::unique_ptr<ROOT::RDataFrame> m_df;
+        std::optional<ROOT::RDF::RNode> m_node;
+
+        std::vector<TString> ExpandAndSort(TString pattern);
+
+        std::unordered_map<int, float> m_runLumiDict;
+        std::string m_excludedTimesCut{""};
+};
