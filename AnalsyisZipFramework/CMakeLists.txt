@@ -29,6 +29,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include
 file(GLOB_RECURSE sources ${PROJECT_SOURCE_DIR}/source/*.cxx)
 file(GLOB_RECURSE headers ${PROJECT_SOURCE_DIR}/include/*.h)
 file(GLOB_RECURSE configs RELATIVE ${PROJECT_SOURCE_DIR} config/*.json)
+file(GLOB_RECURSE definitions ${PROJECT_SOURCE_DIR}/include/RDFDefines.h)
 
 #----------------------------------------------------------------------------
 # Copy all configs to the build directory, i.e. the directory in which we
@@ -45,11 +46,15 @@ foreach(_file ${configs})
     #message(STATUS "Copying ${_file} in ${PROJECT_BINARY_DIR}/${_file}")
 endforeach()
 
+
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
 add_executable(analysis analysis.cxx ${sources})
-# add_compile_definitions(G4MULTITHREADED)
+
+target_compile_definitions(analysis PRIVATE
+    PROJECT_INCLUDE_DIR="${CMAKE_SOURCE_DIR}/include"
+)
 
 target_link_libraries(analysis
                       nlohmann_json::nlohmann_json

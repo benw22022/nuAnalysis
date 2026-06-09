@@ -137,7 +137,7 @@ void Analysis::setGRL(const std::vector<TString>& grlJsons, const std::vector<TS
 void Analysis::BuildDataFrame() {
 
     if (!m_mainChainSet) {
-        std::cerr << "Error: Main chain not set up." << std::endl;
+        ERROR("Error: Main chain not set up.");
         return;
     }
 
@@ -147,7 +147,9 @@ void Analysis::BuildDataFrame() {
 
     // C++ defines (must not rely on anything defined below)
     // TODO: Fix hardcoded path
-    gInterpreter->Declare("#include \"/afs/cern.ch/user/b/bewilson/work/AnalyisZipFramework/AnalsyisZipFramework/include/RDFDefines.h\"");
+    // gInterpreter->Declare("#include \"/afs/cern.ch/user/b/bewilson/work/AnalyisZipFramework/AnalsyisZipFramework/include/RDFDefines.h\"");
+    gInterpreter->AddIncludePath(PROJECT_INCLUDE_DIR);
+    gInterpreter->Declare("#include \"RDFDefines.h\"");
 
     m_df   = std::make_unique<ROOT::RDataFrame>(*m_mainChain);
     m_node = *m_df;
@@ -180,6 +182,7 @@ void Analysis::BuildDataFrame() {
         }
 
         INFO("Loaded ", auxMap->size(), " unique (run, event) pairs.");
+        INFO("1: Number of runs: ", m_node->GetNRuns());
 
         // Inject aux quantities as new columns via Define()
         // Capture auxMap by shared_ptr so it stays alive
@@ -189,7 +192,8 @@ void Analysis::BuildDataFrame() {
                 auto it = auxMap->find(key);
                 return (it != auxMap->end()) ? it->second.charge35_nu0 : -999.f;
             }, {"run", "eventID"});
-
+        
+        INFO("2: Number of runs: ", m_node->GetNRuns());
         m_node = m_node->Define("reduced_charge35_nu1",
             [auxMap](int run, int eventID) -> float {
                 uint64_t key = (uint64_t)run << 32 | (uint32_t)eventID;
@@ -198,7 +202,7 @@ void Analysis::BuildDataFrame() {
             }, {"run", "eventID"});
     }
 
-    // Aliases for older dataframes where the branch names were different
+    // Aliases for older NTuples where the branch names were different
     auto columnNames = m_node->GetColumnNames();
     if (std::find(columnNames.begin(), columnNames.end(), "VetoSt10_raw_charge") != columnNames.end()) {
         m_node = m_node->Alias("VetoSt10_raw_charge", "Veto10_raw_charge");
@@ -281,12 +285,12 @@ void Analysis::Run(TString outputFileName) {
     BuildDataFrame();
 
     if (!m_df) {
-        MessageService::Error("Error: DataFrame not built. Call BuildDataFrame() first.");
+        ERROR("Error: DataFrame not built. Call BuildDataFrame() first.");
+        throw std::runtime_error("DataFrame not built");
         return;
     }
 
-    auto nEvents = m_df->Count();
-    INFO("Number of events: ", *nEvents);
+    // ── Cuts ──────────────
 
     applyCut("distanceToCollidingBCID == 0", "Colliding");
     applyCut("(inputBits & 0x8) == 0x8 || (inputBits & 0x10) == 0x10 || (inputBits & 0x20) == 0x20 || (inputBits & 0x40) == 0x40", "Trigger");
@@ -294,7 +298,6 @@ void Analysis::Run(TString outputFileName) {
     if (m_excludedTimesCut != "") {
         DEBUG("Applying GRL excluded times cut: ", m_excludedTimesCut);
         m_node = m_node->Define("ExcludedTimes", m_excludedTimesCut);
-        // m_node = m_node->Filter("!ExcludedTimes", "Excluded times");
         applyCut("!ExcludedTimes", "Excluded times");
     }
 
@@ -302,8 +305,8 @@ void Analysis::Run(TString outputFileName) {
     applyCut("reduced_charge35_nu0 > -999 && reduced_charge35_nu1 > -999", "Sanity check for aux lookup");
     applyCut("hitsVeto20 && hitsVeto21", "Veto20 and Veto21 charge > 40 pC");
     applyCut("((Track_Y_atTrig[LeadTrack_Idx] > 20 && Timing_charge_top > 20) || \
-                (Track_Y_atTrig[LeadTrack_Idx] < -20 && Timing_charge_bottom > 20) || \
-                (abs(Track_Y_atTrig[LeadTrack_Idx]) < 20 && Timing_charge_total > 20))", "Timing Station Charge");
+               (Track_Y_atTrig[LeadTrack_Idx] < -20 && Timing_charge_bottom > 20) || \
+               (abs(Track_Y_atTrig[LeadTrack_Idx]) < 20 && Timing_charge_total > 20))", "Timing Station Charge");
     applyCut("Preshower0_charge > 2.5 && Preshower1_charge > 2.5", "Preshower Charge");
     applyCut("longTracks >= 1", "At least one long track");
     applyCut("Track_nLayers[LeadTrack_Idx] >= 7", "Leading track has at >= 7 layers");
@@ -313,60 +316,52 @@ void Analysis::Run(TString outputFileName) {
     applyCut("Track_rIFT[LeadTrack_Idx] < 95", "Track R at IFT < 95 mm");
     applyCut("LeadTrack_Theta < 0.025", "Leading track theta < 0.025 rad");
     applyCut("Track_rVetoNu < 120", "Track rVetoNu < 120 mm");
-    applyCut("LeadTrack_pz0 > 100", "Track pz > 100 GeV");    
-    // m_node = m_node->Filter("any_saturated", "A scintillator is saturated");
+    applyCut("LeadTrack_pz0 > 100", "Track pz > 100 GeV");
 
+    // ── Book ALL actions before triggering any event loop ──────────────────
     auto cutReport = m_node->Report();
-    cutReport->Print();
-        
-    // If an output file name is provided, save a snapshot of the resulting dataframe
+    auto runsCol   = m_node->Take<int>("run");
+
     if (outputFileName != "") {
         INFO("Saving snapshot to ", outputFileName, "...");
 
-        TFile *file = TFile::Open(outputFileName, "RECREATE");
+        auto opts = ROOT::RDF::RSnapshotOptions();
+        opts.fMode = "RECREATE";
+        auto columns = m_node->GetColumnNames();
+
+        // ── SINGLE EVENT LOOP ───────────────────────────────────────────────
+        m_node->Snapshot(m_mainFileTreeName, outputFileName, columns, opts);
+
+        // ── Post-processing to save metadata and cutflow info ───────────────
+        TFile *file = TFile::Open(outputFileName, "UPDATE");
+
+        // ── Metadata tree (uses cached runsCol) ─────────────────────────────
         TTree *meta_tree = new TTree("meta", "Metadata tree");
-        
-        auto runsCol = m_node->Take<int>("run");
+
         std::set<int> uniqueRuns(runsCol->begin(), runsCol->end());
 
-        std::vector<float> runLumi;
+        std::vector<int>   runBranch(uniqueRuns.begin(), uniqueRuns.end());
+        std::vector<float> lumiBranch;
         for (const auto& run : uniqueRuns) {
             auto it = m_runLumiDict.find(run);
-            if (it != m_runLumiDict.end()) {
-                runLumi.push_back(it->second);
-            } else {
-                runLumi.push_back(-1); // or some default value indicating missing lumi
-            }
+            lumiBranch.push_back(it != m_runLumiDict.end() ? it->second : -1.f);
         }
-    
-        // Write out run number and lumi for convenience
-        std::vector<float> lumiBranch;
-        for (const auto &lum : runLumi) {
-            lumiBranch.push_back(lum);
-        }
-        meta_tree->Branch("lumi", &lumiBranch);
 
-        std::vector<int> runBranch;
-        for (const auto &run : uniqueRuns) {
-                runBranch.push_back(run);
-            }
         meta_tree->Branch("run_number", &runBranch);
-
-        // Close the file
+        meta_tree->Branch("lumi",       &lumiBranch);
         meta_tree->Fill();
         meta_tree->Write();
         INFO("Saved metadata tree with ", uniqueRuns.size(), " unique runs.");
 
-        // Cutflow tree
+        // ── Cutflow tree (uses cached cutReport) ────────────────────────────
         TTree *cutflow_tree = new TTree("cutflow", "Cutflow tree");
         std::string cut_name;
-        ULong64_t all;
-        ULong64_t passed;
-        double efficiency;
+        ULong64_t   all, passed;
+        double      efficiency;
 
-        cutflow_tree->Branch("cut_name", &cut_name);
-        cutflow_tree->Branch("all", &all);
-        cutflow_tree->Branch("passed", &passed);
+        cutflow_tree->Branch("cut_name",   &cut_name);
+        cutflow_tree->Branch("all",        &all);
+        cutflow_tree->Branch("passed",     &passed);
         cutflow_tree->Branch("efficiency", &efficiency);
 
         for (auto&& cut : *cutReport) {
@@ -374,17 +369,16 @@ void Analysis::Run(TString outputFileName) {
             all        = cut.GetAll();
             passed     = cut.GetPass();
             efficiency = cut.GetEff();
-
+            INFO("Cut: ", cut_name, ", All: ", all, ", Passed: ", passed, ", Efficiency: ", efficiency);
             cutflow_tree->Fill();
         }
         cutflow_tree->Write();
         file->Close();
         INFO("Wrote cutflow tree");
 
-        auto opts = ROOT::RDF::RSnapshotOptions();
-        opts.fMode = "UPDATE";
-        
-        auto columns = m_node->GetColumnNames();
-        m_node->Snapshot(m_mainFileTreeName, outputFileName, columns, opts);
+    } else {
+        cutReport->Print();
     }
+
+    INFO("Total event loop runs: ", m_node->GetNRuns());
 }
