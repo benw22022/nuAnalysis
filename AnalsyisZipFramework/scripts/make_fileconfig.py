@@ -120,11 +120,11 @@ def main():
 
 
     run_list = list(run_cfg.keys())
-    with open("run_list.txt", "w") as f:
+    with open("../config/run_list.txt", "w") as f:
         for run_number in run_list:
             f.write(f"{run_number}\n")
 
-    with open("file_config.json", "w") as f:
+    with open("../config/file_config.json", "w") as f:
         json.dump(run_cfg, f, indent=4)
 
 if __name__ == "__main__":
