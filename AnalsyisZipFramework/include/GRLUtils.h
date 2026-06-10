@@ -9,6 +9,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "TString.h"
+#include <map>
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
@@ -36,5 +37,12 @@ namespace GRLUtils {
     std::string makeExcludedTimesCut(const std::vector<TString>& jsonFiles);
 
     std::string makeGoodTimesCut(const std::vector<TString>& jsonFiles);
+
+    using FileConfig = std::map<int, std::pair<
+        std::vector<std::string>,   // datapaths
+        std::vector<std::string>    // auxpaths
+    >>;
+
+    FileConfig parseFileConfig(std::string configPath);
 
 } // namespace GRLUtils

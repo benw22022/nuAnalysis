@@ -182,7 +182,6 @@ void Analysis::BuildDataFrame() {
         }
 
         INFO("Loaded ", auxMap->size(), " unique (run, event) pairs.");
-        INFO("1: Number of runs: ", m_node->GetNRuns());
 
         // Inject aux quantities as new columns via Define()
         // Capture auxMap by shared_ptr so it stays alive
@@ -193,7 +192,6 @@ void Analysis::BuildDataFrame() {
                 return (it != auxMap->end()) ? it->second.charge35_nu0 : -999.f;
             }, {"run", "eventID"});
         
-        INFO("2: Number of runs: ", m_node->GetNRuns());
         m_node = m_node->Define("reduced_charge35_nu1",
             [auxMap](int run, int eventID) -> float {
                 uint64_t key = (uint64_t)run << 32 | (uint32_t)eventID;

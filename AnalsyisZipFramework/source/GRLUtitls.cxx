@@ -207,5 +207,27 @@ namespace GRLUtils {
         return cutStr;
     }
 
+    FileConfig parseFileConfig(std::string configPath) {
+        std::ifstream ifs(configPath);
+        if (!ifs.is_open()) {
+            ERROR("Could not open file config: ", configPath);
+            throw std::runtime_error("Could not open file config: " + configPath);
+        }
+
+        INFO("Reading file config from ", configPath, "...");
+        
+        json j = json::parse(ifs);
+
+        FileConfig fileConfig;
+
+        for (const auto& [runStr, paths] : j.items()) {
+            int runNumber = std::stoi(runStr);
+            std::vector<std::string> dataPaths = paths["data_paths"].get<std::vector<std::string>>();
+            std::vector<std::string> auxPaths  = paths["waveform_paths"].get<std::vector<std::string>>();
+            fileConfig[runNumber] = {dataPaths, auxPaths};
+        }
+
+        return fileConfig;
+    }
 
 }
