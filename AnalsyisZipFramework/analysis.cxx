@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
 
     INFO("Run number: ", runNumber);
    
-    GRLUtils::GRLConfig grlConfig = GRLUtils::readGRLConfig("config/config.json");
+    GRLUtils::GRLConfig grlConfig = GRLUtils::readGRLConfig("config/grl_config.json");
     GRLUtils::FileConfig fileConfig = GRLUtils::parseFileConfig("config/file_config.json");
     
     std::vector<TString> mainFiles, auxFiles;
