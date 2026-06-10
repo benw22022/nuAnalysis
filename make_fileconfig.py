@@ -119,6 +119,11 @@ def main():
             print(f"Warning: No waveform paths for run {run_number}")
 
 
+    run_list = list(run_cfg.keys())
+    with open("run_list.txt", "w") as f:
+        for run_number in run_list:
+            f.write(f"{run_number}\n")
+
     with open("file_config.json", "w") as f:
         json.dump(run_cfg, f, indent=4)
 
