@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
     Analysis analysis("nt", mainFiles);
     analysis.addAuxFiles("tree", auxFiles);
     analysis.setGRL(grlConfig.grlJsons, grlConfig.grlCsvs);
-    analysis.Run("output.root");
+    analysis.Run(outputFile);
 
     return 0;
     
