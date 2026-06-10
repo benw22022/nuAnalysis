@@ -299,7 +299,7 @@ void Analysis::Run(TString outputFileName) {
         applyCut("!ExcludedTimes", "Excluded times");
     }
 
-    applyCut("reduced_charge35_nu0 < 40 && reduced_charge35_nu1 < 40", "Reduced charge cut");
+    applyCut("reduced_charge35_nu0 < 30 && reduced_charge35_nu1 < 30", "Reduced charge cut");
     applyCut("reduced_charge35_nu0 > -999 && reduced_charge35_nu1 > -999", "Sanity check for aux lookup");
     applyCut("hitsVeto20 && hitsVeto21", "Veto20 and Veto21 charge > 40 pC");
     applyCut("((Track_Y_atTrig[LeadTrack_Idx] > 20 && Timing_charge_top > 20) || \
