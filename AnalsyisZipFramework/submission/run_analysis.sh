@@ -2,7 +2,7 @@
 # run_analysis.sh
 
 # Source LCG view
-source /cvmfs/sft.cern.ch/lcg/views/LCG_107/x86_64-el9-gcc11-opt/setup.sh
+source /cvmfs/sft.cern.ch/lcg/views/LCG_109/x86_64-el9-gcc15-opt/setup.sh
 
 # Move to the build directory where the binary and config/ live
 cd /afs/cern.ch/work/b/bewilson/AnalyisZipFramework/build

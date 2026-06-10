@@ -7,9 +7,6 @@ request_memory = 8000M
 request_cpus   = 1
 request_disk   = 2000M
 
-# Environment — source the LCG view so ROOT is available
-environment = "LD_LIBRARY_PATH=/cvmfs/sft.cern.ch/lcg/views/LCG_107/x86_64-el9-gcc11-opt/lib:/cvmfs/sft.cern.ch/lcg/views/LCG_107/x86_64-el9-gcc11-opt/lib64"
-
 # Logs — must be shared per cluster on CERN HTCondor
 log    = logs/analysis_$(ClusterId).log
 output = logs/analysis_$(ClusterId).$(ProcId).out
