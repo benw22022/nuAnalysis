@@ -14,6 +14,7 @@ int main(int argc, char* argv[]) {
 
     int         runNumber  = -1;
     std::string outputFile = "";
+    bool        isMC       = false;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -36,6 +37,10 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             outputFile = argv[++i];
+        
+        } else if (arg == "--isMC") {
+            isMC = true;
+            INFO("Running in MC mode: GRL, BCID and trigger cuts will be skipped.");
 
         } else {
             ERROR("Unknown argument: ", arg);
@@ -70,7 +75,12 @@ int main(int argc, char* argv[]) {
 
 
     Analysis analysis("nt", mainFiles);
-    analysis.addAuxFiles("tree", auxFiles);
+    if (!auxFiles.empty())
+    {
+        analysis.addAuxFiles("tree", auxFiles);
+    }
+
+    analysis.isMC = isMC;
     analysis.setGRL(grlConfig.grlJsons, grlConfig.grlCsvs);
     analysis.Run(outputFile);
 
