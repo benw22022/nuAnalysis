@@ -204,7 +204,10 @@ void Analysis::BuildDataFrame() {
 
         // Inject aux quantities as new columns via Define()
         // Capture auxMap by shared_ptr so it stays alive
-        m_node = m_node->Define("GoodVetoOrPSHit", "Veto20_status == 0 || Veto21_status == 0 || Preshower0_status == 0 || Preshower1_status == 0");
+        
+        // Define a column which flags if an event had a good hit in either veto station or preshower - need a good hit to trust the reduced charge values from the aux file
+        // Veto status 512 is what is recorded as a good hit on the second digitizer (CaloNu period specific)
+        m_node = m_node->Define("GoodVetoOrPSHit", "Veto20_status == 0 || Veto21_status == 0 || Veto20_status == 512 || Veto21_status == 512 || Preshower0_status == 0 || Preshower1_status == 0");
 
         m_node = m_node->Define("VetoNu0_reduced_charge",
             [auxMap](int run, int eventID, bool GoodVetoOrPSHit, float VetoNu0_raw_charge) -> float {
