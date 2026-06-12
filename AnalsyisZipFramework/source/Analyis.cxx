@@ -154,6 +154,20 @@ void Analysis::BuildDataFrame() {
     m_df   = std::make_unique<ROOT::RDataFrame>(*m_mainChain);
     m_node = *m_df;
 
+    // Aliases for older NTuples where the branch names were different
+    auto columnNames = m_node->GetColumnNames();
+    if (std::find(columnNames.begin(), columnNames.end(), "VetoSt10_raw_charge") != columnNames.end()) {
+        m_node = m_node->Alias("VetoSt10_raw_charge", "Veto10_raw_charge");
+        m_node = m_node->Alias("VetoSt20_raw_charge", "Veto20_raw_charge");
+        m_node = m_node->Alias("VetoSt21_raw_charge", "Veto21_raw_charge");
+        m_node = m_node->Alias("VetoSt10_status", "Veto10_status");
+        m_node = m_node->Alias("VetoSt20_status", "Veto20_status");
+        m_node = m_node->Alias("VetoSt21_status", "Veto21_status");
+        m_node = m_node->Alias("VetoSt10_charge", "Veto10_charge");
+        m_node = m_node->Alias("VetoSt20_charge", "Veto20_charge");
+        m_node = m_node->Alias("VetoSt21_charge", "Veto21_charge");
+    }
+
     if (m_auxChainSet) {
         // Build a lookup map from the aux chain manually
         // Key: {run, event}, Value: struct of aux quantities
@@ -178,6 +192,11 @@ void Analysis::BuildDataFrame() {
             m_auxChain->GetEntry(i);
             // Pack run+event into a single 64-bit key
             uint64_t key = (uint64_t)run << 32 | (uint32_t)evt;
+
+            if (auxMap->find(key) != auxMap->end()) {
+                ERROR("Warning: Duplicate (run, event) pair in aux chain: (", run, ", ", evt, "). Overwriting previous entry.");
+            }
+
             (*auxMap)[key] = {charge35_nu0, charge35_nu1};
         }
 
@@ -185,27 +204,31 @@ void Analysis::BuildDataFrame() {
 
         // Inject aux quantities as new columns via Define()
         // Capture auxMap by shared_ptr so it stays alive
-        m_node = m_node->Define("reduced_charge35_nu0",
-            [auxMap](int run, int eventID) -> float {
-                uint64_t key = (uint64_t)run << 32 | (uint32_t)eventID;
-                auto it = auxMap->find(key);
-                return (it != auxMap->end()) ? it->second.charge35_nu0 : -999.f;
-            }, {"run", "eventID"});
-        
-        m_node = m_node->Define("reduced_charge35_nu1",
-            [auxMap](int run, int eventID) -> float {
-                uint64_t key = (uint64_t)run << 32 | (uint32_t)eventID;
-                auto it = auxMap->find(key);
-                return (it != auxMap->end()) ? it->second.charge35_nu1 : -999.f;
-            }, {"run", "eventID"});
-    }
+        m_node = m_node->Define("GoodVetoOrPSHit", "Veto20_status == 0 || Veto21_status == 0 || Preshower0_status == 0 || Preshower1_status == 0");
 
-    // Aliases for older NTuples where the branch names were different
-    auto columnNames = m_node->GetColumnNames();
-    if (std::find(columnNames.begin(), columnNames.end(), "VetoSt10_raw_charge") != columnNames.end()) {
-        m_node = m_node->Alias("VetoSt10_raw_charge", "Veto10_raw_charge");
-        m_node = m_node->Alias("VetoSt20_raw_charge", "Veto20_raw_charge");
-        m_node = m_node->Alias("VetoSt21_raw_charge", "Veto21_raw_charge");
+        m_node = m_node->Define("VetoNu0_reduced_charge",
+            [auxMap](int run, int eventID, bool GoodVetoOrPSHit, float VetoNu0_raw_charge) -> float {
+                uint64_t key = (uint64_t)run << 32 | (uint32_t)eventID;
+                auto it = auxMap->find(key);
+                // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
+                if (!GoodVetoOrPSHit){
+                    return VetoNu0_raw_charge; 
+                }
+                return (it != auxMap->end()) ? it->second.charge35_nu0 : -999.f;
+            }, {"run", "eventID", "GoodVetoOrPSHit", "VetoNu0_raw_charge"});
+        
+        m_node = m_node->Define("VetoNu1_reduced_charge",
+            [auxMap](int run, int eventID, bool GoodVetoOrPSHit, float VetoNu1_raw_charge) -> float {
+                uint64_t key = (uint64_t)run << 32 | (uint32_t)eventID;
+                auto it = auxMap->find(key);
+                
+                // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
+                if (!GoodVetoOrPSHit){
+                    return VetoNu1_raw_charge; 
+                }
+
+                return (it != auxMap->end()) ? it->second.charge35_nu1 : -999.f;
+            }, {"run", "eventID", "GoodVetoOrPSHit", "VetoNu1_raw_charge"});
     }
 
     // Definitions
@@ -235,10 +258,12 @@ void Analysis::BuildDataFrame() {
     
     m_node = m_node->Define("hitsVetoNu0", "VetoNu0_raw_charge > 40");
     m_node = m_node->Define("hitsVetoNu1", "VetoNu1_raw_charge > 40");
+
+    m_node = m_node->Define("goodVetoNuStatus", "(VetoNu0_status == 0 || VetoNu0_status == 512) && (VetoNu1_status == 0 || VetoNu1_status == 512)");
     
-    m_node = m_node->Define("hitsVeto10", "Veto10_raw_charge > 40");
-    m_node = m_node->Define("hitsVeto20", "Veto20_raw_charge > 40");
-    m_node = m_node->Define("hitsVeto21", "Veto21_raw_charge > 40");
+    m_node = m_node->Define("hitsVeto10", "Veto10_charge > 40");
+    m_node = m_node->Define("hitsVeto20", "Veto20_charge > 40");
+    m_node = m_node->Define("hitsVeto21", "Veto21_charge > 40");
 
     m_node = m_node->Define("hitsTiming", "((Track_Y_atTrig[0] > 20 && Timing_charge_top > 20) || \
                                            (Track_Y_atTrig[0] < -20 && Timing_charge_bottom > 20) || \
@@ -251,12 +276,11 @@ void Analysis::BuildDataFrame() {
 
     m_node = m_node->Define("vetoSaturated", "Veto10_raw_charge > 2500 || Veto20_raw_charge > 100 || Veto21_raw_charge > 100");
     
-    m_node = m_node->Define("hitsPreshower0", "Preshower0_raw_charge > 2.5");
-    m_node = m_node->Define("hitsPreshower1", "Preshower1_raw_charge > 2.5");
+    m_node = m_node->Define("hitsPreshower0", "Preshower0_charge > 2.5");
+    m_node = m_node->Define("hitsPreshower1", "Preshower1_charge > 2.5");
 
     m_node = m_node->Define("LeadTrack_Idx", "ROOT::VecOps::ArgMax(Track_pz0)");
-    m_node = m_node->Define("Track_rVetoNu", "pow(Track_X_atVetoNu[LeadTrack_Idx]*Track_X_atVetoNu[LeadTrack_Idx] + Track_Y_atVetoNu[LeadTrack_Idx]*Track_Y_atVetoNu[LeadTrack_Idx], 0.5)");
-
+    m_node = m_node->Define("Track_rVetoNu","Radius(Track_X_atVetoNu, Track_Y_atVetoNu)");
 
     m_node = m_node->Define("Track_rVetoStation1", "pow(Track_X_atVetoStation1[LeadTrack_Idx]*Track_X_atVetoStation1[LeadTrack_Idx] + Track_Y_atVetoStation1[LeadTrack_Idx]*Track_Y_atVetoStation1[LeadTrack_Idx], 0.5)");
     m_node = m_node->Define("Track_rVetoStation2", "pow(Track_X_atVetoStation2[LeadTrack_Idx]*Track_X_atVetoStation2[LeadTrack_Idx] + Track_Y_atVetoStation2[LeadTrack_Idx]*Track_Y_atVetoStation2[LeadTrack_Idx], 0.5)");
@@ -265,6 +289,13 @@ void Analysis::BuildDataFrame() {
     m_node = m_node->Define("LeadTrack_pz0", "Track_pz0[LeadTrack_Idx] / 1000");
     m_node = m_node->Define("LeadTrack_Theta", "Track_Theta[LeadTrack_Idx]");
     m_node = m_node->Define("LeadTrack_Eta", "-ROOT::VecOps::log(ROOT::VecOps::tan(Track_Theta / 2))[LeadTrack_Idx]");
+    m_node = m_node->Define("LeadTrack_nLayers", "Track_nLayers[LeadTrack_Idx]");
+    m_node = m_node->Define("LeadTrack_nDoF", "Track_nDoF[LeadTrack_Idx]");
+    m_node = m_node->Define("LeadTrack_Chi2", "Track_Chi2[LeadTrack_Idx]");
+    
+    m_node = m_node->Define("LeadTrack_rVetoNu", "Track_rVetoNu[LeadTrack_Idx]");
+    m_node = m_node->Define("LeadTrack_r_atMaxRadius", "Track_r_atMaxRadius[LeadTrack_Idx]");
+    m_node = m_node->Define("LeadTrack_rIFT", "Track_rIFT[LeadTrack_Idx]");
 
     m_node = m_node->Define("VetoNu_saturated", "VetoNu0_status == 4 || VetoNu1_status == 4");
     m_node = m_node->Define("VetoStation_saturated", "Veto10_status == 4 || Veto20_status == 4 || Veto21_status == 4");
@@ -290,31 +321,51 @@ void Analysis::Run(TString outputFileName) {
 
     // ── Cuts ──────────────
 
-    applyCut("distanceToCollidingBCID == 0", "Colliding");
-    applyCut("(inputBits & 0x8) == 0x8 || (inputBits & 0x10) == 0x10 || (inputBits & 0x20) == 0x20 || (inputBits & 0x40) == 0x40", "Trigger");
+    if (!isMC) {
+        applyCut("distanceToCollidingBCID == 0", "Colliding");
+        applyCut("(inputBits & 0x8) == 0x8 || (inputBits & 0x10) == 0x10 || (inputBits & 0x20) == 0x20 || (inputBits & 0x40) == 0x40", "Trigger");
 
-    if (m_excludedTimesCut != "") {
-        DEBUG("Applying GRL excluded times cut: ", m_excludedTimesCut);
-        m_node = m_node->Define("ExcludedTimes", m_excludedTimesCut);
-        applyCut("!ExcludedTimes", "Excluded times");
+        if (m_excludedTimesCut != "") {
+            DEBUG("Applying GRL excluded times cut: ", m_excludedTimesCut);
+            m_node = m_node->Define("ExcludedTimes", m_excludedTimesCut);
+            applyCut("!ExcludedTimes", "Excluded times");
+        }
     }
 
-    applyCut("reduced_charge35_nu0 < 30 && reduced_charge35_nu1 < 30", "Reduced charge cut");
-    applyCut("reduced_charge35_nu0 > -999 && reduced_charge35_nu1 > -999", "Sanity check for aux lookup");
-    applyCut("hitsVeto20 && hitsVeto21", "Veto20 and Veto21 charge > 40 pC");
+    // Reco query cuts
+    // (((reduced_VetoNu0_charge < 30.0) & (reduced_VetoNu0_charge.notna())) & ((reduced_VetoNu1_charge < 30.0) & (reduced_VetoNu1_charge.notna()))) & 
+    // ((VetoSt20_charge > 40) & (VetoSt21_charge > 40)) & 
+    // (((Track_Y_atTrig > 20) & (Timing_charge_top > 20)) | ((Track_Y_atTrig < -20) & (Timing_charge_bottom > 20)) | ((abs(Track_Y_atTrig) < 20) & (Timing_charge_total > 20))) & 
+    // ((Preshower0_charge > 2.5) & (Preshower1_charge > 2.5)) & 
+    // ((longTracks > 0) &
+    //  (Track_nLayers >= 7) &
+    //   (Track_nDoF >= 9) & 
+    //   (chi2_ndf < 15) &
+    //    (Track_pz_gev > 100) & 
+    //    (Track_r_atMaxRadius < 95) & 
+    //    (Track_rIFT < 95) & 
+    //    (Track_rVetoNu < 120) &
+    //     (theta_mrad < 25))
+
+    // applyCut("goodVetoNuStatus", "Good VetoNu status");
+    applyCut("!std::isnan(VetoNu0_reduced_charge ) && !std::isnan(VetoNu1_reduced_charge)", "Reduced charge not NaN");
+    applyCut("VetoNu0_reduced_charge < 30 && VetoNu1_reduced_charge < 30", "VetoNu0 and VetoNu1 reduced charge < 30 pC");
+    applyCut("VetoNu0_reduced_charge > -999 && VetoNu1_reduced_charge > -999", "Sanity check for aux lookup");
+    applyCut("Veto20_charge > 40 && Veto21_charge > 40", "Veto20 and Veto21 charge > 40 pC");
     applyCut("((Track_Y_atTrig[LeadTrack_Idx] > 20 && Timing_charge_top > 20) || \
                (Track_Y_atTrig[LeadTrack_Idx] < -20 && Timing_charge_bottom > 20) || \
                (abs(Track_Y_atTrig[LeadTrack_Idx]) < 20 && Timing_charge_total > 20))", "Timing Station Charge");
     applyCut("Preshower0_charge > 2.5 && Preshower1_charge > 2.5", "Preshower Charge");
-    applyCut("longTracks >= 1", "At least one long track");
-    applyCut("Track_nLayers[LeadTrack_Idx] >= 7", "Leading track has at >= 7 layers");
-    applyCut("Track_nDoF[LeadTrack_Idx] >= 9", "Track nDoF >= 9");
-    applyCut("Track_Chi2[LeadTrack_Idx] / Track_nDoF[LeadTrack_Idx] < 15", "Leading track has chi2/ndof < 15");
-    applyCut("Track_r_atMaxRadius[LeadTrack_Idx] < 95", "Track R at max radius < 95 mm");
-    applyCut("Track_rIFT[LeadTrack_Idx] < 95", "Track R at IFT < 95 mm");
-    applyCut("LeadTrack_Theta < 0.025", "Leading track theta < 0.025 rad");
-    applyCut("Track_rVetoNu < 120", "Track rVetoNu < 120 mm");
+    applyCut("longTracks > 0", "At least one long track");
+    applyCut("LeadTrack_nLayers >= 7", "Leading track has at >= 7 layers");
+    applyCut("LeadTrack_nDoF >= 9", "Track nDoF >= 9");
+    applyCut("LeadTrack_Chi2 / LeadTrack_nDoF < 15", "Leading track has chi2/ndof < 15");
     applyCut("LeadTrack_pz0 > 100", "Track pz > 100 GeV");
+    applyCut("LeadTrack_r_atMaxRadius < 95", "Track R at max radius < 95 mm");
+    applyCut("LeadTrack_rIFT < 95", "Track R at IFT < 95 mm");
+    applyCut("LeadTrack_rVetoNu < 120", "Track rVetoNu < 120 mm");
+    applyCut("LeadTrack_Theta < 0.025", "Leading track theta < 0.025 rad");
+      
 
     // ── Book ALL actions before triggering any event loop ──────────────────
     auto cutReport = m_node->Report();
@@ -344,6 +395,9 @@ void Analysis::Run(TString outputFileName) {
             auto it = m_runLumiDict.find(run);
             lumiBranch.push_back(it != m_runLumiDict.end() ? it->second : -1.f);
         }
+
+        float totalLumi = std::accumulate(lumiBranch.begin(), lumiBranch.end(), 0.f);
+        INFO("Total integrated luminosity for this run: ", totalLumi, " /pb");
 
         meta_tree->Branch("run_number", &runBranch);
         meta_tree->Branch("lumi",       &lumiBranch);

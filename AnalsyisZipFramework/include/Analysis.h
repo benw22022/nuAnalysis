@@ -32,6 +32,8 @@ class Analysis {
         void Run(TString outputFileName = "");
 
         void setGRL(const std::vector<TString>& grlJsons, const std::vector<TString>& grlCSVs);
+
+        bool isMC{false};
     
     private:
         TString m_mainFileTreeName;
