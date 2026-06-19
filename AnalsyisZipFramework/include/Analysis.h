@@ -55,4 +55,9 @@ class Analysis {
 
         std::unordered_map<int, float> m_runLumiDict;
         std::string m_excludedTimesCut{""};
+
+        std::atomic<int> m_NVetoNu0_fallbacks{0};
+        std::atomic<int> m_NVetoNu1_fallbacks{0};
+        std::atomic<int> m_NVetoNu0_missing_aux{0};
+        std::atomic<int> m_NVetoNu1_missing_aux{0};
 };
