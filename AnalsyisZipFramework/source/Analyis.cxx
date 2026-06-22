@@ -231,7 +231,8 @@ void Analysis::BuildDataFrame() {
                 if (reduced_charge == -999.) {
                     m_NVetoNu0_missing_aux++;
                     m_NVetoNu0_fallbacks++;
-                    return VetoNu0_raw_charge; // Fallback to raw charge if aux data is missing
+                    // return reduced_charge;
+                    return VetoNu0_raw_charge; // fallback to raw charge if aux data is missing, to avoid losing events with missing aux data which may still be salvageable with the original charge value
                 }
 
                 return reduced_charge;
@@ -253,7 +254,8 @@ void Analysis::BuildDataFrame() {
                 if (reduced_charge == -999.) {
                     m_NVetoNu1_missing_aux++;
                     m_NVetoNu1_fallbacks++;
-                    return VetoNu1_raw_charge; // Fallback to raw charge if aux data is missing
+                    // return reduced_charge; 
+                    return VetoNu1_raw_charge; // fallback to raw charge if aux data is missing, to avoid losing events with missing aux data which may still be salvageable with the original charge value
                 }
                 return reduced_charge;
                 
@@ -394,6 +396,7 @@ void Analysis::Run(TString outputFileName) {
     applyCut("LeadTrack_rVetoNu < 120", "Track rVetoNu < 120 mm");
     applyCut("LeadTrack_Theta < 0.025", "Leading track theta < 0.025 rad");
     applyCut("VetoNu0_reduced_charge < 30 && VetoNu1_reduced_charge < 30", "VetoNu0 and VetoNu1 reduced charge < 30 pC");
+    // applyCut("VetoNu0_reduced_charge >= -999 && VetoNu1_reduced_charge >= -999", "Sanity cut to remove events with missing aux data (reduced charge set to -999)");
       
 
     // ── Book ALL actions before triggering any event loop ──────────────────

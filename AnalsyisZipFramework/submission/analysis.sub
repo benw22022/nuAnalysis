@@ -9,11 +9,10 @@ request_disk   = 2000M
 
 # Logs — must be shared per cluster on CERN HTCondor
 log    = logs/analysis_$(ClusterId).log
-output = logs/analysis_$(ClusterId).$(ProcId).out
-error  = logs/analysis_$(ClusterId).$(ProcId).err
+output = logs/analysis_$(ClusterId).$(ProcId)-$(runNumber).out
+error  = logs/analysis_$(ClusterId).$(ProcId)-$(runNumber).err
 
-# CERN-specific (~8 hours; use "tomorrow" (1 day) or "testmatch" (20 min) as needed)
-+JobFlavour = "workday"  
++JobFlavour = "espresso"  
 
 
 # Queue one job per run number

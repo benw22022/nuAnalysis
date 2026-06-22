@@ -5,3 +5,4 @@ logs/
 *.err
 *.cc
 *.root
+.__afs*
