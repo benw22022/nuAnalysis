@@ -206,24 +206,33 @@ void Analysis::BuildDataFrame() {
         // Capture auxMap by shared_ptr so it stays alive
         // Define a column which flags if an event had a good hit in either veto station or preshower - need a good hit to trust the reduced charge values from the aux file
         // Veto status 512 is what is recorded as a good hit on the second digitizer (CaloNu period specific)
-        m_node = m_node->Define("GoodVeto20Hit",[](int status) { return (status & ~512) == 0; }, {"Veto20_status"});
-        m_node = m_node->Define("GoodVeto21Hit", [](int status) { return (status & ~512) == 0; }, {"Veto21_status"});
-        m_node = m_node->Define("GoodPreshower0Hit", [](int status) { return (status & ~512) == 0; }, {"Preshower0_status"}); 
-        m_node = m_node->Define("GoodPreshower1Hit", [](int status) { return (status & ~512) == 0; }, {"Preshower1_status"});
-        m_node = m_node->Define("GoodVetoOrPSHit", "GoodVeto20Hit || GoodVeto21Hit || GoodPreshower0Hit || GoodPreshower1Hit");
+        m_node = m_node->Define("GoodVeto20Hit",[](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Veto20_status"});
+        m_node = m_node->Define("GoodVeto21Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Veto21_status"});
+        m_node = m_node->Define("GoodPreshower0Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Preshower0_status"}); 
+        m_node = m_node->Define("GoodPreshower1Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Preshower1_status"});
+        m_node = m_node->Define("TimingOK", "GoodVeto20Hit || GoodVeto21Hit || GoodPreshower0Hit || GoodPreshower1Hit");
         m_node = m_node->Define("BadVetoStatus", "Veto20_status == 528 || Veto21_status == 528");
         m_node = m_node->Define("GoodVetoNuStatus", "((VetoNu0_status == 0 || VetoNu0_status == 1) && (VetoNu1_status == 0 || VetoNu1_status == 1)) || (VetoNu0_status == 0 && VetoNu1_status == 16)");
-        m_node = m_node->Define("GoodScintillatorStatus", "GoodVetoOrPSHit && GoodVetoNuStatus && !BadVetoStatus");
+        m_node = m_node->Define("GoodScintillatorStatus", "TimingOK && GoodVetoNuStatus && !BadVetoStatus");
+        m_node = m_node->Define("isCaloNuPeriod", "15821 <= run  && run <= 16924");
+        m_node = m_node->Define("caloNuVeto2StatusBug", "(Veto20_status == 528 || Veto21_status == 528) && isCaloNuPeriod");
+        m_node = m_node->Define("caloNuVetoNuStatusKeep", "GoodVetoNuStatus && isCaloNuPeriod");
+        m_node = m_node->Define("caloNuStatusCleaning", "!caloNuVeto2StatusBug && caloNuVetoNuStatusKeep");
 
         m_node = m_node->Define("VetoNu0_reduced_charge",
-            [this, auxMap](Int_t run, Int_t eventID, bool GoodScintillatorStatus, float VetoNu0_raw_charge) -> float {
+            [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, float VetoNu0_raw_charge) -> float {
                 
                 // Lookup the reduced charge from the aux map
                 auto it = auxMap->find(eventID);
                 float reduced_charge = (it != auxMap->end()) ? it->second.charge35_nu0 : -999.;
 
+                if (reduced_charge == -999.) {
+                    m_NVetoNu0_missing_aux++;
+                    std::cerr << "Warning: Missing aux data for eventID " << eventID << " in run " << run << ". Setting reduced charge to -999." << std::endl;
+                }
+
                 // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
-                if (!GoodScintillatorStatus || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu0_raw_charge > 30)){
+                if (!TimingOK || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu0_raw_charge > 30)){
                     m_NVetoNu0_fallbacks++;
                     return VetoNu0_raw_charge; 
                 }
@@ -231,22 +240,23 @@ void Analysis::BuildDataFrame() {
                 if (reduced_charge == -999.) {
                     m_NVetoNu0_missing_aux++;
                     m_NVetoNu0_fallbacks++;
-                    // return reduced_charge;
-                    return VetoNu0_raw_charge; // fallback to raw charge if aux data is missing, to avoid losing events with missing aux data which may still be salvageable with the original charge value
+                    return reduced_charge;
+                    // return std::nanf(""); // return NaN to indicate missing aux data, but still count the event as a fallback
+                    // return VetoNu0_raw_charge; // fallback to raw charge if aux data is missing, to avoid losing events with missing aux data which may still be salvageable with the original charge value
                 }
 
-                return reduced_charge;
-            }, {"run", "eventID", "GoodScintillatorStatus", "VetoNu0_raw_charge"});
+                return std::max(reduced_charge, 0.0f);
+            }, {"run", "eventID", "TimingOK", "VetoNu0_raw_charge"});
         
         m_node = m_node->Define("VetoNu1_reduced_charge",
-            [this, auxMap](Int_t run, Int_t eventID, bool GoodScintillatorStatus, float VetoNu1_raw_charge) -> float {
+            [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, float VetoNu1_raw_charge) -> float {
 
                 // Lookup the reduced charge from the aux map
                 auto it = auxMap->find(eventID);
                 float reduced_charge = (it != auxMap->end()) ? it->second.charge35_nu1 : -999.;
 
                 // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
-                if (!GoodScintillatorStatus || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu1_raw_charge > 30)){
+                if (!TimingOK || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu1_raw_charge > 30)){
                     m_NVetoNu1_fallbacks++;
                     
                     return VetoNu1_raw_charge; 
@@ -254,12 +264,13 @@ void Analysis::BuildDataFrame() {
                 if (reduced_charge == -999.) {
                     m_NVetoNu1_missing_aux++;
                     m_NVetoNu1_fallbacks++;
-                    // return reduced_charge; 
-                    return VetoNu1_raw_charge; // fallback to raw charge if aux data is missing, to avoid losing events with missing aux data which may still be salvageable with the original charge value
+                    return reduced_charge; 
+                    // return std::nanf(""); // return NaN to indicate missing aux data, but still count the event as a fallback
+                    // return VetoNu1_raw_charge; // fallback to raw charge if aux data is missing, to avoid losing events with missing aux data which may still be salvageable with the original charge value
                 }
-                return reduced_charge;
+                return std::max(reduced_charge, 0.0f);
                 
-            }, {"run", "eventID", "GoodScintillatorStatus", "VetoNu1_raw_charge"});
+            }, {"run", "eventID", "TimingOK", "VetoNu1_raw_charge"});
     } // End of aux chain handling
 
 
@@ -382,9 +393,7 @@ void Analysis::Run(TString outputFileName) {
     // (theta_mrad < 25))
 
     applyCut("Veto20_charge > 40 && Veto21_charge > 40", "Veto20 and Veto21 charge > 40 pC");
-    applyCut("((Track_Y_atTrig[LeadTrack_Idx] > 20 && Timing_charge_top > 20) || \
-               (Track_Y_atTrig[LeadTrack_Idx] < -20 && Timing_charge_bottom > 20) || \
-               (abs(Track_Y_atTrig[LeadTrack_Idx]) < 20 && Timing_charge_total > 20))", "Timing Station Charge > 20 pC");
+    applyCut("((Track_Y_atTrig[LeadTrack_Idx] > 20 && Timing_charge_top > 20) || (Track_Y_atTrig[LeadTrack_Idx] < -20 && Timing_charge_bottom > 20) || (abs(Track_Y_atTrig[LeadTrack_Idx]) < 20 && Timing_charge_total > 20))", "Timing Station Charge > 20 pC");
     applyCut("Preshower0_charge > 2.5 && Preshower1_charge > 2.5", "Preshower Charge > 2.5 pC");
     applyCut("longTracks > 0", "At least one long track");
     applyCut("LeadTrack_nLayers >= 7", "Leading track has at >= 7 layers");
@@ -395,8 +404,9 @@ void Analysis::Run(TString outputFileName) {
     applyCut("LeadTrack_rIFT < 95", "Track R at IFT < 95 mm");
     applyCut("LeadTrack_rVetoNu < 120", "Track rVetoNu < 120 mm");
     applyCut("LeadTrack_Theta < 0.025", "Leading track theta < 0.025 rad");
+    // applyCut("VetoNu0_reduced_charge != -999 && VetoNu1_reduced_charge != -999", "VetoNu0 and VetoNu1 reduced charge not NaN");
     applyCut("VetoNu0_reduced_charge < 30 && VetoNu1_reduced_charge < 30", "VetoNu0 and VetoNu1 reduced charge < 30 pC");
-    // applyCut("VetoNu0_reduced_charge >= -999 && VetoNu1_reduced_charge >= -999", "Sanity cut to remove events with missing aux data (reduced charge set to -999)");
+    applyCut("VetoNu0_reduced_charge >= -999 && VetoNu1_reduced_charge >= -999", "Sanity cut to remove events with missing aux data (reduced charge set to -999)");
       
 
     // ── Book ALL actions before triggering any event loop ──────────────────
