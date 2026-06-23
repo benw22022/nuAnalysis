@@ -174,7 +174,8 @@ void Analysis::BuildDataFrame() {
         // Key: {run, event}, Value: struct of aux quantities
         struct AuxData { float charge35_nu0; float charge35_nu1; };
         
-        auto auxMap = std::make_shared<std::unordered_map<Int_t, AuxData>>();
+        // auto auxMap = std::make_shared<std::unordered_map<Int_t, AuxData>>();
+        auto auxMap = std::make_shared<std::unordered_map<uint64_t, AuxData>>();
 
         Int_t  run, evt;
         float charge35_nu0, charge35_nu1;
@@ -192,12 +193,14 @@ void Analysis::BuildDataFrame() {
         INFO("Loading ", nAux, " aux entries into lookup map...");
         for (Long64_t i = 0; i < nAux; ++i) {
             m_auxChain->GetEntry(i);
+            uint64_t key = (uint64_t)run << 32 | (uint32_t)evt;
+            // key = evt; // Use only event number as key for now, since run number is always the same in the aux files. This is a temporary workaround until we can fix the aux files to include the run number.
 
-            if (auxMap->find(evt) != auxMap->end()) {
+            if (auxMap->find(key) != auxMap->end()) {
                 ERROR("Warning: Duplicate (run, event) pair in aux chain: (", run, ", ", evt, "). Overwriting previous entry.");
             }
 
-            (*auxMap)[evt] = {charge35_nu0, charge35_nu1};
+            (*auxMap)[key] = {charge35_nu0, charge35_nu1};
         }
 
         INFO("Loaded ", auxMap->size(), " unique (run, event) pairs.");
@@ -218,57 +221,72 @@ void Analysis::BuildDataFrame() {
         m_node = m_node->Define("caloNuVeto2StatusBug", "(Veto20_status == 528 || Veto21_status == 528) && isCaloNuPeriod");
         m_node = m_node->Define("caloNuVetoNuStatusKeep", "GoodVetoNuStatus && isCaloNuPeriod");
         m_node = m_node->Define("caloNuStatusCleaning", "!caloNuVeto2StatusBug && caloNuVetoNuStatusKeep");
-
+        
         m_node = m_node->Define("VetoNu0_reduced_charge",
             [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, float VetoNu0_raw_charge) -> float {
                 
                 // Lookup the reduced charge from the aux map
-                auto it = auxMap->find(eventID);
-                float reduced_charge = (it != auxMap->end()) ? it->second.charge35_nu0 : -999.;
+                // auto it = auxMap->find(eventID);
+                uint64_t key = (uint64_t)run << 32 | (uint32_t)eventID;
+                auto it = auxMap->find(key);
+                // return (it != auxMap->end()) ? it->second.charge35_nu0 : -999.f;
+                // auto reduced_charge = (it != auxMap->end()) ? it->second.charge35_nu0 : -999.f;
+                bool lookup_failed = true;
+                auto reduced_charge = -999.f;
+                if (it != auxMap->end()) {
+                    reduced_charge = it->second.charge35_nu1;
+                    lookup_failed = false;
+                }
 
-                if (reduced_charge == -999.) {
+
+                if (lookup_failed) {
+                    ERROR("Warning: Missing aux data for eventID ", eventID, " in run ", run, ". Setting reduced charge to -999.");
                     m_NVetoNu0_missing_aux++;
                     std::cerr << "Warning: Missing aux data for eventID " << eventID << " in run " << run << ". Setting reduced charge to -999." << std::endl;
+                    return reduced_charge;
                 }
 
                 // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
-                if (!TimingOK || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu0_raw_charge > 30)){
-                    m_NVetoNu0_fallbacks++;
-                    return VetoNu0_raw_charge; 
-                }
-
-                if (reduced_charge == -999.) {
-                    m_NVetoNu0_missing_aux++;
-                    m_NVetoNu0_fallbacks++;
-                    return reduced_charge;
-                    // return std::nanf(""); // return NaN to indicate missing aux data, but still count the event as a fallback
-                    // return VetoNu0_raw_charge; // fallback to raw charge if aux data is missing, to avoid losing events with missing aux data which may still be salvageable with the original charge value
-                }
-
-                return std::max(reduced_charge, 0.0f);
+                // if (!TimingOK || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu0_raw_charge > 30)){
+                //     m_NVetoNu0_fallbacks++;
+                //     return VetoNu0_raw_charge; 
+                // }
+                return reduced_charge;
+                // return std::max(reduced_charge, 0.0f);
             }, {"run", "eventID", "TimingOK", "VetoNu0_raw_charge"});
         
         m_node = m_node->Define("VetoNu1_reduced_charge",
             [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, float VetoNu1_raw_charge) -> float {
 
                 // Lookup the reduced charge from the aux map
-                auto it = auxMap->find(eventID);
-                float reduced_charge = (it != auxMap->end()) ? it->second.charge35_nu1 : -999.;
+                // auto it = auxMap->find(eventID);
+                uint64_t key = (uint64_t)run << 32 | (uint32_t)eventID;
+                auto it = auxMap->find(key);
+                // return (it != auxMap->end()) ? it->second.charge35_nu1 : -999.f;
+
+
+                auto reduced_charge = -999.f;
+                bool lookup_failed = true;
+                if (it != auxMap->end()) {
+                    reduced_charge = it->second.charge35_nu1;
+                    lookup_failed = false;
+                }
+
+
+                if (lookup_failed) {
+                    ERROR("Warning: Missing aux data for eventID ", eventID, " in run ", run, ". Setting reduced charge to -999.");
+                    m_NVetoNu1_missing_aux++;
+                    std::cerr << "Warning: Missing aux data for eventID " << eventID << " in run " << run << ". Setting reduced charge to -999." << std::endl;
+                    return reduced_charge;    
+                }
 
                 // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
-                if (!TimingOK || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu1_raw_charge > 30)){
-                    m_NVetoNu1_fallbacks++;
-                    
-                    return VetoNu1_raw_charge; 
-                }
-                if (reduced_charge == -999.) {
-                    m_NVetoNu1_missing_aux++;
-                    m_NVetoNu1_fallbacks++;
-                    return reduced_charge; 
-                    // return std::nanf(""); // return NaN to indicate missing aux data, but still count the event as a fallback
-                    // return VetoNu1_raw_charge; // fallback to raw charge if aux data is missing, to avoid losing events with missing aux data which may still be salvageable with the original charge value
-                }
-                return std::max(reduced_charge, 0.0f);
+                // if (!TimingOK || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu1_raw_charge > 30)){
+                //     m_NVetoNu1_fallbacks++;
+                //     return VetoNu1_raw_charge; 
+                // }
+                return reduced_charge;
+                // return std::max(reduced_charge, 0.0f);
                 
             }, {"run", "eventID", "TimingOK", "VetoNu1_raw_charge"});
     } // End of aux chain handling
@@ -392,6 +410,8 @@ void Analysis::Run(TString outputFileName) {
     // (Track_rVetoNu < 120) &
     // (theta_mrad < 25))
 
+    applyCut("VetoNu0_reduced_charge >= -999 && VetoNu1_reduced_charge >= -999", "Sanity cut to remove events with missing aux data (reduced charge set to -999)");
+    applyCut("VetoNu0_reduced_charge < 30 && VetoNu1_reduced_charge < 30", "VetoNu0 and VetoNu1 reduced charge < 30 pC");
     applyCut("Veto20_charge > 40 && Veto21_charge > 40", "Veto20 and Veto21 charge > 40 pC");
     applyCut("((Track_Y_atTrig[LeadTrack_Idx] > 20 && Timing_charge_top > 20) || (Track_Y_atTrig[LeadTrack_Idx] < -20 && Timing_charge_bottom > 20) || (abs(Track_Y_atTrig[LeadTrack_Idx]) < 20 && Timing_charge_total > 20))", "Timing Station Charge > 20 pC");
     applyCut("Preshower0_charge > 2.5 && Preshower1_charge > 2.5", "Preshower Charge > 2.5 pC");
@@ -405,8 +425,6 @@ void Analysis::Run(TString outputFileName) {
     applyCut("LeadTrack_rVetoNu < 120", "Track rVetoNu < 120 mm");
     applyCut("LeadTrack_Theta < 0.025", "Leading track theta < 0.025 rad");
     // applyCut("VetoNu0_reduced_charge != -999 && VetoNu1_reduced_charge != -999", "VetoNu0 and VetoNu1 reduced charge not NaN");
-    applyCut("VetoNu0_reduced_charge < 30 && VetoNu1_reduced_charge < 30", "VetoNu0 and VetoNu1 reduced charge < 30 pC");
-    applyCut("VetoNu0_reduced_charge >= -999 && VetoNu1_reduced_charge >= -999", "Sanity cut to remove events with missing aux data (reduced charge set to -999)");
       
 
     // ── Book ALL actions before triggering any event loop ──────────────────
