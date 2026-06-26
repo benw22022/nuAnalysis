@@ -1,15 +1,7 @@
 {
-    "7729": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007729/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007729/*.root"
-        ]
-    },
     "7733": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007733/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007733/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007733/*.root"
@@ -17,7 +9,7 @@
     },
     "7734": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007734/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007734/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007734/*.root"
@@ -25,7 +17,7 @@
     },
     "7802": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007802/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007802/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007802/*.root"
@@ -33,7 +25,7 @@
     },
     "7833": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007833/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007833/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007833/*.root"
@@ -41,23 +33,15 @@
     },
     "7835": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007835/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007835/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007835/*.root"
         ]
     },
-    "7836": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007836/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007836/*.root"
-        ]
-    },
     "7848": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007848/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007848/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007848/*.root"
@@ -65,7 +49,7 @@
     },
     "7849": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007849/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007849/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007849/*.root"
@@ -73,7 +57,7 @@
     },
     "7918": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007918/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007918/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007918/*.root"
@@ -81,7 +65,7 @@
     },
     "7930": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007930/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007930/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007930/*.root"
@@ -89,7 +73,7 @@
     },
     "7961": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007961/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007961/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007961/*.root"
@@ -97,7 +81,7 @@
     },
     "7971": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007971/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007971/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007971/*.root"
@@ -105,7 +89,7 @@
     },
     "7984": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007984/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007984/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007984/*.root"
@@ -113,7 +97,7 @@
     },
     "7985": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007985/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007985/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007985/*.root"
@@ -121,7 +105,7 @@
     },
     "7987": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007987/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007987/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007987/*.root"
@@ -129,7 +113,7 @@
     },
     "7988": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007988/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007988/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007988/*.root"
@@ -137,7 +121,7 @@
     },
     "7989": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007989/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007989/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007989/*.root"
@@ -145,7 +129,7 @@
     },
     "7990": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007990/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007990/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007990/*.root"
@@ -153,7 +137,7 @@
     },
     "7998": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/007998/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/007998/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/007998/*.root"
@@ -161,7 +145,7 @@
     },
     "8006": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008006/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008006/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008006/*.root"
@@ -169,7 +153,7 @@
     },
     "8023": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008023/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008023/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008023/*.root"
@@ -177,7 +161,7 @@
     },
     "8025": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008025/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008025/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008025/*.root"
@@ -185,7 +169,7 @@
     },
     "8034": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008034/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008034/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008034/*.root"
@@ -193,7 +177,7 @@
     },
     "8036": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008036/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008036/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008036/*.root"
@@ -201,7 +185,7 @@
     },
     "8037": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008037/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008037/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008037/*.root"
@@ -209,7 +193,7 @@
     },
     "8038": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008038/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008038/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008038/*.root"
@@ -217,7 +201,7 @@
     },
     "8039": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008039/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008039/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008039/*.root"
@@ -225,7 +209,7 @@
     },
     "8040": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008040/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008040/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008040/*.root"
@@ -233,7 +217,7 @@
     },
     "8041": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008041/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008041/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008041/*.root"
@@ -241,7 +225,7 @@
     },
     "8090": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008090/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008090/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008090/*.root"
@@ -249,7 +233,7 @@
     },
     "8094": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008094/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008094/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008094/*.root"
@@ -257,7 +241,7 @@
     },
     "8095": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008095/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008095/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008095/*.root"
@@ -265,7 +249,7 @@
     },
     "8096": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008096/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008096/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008096/*.root"
@@ -273,7 +257,7 @@
     },
     "8097": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008097/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008097/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008097/*.root"
@@ -281,7 +265,7 @@
     },
     "8098": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008098/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008098/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008098/*.root"
@@ -289,7 +273,7 @@
     },
     "8099": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008099/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008099/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008099/*.root"
@@ -297,7 +281,7 @@
     },
     "8104": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008104/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008104/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008104/*.root"
@@ -305,7 +289,7 @@
     },
     "8105": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008105/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008105/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008105/*.root"
@@ -313,7 +297,7 @@
     },
     "8106": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008106/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008106/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008106/*.root"
@@ -321,7 +305,7 @@
     },
     "8108": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008108/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008108/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008108/*.root"
@@ -329,7 +313,7 @@
     },
     "8109": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008109/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008109/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008109/*.root"
@@ -337,7 +321,7 @@
     },
     "8110": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008110/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008110/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008110/*.root"
@@ -345,7 +329,7 @@
     },
     "8111": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008111/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008111/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008111/*.root"
@@ -353,7 +337,7 @@
     },
     "8112": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008112/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008112/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008112/*.root"
@@ -361,7 +345,7 @@
     },
     "8113": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008113/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008113/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008113/*.root"
@@ -369,7 +353,7 @@
     },
     "8114": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008114/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008114/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008114/*.root"
@@ -377,7 +361,7 @@
     },
     "8115": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008115/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008115/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008115/*.root"
@@ -385,7 +369,7 @@
     },
     "8119": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008119/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008119/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008119/*.root"
@@ -393,7 +377,7 @@
     },
     "8120": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008120/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008120/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008120/*.root"
@@ -401,7 +385,7 @@
     },
     "8124": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008124/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008124/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008124/*.root"
@@ -409,7 +393,7 @@
     },
     "8134": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008134/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008134/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008134/*.root"
@@ -417,7 +401,7 @@
     },
     "8137": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008137/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008137/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008137/*.root"
@@ -425,7 +409,7 @@
     },
     "8152": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008152/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008152/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008152/*.root"
@@ -433,7 +417,7 @@
     },
     "8153": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008153/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008153/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008153/*.root"
@@ -441,7 +425,7 @@
     },
     "8155": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008155/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008155/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008155/*.root"
@@ -449,7 +433,7 @@
     },
     "8157": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008157/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008157/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008157/*.root"
@@ -457,7 +441,7 @@
     },
     "8174": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008174/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008174/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008174/*.root"
@@ -465,7 +449,7 @@
     },
     "8175": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008175/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008175/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008175/*.root"
@@ -473,7 +457,7 @@
     },
     "8179": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008179/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008179/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008179/*.root"
@@ -481,7 +465,7 @@
     },
     "8182": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008182/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008182/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008182/*.root"
@@ -489,7 +473,7 @@
     },
     "8186": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008186/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008186/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008186/*.root"
@@ -497,7 +481,7 @@
     },
     "8187": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008187/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008187/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008187/*.root"
@@ -505,7 +489,7 @@
     },
     "8188": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008188/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008188/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008188/*.root"
@@ -513,7 +497,7 @@
     },
     "8190": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008190/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008190/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008190/*.root"
@@ -521,7 +505,7 @@
     },
     "8191": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008191/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008191/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008191/*.root"
@@ -529,7 +513,7 @@
     },
     "8193": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008193/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008193/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008193/*.root"
@@ -537,7 +521,7 @@
     },
     "8243": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008243/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008243/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008243/*.root"
@@ -545,7 +529,7 @@
     },
     "8247": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008247/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008247/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008247/*.root"
@@ -553,7 +537,7 @@
     },
     "8248": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008248/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008248/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008248/*.root"
@@ -561,7 +545,7 @@
     },
     "8250": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008250/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008250/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008250/*.root"
@@ -569,7 +553,7 @@
     },
     "8251": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008251/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008251/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008251/*.root"
@@ -577,23 +561,15 @@
     },
     "8252": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008252/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008252/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008252/*.root"
         ]
     },
-    "8253": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008253/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008253/*.root"
-        ]
-    },
     "8266": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008266/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008266/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008266/*.root"
@@ -601,7 +577,7 @@
     },
     "8269": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008269/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008269/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008269/*.root"
@@ -609,7 +585,7 @@
     },
     "8290": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008290/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008290/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008290/*.root"
@@ -617,7 +593,7 @@
     },
     "8291": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008291/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008291/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008291/*.root"
@@ -625,7 +601,7 @@
     },
     "8294": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008294/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008294/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008294/*.root"
@@ -633,7 +609,7 @@
     },
     "8295": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008295/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008295/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008295/*.root"
@@ -641,7 +617,7 @@
     },
     "8297": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008297/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008297/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008297/*.root"
@@ -649,7 +625,7 @@
     },
     "8301": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008301/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008301/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008301/*.root"
@@ -657,7 +633,7 @@
     },
     "8320": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008320/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008320/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008320/*.root"
@@ -665,7 +641,7 @@
     },
     "8326": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008326/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008326/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008326/*.root"
@@ -673,7 +649,7 @@
     },
     "8327": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008327/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008327/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008327/*.root"
@@ -681,7 +657,7 @@
     },
     "8328": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008328/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008328/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008328/*.root"
@@ -689,7 +665,7 @@
     },
     "8330": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008330/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008330/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008330/*.root"
@@ -697,7 +673,7 @@
     },
     "8331": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008331/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008331/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008331/*.root"
@@ -705,7 +681,7 @@
     },
     "8332": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008332/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008332/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008332/*.root"
@@ -713,7 +689,7 @@
     },
     "8333": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008333/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008333/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008333/*.root"
@@ -721,7 +697,7 @@
     },
     "8334": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008334/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008334/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008334/*.root"
@@ -729,55 +705,15 @@
     },
     "8336": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008336/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008336/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008336/*.root"
         ]
     },
-    "8651": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008651/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008651/*.root"
-        ]
-    },
-    "8652": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008652/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008652/*.root"
-        ]
-    },
-    "8655": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008655/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008655/*.root"
-        ]
-    },
-    "8658": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008658/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008658/*.root"
-        ]
-    },
-    "8713": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008713/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008713/*.root"
-        ]
-    },
     "8714": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008714/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008714/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008714/*.root"
@@ -785,7 +721,7 @@
     },
     "8717": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008717/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008717/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008717/*.root"
@@ -793,7 +729,7 @@
     },
     "8725": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008725/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008725/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008725/*.root"
@@ -801,7 +737,7 @@
     },
     "8728": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008728/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008728/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008728/*.root"
@@ -809,7 +745,7 @@
     },
     "8729": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008729/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008729/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008729/*.root"
@@ -817,7 +753,7 @@
     },
     "8730": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008730/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008730/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008730/*.root"
@@ -825,7 +761,7 @@
     },
     "8731": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008731/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008731/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008731/*.root"
@@ -833,23 +769,15 @@
     },
     "8733": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008733/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008733/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008733/*.root"
         ]
     },
-    "8734": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008734/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008734/*.root"
-        ]
-    },
     "8736": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008736/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008736/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008736/*.root"
@@ -857,23 +785,15 @@
     },
     "8749": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008749/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008749/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008749/*.root"
         ]
     },
-    "8751": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008751/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008751/*.root"
-        ]
-    },
     "8752": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008752/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008752/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008752/*.root"
@@ -881,7 +801,7 @@
     },
     "8775": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008775/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008775/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008775/*.root"
@@ -889,7 +809,7 @@
     },
     "8777": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008777/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008777/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008777/*.root"
@@ -897,7 +817,7 @@
     },
     "8784": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008784/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008784/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008784/*.root"
@@ -905,7 +825,7 @@
     },
     "8798": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008798/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008798/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008798/*.root"
@@ -913,7 +833,7 @@
     },
     "8799": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008799/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008799/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008799/*.root"
@@ -921,7 +841,7 @@
     },
     "8804": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008804/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008804/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008804/*.root"
@@ -929,7 +849,7 @@
     },
     "8834": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008834/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008834/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008834/*.root"
@@ -937,7 +857,7 @@
     },
     "8837": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008837/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008837/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008837/*.root"
@@ -945,7 +865,7 @@
     },
     "8841": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008841/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008841/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008841/*.root"
@@ -953,7 +873,7 @@
     },
     "8843": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008843/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008843/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008843/*.root"
@@ -961,7 +881,7 @@
     },
     "8846": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008846/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008846/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008846/*.root"
@@ -969,7 +889,7 @@
     },
     "8847": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008847/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008847/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008847/*.root"
@@ -977,7 +897,7 @@
     },
     "8848": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008848/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008848/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008848/*.root"
@@ -985,7 +905,7 @@
     },
     "8850": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008850/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008850/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008850/*.root"
@@ -993,7 +913,7 @@
     },
     "8901": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008901/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008901/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008901/*.root"
@@ -1001,7 +921,7 @@
     },
     "8904": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008904/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008904/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008904/*.root"
@@ -1009,7 +929,7 @@
     },
     "8906": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008906/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008906/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008906/*.root"
@@ -1017,7 +937,7 @@
     },
     "8908": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008908/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008908/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008908/*.root"
@@ -1025,7 +945,7 @@
     },
     "8910": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008910/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008910/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008910/*.root"
@@ -1033,7 +953,7 @@
     },
     "8912": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008912/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008912/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008912/*.root"
@@ -1041,7 +961,7 @@
     },
     "8913": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008913/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008913/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008913/*.root"
@@ -1049,7 +969,7 @@
     },
     "8915": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008915/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008915/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008915/*.root"
@@ -1057,7 +977,7 @@
     },
     "8916": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008916/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008916/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008916/*.root"
@@ -1065,7 +985,7 @@
     },
     "8917": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008917/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008917/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008917/*.root"
@@ -1073,7 +993,7 @@
     },
     "8926": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008926/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008926/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008926/*.root"
@@ -1081,7 +1001,7 @@
     },
     "8928": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008928/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008928/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008928/*.root"
@@ -1089,7 +1009,7 @@
     },
     "8930": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008930/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008930/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008930/*.root"
@@ -1097,7 +1017,7 @@
     },
     "8932": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008932/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008932/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008932/*.root"
@@ -1105,7 +1025,7 @@
     },
     "8933": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008933/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008933/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008933/*.root"
@@ -1113,7 +1033,7 @@
     },
     "8934": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008934/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008934/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008934/*.root"
@@ -1121,7 +1041,7 @@
     },
     "8943": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008943/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008943/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008943/*.root"
@@ -1129,7 +1049,7 @@
     },
     "8944": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008944/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008944/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008944/*.root"
@@ -1137,7 +1057,7 @@
     },
     "8945": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008945/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008945/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008945/*.root"
@@ -1145,7 +1065,7 @@
     },
     "8947": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008947/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008947/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008947/*.root"
@@ -1153,7 +1073,7 @@
     },
     "8948": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008948/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008948/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008948/*.root"
@@ -1161,7 +1081,7 @@
     },
     "8949": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008949/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008949/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008949/*.root"
@@ -1169,7 +1089,7 @@
     },
     "8950": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008950/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008950/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008950/*.root"
@@ -1177,7 +1097,7 @@
     },
     "8952": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008952/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008952/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008952/*.root"
@@ -1185,7 +1105,7 @@
     },
     "8955": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008955/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008955/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008955/*.root"
@@ -1193,7 +1113,7 @@
     },
     "8969": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008969/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008969/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008969/*.root"
@@ -1201,7 +1121,7 @@
     },
     "8970": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008970/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008970/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008970/*.root"
@@ -1209,7 +1129,7 @@
     },
     "8972": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008972/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008972/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008972/*.root"
@@ -1217,7 +1137,7 @@
     },
     "8975": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008975/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008975/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008975/*.root"
@@ -1225,7 +1145,7 @@
     },
     "8977": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008977/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008977/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008977/*.root"
@@ -1233,7 +1153,7 @@
     },
     "8981": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008981/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008981/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008981/*.root"
@@ -1241,7 +1161,7 @@
     },
     "8985": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008985/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008985/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008985/*.root"
@@ -1249,39 +1169,15 @@
     },
     "8987": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/008987/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/008987/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/008987/*.root"
         ]
     },
-    "9048": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009048/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009048/*.root"
-        ]
-    },
-    "9053": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009053/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009053/*.root"
-        ]
-    },
-    "9056": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009056/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009056/*.root"
-        ]
-    },
     "9058": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009058/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009058/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009058/*.root"
@@ -1289,7 +1185,7 @@
     },
     "9060": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009060/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009060/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009060/*.root"
@@ -1297,7 +1193,7 @@
     },
     "9063": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009063/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009063/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009063/*.root"
@@ -1305,7 +1201,7 @@
     },
     "9066": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009066/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009066/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009066/*.root"
@@ -1313,7 +1209,7 @@
     },
     "9069": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009069/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009069/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009069/*.root"
@@ -1321,7 +1217,7 @@
     },
     "9072": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009072/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009072/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009072/*.root"
@@ -1329,7 +1225,7 @@
     },
     "9073": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009073/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009073/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009073/*.root"
@@ -1337,7 +1233,7 @@
     },
     "9092": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009092/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009092/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009092/*.root"
@@ -1345,31 +1241,15 @@
     },
     "9094": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009094/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009094/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009094/*.root"
         ]
     },
-    "9104": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009104/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009104/*.root"
-        ]
-    },
-    "9105": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009105/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009105/*.root"
-        ]
-    },
     "9148": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009148/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009148/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009148/*.root"
@@ -1377,7 +1257,7 @@
     },
     "9163": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009163/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009163/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009163/*.root"
@@ -1385,23 +1265,15 @@
     },
     "9166": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009166/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009166/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009166/*.root"
         ]
     },
-    "9171": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009171/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009171/*.root"
-        ]
-    },
     "9176": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009176/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009176/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009176/*.root"
@@ -1409,7 +1281,7 @@
     },
     "9181": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009181/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009181/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009181/*.root"
@@ -1417,7 +1289,7 @@
     },
     "9183": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009183/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009183/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009183/*.root"
@@ -1425,127 +1297,31 @@
     },
     "9188": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2022_back/r0021/009188/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/009188/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/009188/*.root"
         ]
     },
-    "10417": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010417/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010417/*.root"
-        ]
-    },
-    "10419": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010419/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010419/*.root"
-        ]
-    },
-    "10422": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010422/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010422/*.root"
-        ]
-    },
-    "10424": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010424/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010424/*.root"
-        ]
-    },
-    "10426": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010426/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010426/*.root"
-        ]
-    },
-    "10443": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010443/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010443/*.root"
-        ]
-    },
-    "10526": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010526/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010526/*.root"
-        ]
-    },
-    "10538": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010538/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010538/*.root"
-        ]
-    },
-    "10540": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010540/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010540/*.root"
-        ]
-    },
     "10555": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010555/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010555/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010555/*.root"
         ]
     },
-    "10572": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010572/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010572/*.root"
-        ]
-    },
-    "10600": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010600/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010600/*.root"
-        ]
-    },
     "10601": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010601/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010601/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010601/*.root"
         ]
     },
-    "10602": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010602/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010602/*.root"
-        ]
-    },
     "10604": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010604/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010604/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010604/*.root"
@@ -1553,7 +1329,7 @@
     },
     "10605": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010605/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010605/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010605/*.root"
@@ -1561,7 +1337,7 @@
     },
     "10615": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010615/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010615/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010615/*.root"
@@ -1569,7 +1345,7 @@
     },
     "10693": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010693/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010693/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010693/*.root"
@@ -1577,7 +1353,7 @@
     },
     "10694": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010694/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010694/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010694/*.root"
@@ -1585,7 +1361,7 @@
     },
     "10695": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010695/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010695/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010695/*.root"
@@ -1593,7 +1369,7 @@
     },
     "10698": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010698/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010698/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010698/*.root"
@@ -1601,7 +1377,7 @@
     },
     "10699": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010699/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010699/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010699/*.root"
@@ -1609,7 +1385,7 @@
     },
     "10700": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010700/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010700/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010700/*.root"
@@ -1617,7 +1393,7 @@
     },
     "10701": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010701/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010701/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010701/*.root"
@@ -1625,7 +1401,7 @@
     },
     "10729": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010729/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010729/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010729/*.root"
@@ -1633,7 +1409,7 @@
     },
     "10732": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010732/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010732/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010732/*.root"
@@ -1641,7 +1417,7 @@
     },
     "10733": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010733/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010733/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010733/*.root"
@@ -1649,7 +1425,7 @@
     },
     "10738": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010738/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010738/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010738/*.root"
@@ -1657,23 +1433,15 @@
     },
     "10743": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010743/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010743/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010743/*.root"
         ]
     },
-    "10747": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010747/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010747/*.root"
-        ]
-    },
     "10775": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010775/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010775/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010775/*.root"
@@ -1681,7 +1449,7 @@
     },
     "10792": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010792/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010792/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010792/*.root"
@@ -1689,7 +1457,7 @@
     },
     "10794": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010794/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010794/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010794/*.root"
@@ -1697,23 +1465,15 @@
     },
     "10796": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010796/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010796/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010796/*.root"
         ]
     },
-    "10799": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010799/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010799/*.root"
-        ]
-    },
     "10829": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010829/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010829/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010829/*.root"
@@ -1721,7 +1481,7 @@
     },
     "10847": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010847/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010847/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010847/*.root"
@@ -1729,7 +1489,7 @@
     },
     "10849": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010849/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010849/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010849/*.root"
@@ -1737,7 +1497,7 @@
     },
     "10857": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010857/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010857/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010857/*.root"
@@ -1745,7 +1505,7 @@
     },
     "10859": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010859/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010859/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010859/*.root"
@@ -1753,7 +1513,7 @@
     },
     "10881": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010881/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010881/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010881/*.root"
@@ -1761,7 +1521,7 @@
     },
     "10884": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010884/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010884/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010884/*.root"
@@ -1769,7 +1529,7 @@
     },
     "10888": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010888/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010888/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010888/*.root"
@@ -1777,7 +1537,7 @@
     },
     "10921": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010921/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010921/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010921/*.root"
@@ -1785,7 +1545,7 @@
     },
     "10928": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010928/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010928/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010928/*.root"
@@ -1793,7 +1553,7 @@
     },
     "10955": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010955/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010955/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010955/*.root"
@@ -1801,7 +1561,7 @@
     },
     "10956": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/010956/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/010956/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/010956/*.root"
@@ -1809,7 +1569,7 @@
     },
     "11038": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011038/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011038/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011038/*.root"
@@ -1817,7 +1577,7 @@
     },
     "11041": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011041/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011041/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011041/*.root"
@@ -1825,7 +1585,7 @@
     },
     "11068": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011068/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011068/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011068/*.root"
@@ -1833,7 +1593,7 @@
     },
     "11070": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011070/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011070/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011070/*.root"
@@ -1841,7 +1601,7 @@
     },
     "11079": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011079/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011079/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011079/*.root"
@@ -1849,7 +1609,7 @@
     },
     "11081": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011081/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011081/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011081/*.root"
@@ -1857,7 +1617,7 @@
     },
     "11082": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011082/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011082/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011082/*.root"
@@ -1865,7 +1625,7 @@
     },
     "11086": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011086/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011086/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011086/*.root"
@@ -1873,7 +1633,7 @@
     },
     "11088": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011088/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011088/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011088/*.root"
@@ -1881,7 +1641,7 @@
     },
     "11089": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011089/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011089/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011089/*.root"
@@ -1889,7 +1649,7 @@
     },
     "11093": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011093/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011093/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011093/*.root"
@@ -1897,7 +1657,7 @@
     },
     "11096": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011096/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011096/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011096/*.root"
@@ -1905,7 +1665,7 @@
     },
     "11098": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011098/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011098/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011098/*.root"
@@ -1913,7 +1673,7 @@
     },
     "11127": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011127/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011127/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011127/*.root"
@@ -1921,7 +1681,7 @@
     },
     "11156": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011156/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011156/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011156/*.root"
@@ -1929,7 +1689,7 @@
     },
     "11208": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011208/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011208/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011208/*.root"
@@ -1937,7 +1697,7 @@
     },
     "11211": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011211/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011211/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011211/*.root"
@@ -1945,7 +1705,7 @@
     },
     "11212": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011212/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011212/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011212/*.root"
@@ -1953,111 +1713,23 @@
     },
     "11213": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011213/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011213/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011213/*.root"
         ]
     },
-    "11214": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011214/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011214/*.root"
-        ]
-    },
     "11243": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011243/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011243/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011243/*.root"
         ]
     },
-    "11461": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011461/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011461/*.root"
-        ]
-    },
-    "11463": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011463/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011463/*.root"
-        ]
-    },
-    "11471": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011471/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011471/*.root"
-        ]
-    },
-    "11478": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011478/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011478/*.root"
-        ]
-    },
-    "11480": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011480/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011480/*.root"
-        ]
-    },
-    "11486": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011486/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011486/*.root"
-        ]
-    },
-    "11488": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011488/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011488/*.root"
-        ]
-    },
-    "11491": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011491/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011491/*.root"
-        ]
-    },
-    "11504": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011504/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011504/*.root"
-        ]
-    },
-    "11506": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011506/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011506/*.root"
-        ]
-    },
     "11519": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011519/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011519/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011519/*.root"
@@ -2065,7 +1737,7 @@
     },
     "11523": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011523/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011523/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011523/*.root"
@@ -2073,7 +1745,7 @@
     },
     "11527": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011527/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011527/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011527/*.root"
@@ -2081,7 +1753,7 @@
     },
     "11528": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011528/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011528/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011528/*.root"
@@ -2089,7 +1761,7 @@
     },
     "11583": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011583/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011583/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011583/*.root"
@@ -2097,7 +1769,7 @@
     },
     "11584": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011584/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011584/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011584/*.root"
@@ -2105,7 +1777,7 @@
     },
     "11585": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011585/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011585/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011585/*.root"
@@ -2113,7 +1785,7 @@
     },
     "11586": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011586/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011586/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011586/*.root"
@@ -2121,7 +1793,7 @@
     },
     "11589": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011589/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011589/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011589/*.root"
@@ -2129,7 +1801,7 @@
     },
     "11590": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011590/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011590/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011590/*.root"
@@ -2137,7 +1809,7 @@
     },
     "11595": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011595/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011595/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011595/*.root"
@@ -2145,7 +1817,7 @@
     },
     "11596": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011596/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011596/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011596/*.root"
@@ -2153,7 +1825,7 @@
     },
     "11597": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011597/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011597/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011597/*.root"
@@ -2161,7 +1833,7 @@
     },
     "11599": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011599/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011599/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011599/*.root"
@@ -2169,7 +1841,7 @@
     },
     "11602": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011602/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011602/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011602/*.root"
@@ -2177,7 +1849,7 @@
     },
     "11613": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011613/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011613/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011613/*.root"
@@ -2185,7 +1857,7 @@
     },
     "11630": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011630/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011630/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011630/*.root"
@@ -2193,7 +1865,7 @@
     },
     "11700": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011700/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011700/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011700/*.root"
@@ -2201,7 +1873,7 @@
     },
     "11701": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011701/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011701/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011701/*.root"
@@ -2209,31 +1881,15 @@
     },
     "11703": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011703/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/011703/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011703/*.root"
         ]
     },
-    "11705": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011705/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011705/*.root"
-        ]
-    },
-    "11706": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2023_back/r0021/011706/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/011706/*.root"
-        ]
-    },
     "15838": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015838/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015838/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015838/*.root"
@@ -2241,7 +1897,7 @@
     },
     "15839": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015839/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015839/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015839/*.root"
@@ -2249,7 +1905,7 @@
     },
     "15840": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015840/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015840/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015840/*.root"
@@ -2257,7 +1913,7 @@
     },
     "15844": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015844/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015844/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015844/*.root"
@@ -2265,7 +1921,7 @@
     },
     "15849": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015849/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015849/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015849/*.root"
@@ -2273,23 +1929,15 @@
     },
     "15850": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015850/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015850/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015850/*.root"
         ]
     },
-    "15868": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015868/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015868/*.root"
-        ]
-    },
     "15873": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015873/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015873/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015873/*.root"
@@ -2297,7 +1945,7 @@
     },
     "15874": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015874/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015874/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015874/*.root"
@@ -2305,7 +1953,7 @@
     },
     "15877": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015877/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015877/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015877/*.root"
@@ -2313,7 +1961,7 @@
     },
     "15878": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015878/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015878/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015878/*.root"
@@ -2321,7 +1969,7 @@
     },
     "15882": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015882/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015882/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015882/*.root"
@@ -2329,7 +1977,7 @@
     },
     "15883": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015883/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015883/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015883/*.root"
@@ -2337,7 +1985,7 @@
     },
     "15884": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015884/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015884/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015884/*.root"
@@ -2345,7 +1993,7 @@
     },
     "15902": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015902/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015902/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015902/*.root"
@@ -2353,7 +2001,7 @@
     },
     "15903": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015903/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015903/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015903/*.root"
@@ -2361,7 +2009,7 @@
     },
     "15904": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015904/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015904/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015904/*.root"
@@ -2369,7 +2017,7 @@
     },
     "15909": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015909/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015909/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015909/*.root"
@@ -2377,7 +2025,7 @@
     },
     "15912": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015912/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015912/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015912/*.root"
@@ -2385,7 +2033,7 @@
     },
     "15913": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015913/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015913/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015913/*.root"
@@ -2393,7 +2041,7 @@
     },
     "15915": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015915/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015915/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015915/*.root"
@@ -2401,7 +2049,7 @@
     },
     "15917": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015917/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015917/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015917/*.root"
@@ -2409,7 +2057,7 @@
     },
     "15918": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015918/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015918/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015918/*.root"
@@ -2417,7 +2065,7 @@
     },
     "15919": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015919/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015919/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015919/*.root"
@@ -2425,7 +2073,7 @@
     },
     "15945": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015945/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015945/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015945/*.root"
@@ -2433,7 +2081,7 @@
     },
     "15946": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015946/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015946/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015946/*.root"
@@ -2441,7 +2089,7 @@
     },
     "15948": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015948/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015948/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015948/*.root"
@@ -2449,7 +2097,7 @@
     },
     "15949": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015949/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015949/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015949/*.root"
@@ -2457,7 +2105,7 @@
     },
     "15950": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015950/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015950/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015950/*.root"
@@ -2465,7 +2113,7 @@
     },
     "15951": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015951/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015951/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015951/*.root"
@@ -2473,7 +2121,7 @@
     },
     "15953": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015953/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015953/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015953/*.root"
@@ -2481,7 +2129,7 @@
     },
     "15955": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015955/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015955/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015955/*.root"
@@ -2489,7 +2137,7 @@
     },
     "15956": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015956/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015956/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015956/*.root"
@@ -2497,7 +2145,7 @@
     },
     "15957": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015957/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015957/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015957/*.root"
@@ -2505,7 +2153,7 @@
     },
     "15961": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015961/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015961/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015961/*.root"
@@ -2513,7 +2161,7 @@
     },
     "15963": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015963/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015963/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015963/*.root"
@@ -2521,39 +2169,23 @@
     },
     "15967": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015967/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015967/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015967/*.root"
         ]
     },
-    "15975": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015975/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015975/*.root"
-        ]
-    },
     "15977": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015977/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015977/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015977/*.root"
         ]
     },
-    "15993": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015993/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015993/*.root"
-        ]
-    },
     "15994": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015994/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015994/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015994/*.root"
@@ -2561,7 +2193,7 @@
     },
     "15996": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015996/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015996/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015996/*.root"
@@ -2569,7 +2201,7 @@
     },
     "15997": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015997/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015997/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015997/*.root"
@@ -2577,7 +2209,7 @@
     },
     "15998": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015998/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015998/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/015998/*.root"
@@ -2585,7 +2217,7 @@
     },
     "16000": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016000/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016000/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016000/*.root"
@@ -2593,7 +2225,7 @@
     },
     "16001": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016001/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016001/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016001/*.root"
@@ -2601,7 +2233,7 @@
     },
     "16018": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016018/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016018/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016018/*.root"
@@ -2609,7 +2241,7 @@
     },
     "16022": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016022/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016022/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016022/*.root"
@@ -2617,7 +2249,7 @@
     },
     "16023": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016023/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016023/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016023/*.root"
@@ -2625,7 +2257,7 @@
     },
     "16024": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016024/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016024/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016024/*.root"
@@ -2633,7 +2265,7 @@
     },
     "16028": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016028/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016028/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016028/*.root"
@@ -2641,7 +2273,7 @@
     },
     "16042": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016042/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016042/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016042/*.root"
@@ -2649,7 +2281,7 @@
     },
     "16043": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016043/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016043/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016043/*.root"
@@ -2657,7 +2289,7 @@
     },
     "16057": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016057/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016057/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016057/*.root"
@@ -2665,7 +2297,7 @@
     },
     "16060": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016060/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016060/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016060/*.root"
@@ -2673,7 +2305,7 @@
     },
     "16064": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016064/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016064/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016064/*.root"
@@ -2681,7 +2313,7 @@
     },
     "16065": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016065/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016065/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016065/*.root"
@@ -2689,7 +2321,7 @@
     },
     "16068": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016068/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016068/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016068/*.root"
@@ -2697,7 +2329,7 @@
     },
     "16071": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016071/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016071/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016071/*.root"
@@ -2705,7 +2337,7 @@
     },
     "16072": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016072/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016072/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016072/*.root"
@@ -2713,7 +2345,7 @@
     },
     "16073": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016073/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016073/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016073/*.root"
@@ -2721,7 +2353,7 @@
     },
     "16075": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016075/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016075/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016075/*.root"
@@ -2729,7 +2361,7 @@
     },
     "16076": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016076/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016076/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016076/*.root"
@@ -2737,7 +2369,7 @@
     },
     "16077": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016077/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016077/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016077/*.root"
@@ -2745,7 +2377,7 @@
     },
     "16096": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016096/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016096/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016096/*.root"
@@ -2753,7 +2385,7 @@
     },
     "16098": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016098/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016098/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016098/*.root"
@@ -2761,7 +2393,7 @@
     },
     "16099": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016099/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016099/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016099/*.root"
@@ -2769,7 +2401,7 @@
     },
     "16100": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016100/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016100/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016100/*.root"
@@ -2777,7 +2409,7 @@
     },
     "16102": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016102/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016102/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016102/*.root"
@@ -2785,7 +2417,7 @@
     },
     "16103": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016103/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016103/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016103/*.root"
@@ -2793,7 +2425,7 @@
     },
     "16393": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016393/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016393/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016393/*.root"
@@ -2801,7 +2433,7 @@
     },
     "16394": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016394/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016394/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016394/*.root"
@@ -2809,7 +2441,7 @@
     },
     "16396": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016396/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016396/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016396/*.root"
@@ -2817,7 +2449,7 @@
     },
     "16400": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016400/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016400/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016400/*.root"
@@ -2825,7 +2457,7 @@
     },
     "16403": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016403/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016403/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016403/*.root"
@@ -2833,7 +2465,7 @@
     },
     "16405": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016405/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016405/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016405/*.root"
@@ -2841,23 +2473,15 @@
     },
     "16517": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016517/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016517/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016517/*.root"
         ]
     },
-    "16522": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016522/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016522/*.root"
-        ]
-    },
     "16523": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016523/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016523/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016523/*.root"
@@ -2865,7 +2489,7 @@
     },
     "16531": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016531/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016531/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016531/*.root"
@@ -2873,7 +2497,7 @@
     },
     "16533": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016533/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016533/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016533/*.root"
@@ -2881,7 +2505,7 @@
     },
     "16542": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016542/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016542/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016542/*.root"
@@ -2889,7 +2513,7 @@
     },
     "16558": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016558/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016558/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016558/*.root"
@@ -2897,7 +2521,7 @@
     },
     "16564": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016564/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016564/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016564/*.root"
@@ -2905,7 +2529,7 @@
     },
     "16581": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016581/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016581/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016581/*.root"
@@ -2913,7 +2537,7 @@
     },
     "16628": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016628/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016628/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016628/*.root"
@@ -2921,23 +2545,15 @@
     },
     "16635": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016635/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016635/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016635/*.root"
         ]
     },
-    "16648": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016648/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016648/*.root"
-        ]
-    },
     "16649": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016649/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016649/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016649/*.root"
@@ -2945,7 +2561,7 @@
     },
     "16650": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016650/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016650/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016650/*.root"
@@ -2953,7 +2569,7 @@
     },
     "16653": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016653/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016653/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016653/*.root"
@@ -2961,7 +2577,7 @@
     },
     "16657": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016657/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016657/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016657/*.root"
@@ -2969,7 +2585,7 @@
     },
     "16658": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016658/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016658/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016658/*.root"
@@ -2977,7 +2593,7 @@
     },
     "16659": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016659/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016659/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016659/*.root"
@@ -2985,7 +2601,7 @@
     },
     "16660": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016660/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016660/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016660/*.root"
@@ -2993,7 +2609,7 @@
     },
     "16661": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016661/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016661/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016661/*.root"
@@ -3001,7 +2617,7 @@
     },
     "16662": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016662/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016662/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016662/*.root"
@@ -3009,7 +2625,7 @@
     },
     "16663": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016663/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016663/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016663/*.root"
@@ -3017,7 +2633,7 @@
     },
     "16664": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016664/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016664/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016664/*.root"
@@ -3025,7 +2641,7 @@
     },
     "16665": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016665/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016665/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016665/*.root"
@@ -3033,23 +2649,15 @@
     },
     "16667": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016667/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016667/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016667/*.root"
         ]
     },
-    "16669": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016669/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016669/*.root"
-        ]
-    },
     "16684": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016684/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016684/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016684/*.root"
@@ -3057,7 +2665,7 @@
     },
     "16685": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016685/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016685/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016685/*.root"
@@ -3065,7 +2673,7 @@
     },
     "16687": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016687/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016687/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016687/*.root"
@@ -3073,7 +2681,7 @@
     },
     "16690": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016690/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016690/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016690/*.root"
@@ -3081,7 +2689,7 @@
     },
     "16693": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016693/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016693/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016693/*.root"
@@ -3089,7 +2697,7 @@
     },
     "16696": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016696/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016696/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016696/*.root"
@@ -3097,7 +2705,7 @@
     },
     "16697": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016697/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016697/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016697/*.root"
@@ -3105,7 +2713,7 @@
     },
     "16698": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016698/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016698/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016698/*.root"
@@ -3113,7 +2721,7 @@
     },
     "16699": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016699/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016699/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016699/*.root"
@@ -3121,7 +2729,7 @@
     },
     "16700": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016700/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016700/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016700/*.root"
@@ -3129,23 +2737,15 @@
     },
     "16715": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016715/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016715/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016715/*.root"
         ]
     },
-    "16716": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016716/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016716/*.root"
-        ]
-    },
     "16730": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016730/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016730/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016730/*.root"
@@ -3153,7 +2753,7 @@
     },
     "16731": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016731/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016731/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016731/*.root"
@@ -3161,7 +2761,7 @@
     },
     "16732": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016732/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016732/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016732/*.root"
@@ -3169,7 +2769,7 @@
     },
     "16798": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016798/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016798/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016798/*.root"
@@ -3177,7 +2777,7 @@
     },
     "16800": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016800/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016800/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016800/*.root"
@@ -3185,7 +2785,7 @@
     },
     "16802": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016802/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016802/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016802/*.root"
@@ -3193,7 +2793,7 @@
     },
     "16805": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016805/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016805/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016805/*.root"
@@ -3201,7 +2801,7 @@
     },
     "16806": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016806/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016806/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016806/*.root"
@@ -3209,7 +2809,7 @@
     },
     "16848": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016848/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016848/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016848/*.root"
@@ -3217,7 +2817,7 @@
     },
     "16850": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016850/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016850/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016850/*.root"
@@ -3225,7 +2825,7 @@
     },
     "16851": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016851/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016851/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016851/*.root"
@@ -3233,7 +2833,7 @@
     },
     "16852": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016852/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016852/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016852/*.root"
@@ -3241,7 +2841,7 @@
     },
     "16853": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016853/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016853/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016853/*.root"
@@ -3249,7 +2849,7 @@
     },
     "16901": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016901/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016901/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016901/*.root"
@@ -3257,7 +2857,7 @@
     },
     "16916": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016916/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016916/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016916/*.root"
@@ -3265,63 +2865,23 @@
     },
     "16923": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016923/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016923/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/016923/*.root"
         ]
     },
-    "14587": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014587/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014587/*.root"
-        ]
-    },
-    "14588": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014588/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014588/*.root"
-        ]
-    },
-    "14589": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014589/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014589/*.root"
-        ]
-    },
-    "14590": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014590/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014590/*.root"
-        ]
-    },
     "14593": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014593/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014593/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014593/*.root"
         ]
     },
-    "14597": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014597/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014597/*.root"
-        ]
-    },
     "14618": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014618/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014618/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014618/*.root"
@@ -3329,7 +2889,7 @@
     },
     "14644": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014644/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014644/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014644/*.root"
@@ -3337,7 +2897,7 @@
     },
     "14645": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014645/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014645/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014645/*.root"
@@ -3345,23 +2905,15 @@
     },
     "14647": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014647/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014647/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014647/*.root"
         ]
     },
-    "14733": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014733/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014733/*.root"
-        ]
-    },
     "14743": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014743/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014743/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014743/*.root"
@@ -3369,7 +2921,7 @@
     },
     "14758": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014758/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014758/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014758/*.root"
@@ -3377,7 +2929,7 @@
     },
     "14760": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014760/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014760/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014760/*.root"
@@ -3385,7 +2937,7 @@
     },
     "14763": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014763/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014763/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014763/*.root"
@@ -3393,7 +2945,7 @@
     },
     "14764": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014764/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014764/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014764/*.root"
@@ -3401,23 +2953,15 @@
     },
     "14765": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014765/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014765/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014765/*.root"
         ]
     },
-    "14766": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014766/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014766/*.root"
-        ]
-    },
     "14767": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014767/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014767/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014767/*.root"
@@ -3425,7 +2969,7 @@
     },
     "14769": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014769/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014769/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014769/*.root"
@@ -3433,23 +2977,15 @@
     },
     "14771": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014771/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014771/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014771/*.root"
         ]
     },
-    "14776": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014776/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014776/*.root"
-        ]
-    },
     "14777": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014777/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014777/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014777/*.root"
@@ -3457,7 +2993,7 @@
     },
     "14797": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014797/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014797/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014797/*.root"
@@ -3465,7 +3001,7 @@
     },
     "14799": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014799/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014799/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014799/*.root"
@@ -3473,7 +3009,7 @@
     },
     "14804": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014804/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014804/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014804/*.root"
@@ -3481,7 +3017,7 @@
     },
     "14809": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014809/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014809/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014809/*.root"
@@ -3489,7 +3025,7 @@
     },
     "14810": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014810/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014810/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014810/*.root"
@@ -3497,7 +3033,7 @@
     },
     "14904": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014904/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014904/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014904/*.root"
@@ -3505,7 +3041,7 @@
     },
     "14905": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014905/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014905/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014905/*.root"
@@ -3513,7 +3049,7 @@
     },
     "14906": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014906/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014906/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014906/*.root"
@@ -3521,7 +3057,7 @@
     },
     "14954": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014954/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014954/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014954/*.root"
@@ -3529,7 +3065,7 @@
     },
     "14971": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014971/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014971/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014971/*.root"
@@ -3537,7 +3073,7 @@
     },
     "14972": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014972/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014972/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014972/*.root"
@@ -3545,7 +3081,7 @@
     },
     "14973": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014973/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014973/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014973/*.root"
@@ -3553,7 +3089,7 @@
     },
     "14974": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014974/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014974/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014974/*.root"
@@ -3561,7 +3097,7 @@
     },
     "14975": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014975/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014975/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014975/*.root"
@@ -3569,7 +3105,7 @@
     },
     "14976": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014976/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014976/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014976/*.root"
@@ -3577,7 +3113,7 @@
     },
     "14977": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014977/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014977/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014977/*.root"
@@ -3585,7 +3121,7 @@
     },
     "14980": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014980/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014980/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014980/*.root"
@@ -3593,7 +3129,7 @@
     },
     "14981": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014981/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014981/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014981/*.root"
@@ -3601,7 +3137,7 @@
     },
     "14985": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014985/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014985/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014985/*.root"
@@ -3609,7 +3145,7 @@
     },
     "14989": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/014989/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/014989/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/014989/*.root"
@@ -3617,7 +3153,7 @@
     },
     "15007": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015007/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015007/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015007/*.root"
@@ -3625,7 +3161,7 @@
     },
     "15015": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015015/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015015/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015015/*.root"
@@ -3633,7 +3169,7 @@
     },
     "15016": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015016/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015016/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015016/*.root"
@@ -3641,7 +3177,7 @@
     },
     "15023": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015023/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015023/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015023/*.root"
@@ -3649,7 +3185,7 @@
     },
     "15024": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015024/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015024/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015024/*.root"
@@ -3657,7 +3193,7 @@
     },
     "15025": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015025/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015025/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015025/*.root"
@@ -3665,7 +3201,7 @@
     },
     "15031": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015031/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015031/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015031/*.root"
@@ -3673,7 +3209,7 @@
     },
     "15032": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015032/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015032/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015032/*.root"
@@ -3681,7 +3217,7 @@
     },
     "15034": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015034/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015034/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015034/*.root"
@@ -3689,7 +3225,7 @@
     },
     "15050": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015050/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015050/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015050/*.root"
@@ -3697,7 +3233,7 @@
     },
     "15051": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015051/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015051/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015051/*.root"
@@ -3705,7 +3241,7 @@
     },
     "15052": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015052/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015052/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015052/*.root"
@@ -3713,7 +3249,7 @@
     },
     "15055": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015055/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015055/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015055/*.root"
@@ -3721,71 +3257,15 @@
     },
     "15059": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015059/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015059/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015059/*.root"
         ]
     },
-    "15075": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015075/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015075/*.root"
-        ]
-    },
-    "15146": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015146/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015146/*.root"
-        ]
-    },
-    "15181": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015181/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015181/*.root"
-        ]
-    },
-    "15257": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015257/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015257/*.root"
-        ]
-    },
-    "15259": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015259/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015259/*.root"
-        ]
-    },
-    "15260": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015260/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015260/*.root"
-        ]
-    },
-    "15267": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015267/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015267/*.root"
-        ]
-    },
     "15269": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015269/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015269/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015269/*.root"
@@ -3793,7 +3273,7 @@
     },
     "15270": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015270/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015270/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015270/*.root"
@@ -3801,7 +3281,7 @@
     },
     "15287": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015287/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015287/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015287/*.root"
@@ -3809,7 +3289,7 @@
     },
     "15289": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015289/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015289/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015289/*.root"
@@ -3817,7 +3297,7 @@
     },
     "15290": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015290/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015290/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015290/*.root"
@@ -3825,7 +3305,7 @@
     },
     "15387": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015387/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015387/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015387/*.root"
@@ -3833,7 +3313,7 @@
     },
     "15388": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015388/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015388/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015388/*.root"
@@ -3841,7 +3321,7 @@
     },
     "15390": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015390/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015390/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015390/*.root"
@@ -3849,7 +3329,7 @@
     },
     "15391": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015391/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015391/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015391/*.root"
@@ -3857,7 +3337,7 @@
     },
     "15394": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015394/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015394/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015394/*.root"
@@ -3865,7 +3345,7 @@
     },
     "15396": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015396/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015396/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015396/*.root"
@@ -3873,7 +3353,7 @@
     },
     "15398": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015398/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015398/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015398/*.root"
@@ -3881,7 +3361,7 @@
     },
     "15415": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015415/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015415/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015415/*.root"
@@ -3889,23 +3369,15 @@
     },
     "15418": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015418/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015418/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015418/*.root"
         ]
     },
-    "15421": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015421/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015421/*.root"
-        ]
-    },
     "15422": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015422/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015422/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015422/*.root"
@@ -3913,7 +3385,7 @@
     },
     "15424": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015424/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015424/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015424/*.root"
@@ -3921,7 +3393,7 @@
     },
     "15425": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015425/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015425/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015425/*.root"
@@ -3929,7 +3401,7 @@
     },
     "15429": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015429/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015429/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015429/*.root"
@@ -3937,7 +3409,7 @@
     },
     "15432": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015432/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015432/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015432/*.root"
@@ -3945,7 +3417,7 @@
     },
     "15434": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015434/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015434/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015434/*.root"
@@ -3953,7 +3425,7 @@
     },
     "15438": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015438/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015438/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015438/*.root"
@@ -3961,7 +3433,7 @@
     },
     "15439": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015439/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015439/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015439/*.root"
@@ -3969,7 +3441,7 @@
     },
     "15443": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015443/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015443/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015443/*.root"
@@ -3977,7 +3449,7 @@
     },
     "15445": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015445/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015445/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015445/*.root"
@@ -3985,55 +3457,15 @@
     },
     "15446": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015446/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015446/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015446/*.root"
         ]
     },
-    "15455": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015455/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015455/*.root"
-        ]
-    },
-    "15553": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015553/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015553/*.root"
-        ]
-    },
-    "15676": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015676/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015676/*.root"
-        ]
-    },
-    "15678": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015678/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015678/*.root"
-        ]
-    },
-    "15679": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015679/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015679/*.root"
-        ]
-    },
     "15681": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015681/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015681/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015681/*.root"
@@ -4041,7 +3473,7 @@
     },
     "15683": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015683/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015683/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015683/*.root"
@@ -4049,7 +3481,7 @@
     },
     "15685": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015685/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015685/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015685/*.root"
@@ -4057,7 +3489,7 @@
     },
     "15687": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015687/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015687/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015687/*.root"
@@ -4065,7 +3497,7 @@
     },
     "15688": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015688/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015688/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015688/*.root"
@@ -4073,23 +3505,15 @@
     },
     "15691": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015691/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015691/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015691/*.root"
         ]
     },
-    "15694": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015694/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015694/*.root"
-        ]
-    },
     "15723": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015723/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015723/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015723/*.root"
@@ -4097,7 +3521,7 @@
     },
     "15749": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015749/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015749/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015749/*.root"
@@ -4105,7 +3529,7 @@
     },
     "15751": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015751/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015751/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015751/*.root"
@@ -4113,7 +3537,7 @@
     },
     "15754": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015754/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015754/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015754/*.root"
@@ -4121,7 +3545,7 @@
     },
     "15755": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015755/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015755/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015755/*.root"
@@ -4129,7 +3553,7 @@
     },
     "15758": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015758/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015758/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015758/*.root"
@@ -4137,7 +3561,7 @@
     },
     "15762": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015762/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015762/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015762/*.root"
@@ -4145,7 +3569,7 @@
     },
     "15763": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015763/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015763/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015763/*.root"
@@ -4153,7 +3577,7 @@
     },
     "15765": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015765/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015765/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015765/*.root"
@@ -4161,7 +3585,7 @@
     },
     "15766": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015766/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015766/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015766/*.root"
@@ -4169,7 +3593,7 @@
     },
     "15782": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015782/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015782/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015782/*.root"
@@ -4177,7 +3601,7 @@
     },
     "15784": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015784/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015784/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015784/*.root"
@@ -4185,7 +3609,7 @@
     },
     "15785": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015785/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015785/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015785/*.root"
@@ -4193,7 +3617,7 @@
     },
     "15786": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015786/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015786/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015786/*.root"
@@ -4201,7 +3625,7 @@
     },
     "15787": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015787/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015787/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015787/*.root"
@@ -4209,7 +3633,7 @@
     },
     "15789": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015789/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015789/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015789/*.root"
@@ -4217,7 +3641,7 @@
     },
     "15790": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015790/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015790/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015790/*.root"
@@ -4225,7 +3649,7 @@
     },
     "15814": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015814/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015814/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015814/*.root"
@@ -4233,7 +3657,7 @@
     },
     "15816": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015816/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015816/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015816/*.root"
@@ -4241,7 +3665,7 @@
     },
     "15818": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015818/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015818/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015818/*.root"
@@ -4249,7 +3673,7 @@
     },
     "15820": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/015820/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/015820/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/015820/*.root"
@@ -4257,7 +3681,7 @@
     },
     "16929": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016929/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016929/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016929/*.root"
@@ -4265,7 +3689,7 @@
     },
     "16930": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016930/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016930/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016930/*.root"
@@ -4273,7 +3697,7 @@
     },
     "16931": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016931/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016931/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016931/*.root"
@@ -4281,7 +3705,7 @@
     },
     "16932": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016932/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016932/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016932/*.root"
@@ -4289,7 +3713,7 @@
     },
     "16934": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016934/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016934/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016934/*.root"
@@ -4297,7 +3721,7 @@
     },
     "16936": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016936/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016936/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016936/*.root"
@@ -4305,7 +3729,7 @@
     },
     "16937": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016937/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016937/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016937/*.root"
@@ -4313,7 +3737,7 @@
     },
     "16938": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016938/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016938/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016938/*.root"
@@ -4321,7 +3745,7 @@
     },
     "16939": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016939/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016939/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016939/*.root"
@@ -4329,7 +3753,7 @@
     },
     "16940": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016940/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016940/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016940/*.root"
@@ -4337,7 +3761,7 @@
     },
     "16941": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016941/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016941/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016941/*.root"
@@ -4345,7 +3769,7 @@
     },
     "16943": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016943/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016943/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016943/*.root"
@@ -4353,23 +3777,15 @@
     },
     "16963": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016963/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016963/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016963/*.root"
         ]
     },
-    "16972": {
-        "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016972/*.root"
-        ],
-        "waveform_paths": [
-            "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016972/*.root"
-        ]
-    },
     "16974": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/016974/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/016974/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/016974/*.root"
@@ -4377,7 +3793,7 @@
     },
     "17018": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/017018/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/017018/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/017018/*.root"
@@ -4385,7 +3801,7 @@
     },
     "17023": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/017023/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/017023/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/017023/*.root"
@@ -4393,7 +3809,7 @@
     },
     "17095": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/017095/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/017095/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/017095/*.root"
@@ -4401,7 +3817,7 @@
     },
     "17102": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/017102/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/017102/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/017102/*.root"
@@ -4409,7 +3825,7 @@
     },
     "17127": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/017127/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/017127/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/017127/*.root"
@@ -4417,7 +3833,7 @@
     },
     "17147": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/017147/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/017147/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/017147/*.root"
@@ -4425,7 +3841,7 @@
     },
     "17199": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/017199/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/017199/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/017199/*.root"
@@ -4433,7 +3849,7 @@
     },
     "17230": {
         "data_paths": [
-            "/eos/experiment/faser/data0/phys/2024_back/r0022/017230/*.root"
+            "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/017230/*.root"
         ],
         "waveform_paths": [
             "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/017230/*.root"

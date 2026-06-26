@@ -27,9 +27,9 @@ def get_parse_GRL(grl_path):
 def main():
 
 
-    data_2022_files = "/eos/experiment/faser/data0/phys/2022_back/r0021/*"
-    data_2023_files = "/eos/experiment/faser/data0/phys/2023_back/r0021/*"
-    data_2024_files = "/eos/experiment/faser/data0/phys/2024_back/r0022/*"
+    data_2022_files = "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2022/*"
+    data_2023_files = "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2023/*"
+    data_2024_files = "/afs/cern.ch/user/b/bewilson/eos/LateTracks/NTuples-Full/2024/*"
 
     waveforms_2022_files = "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/*"
     waveforms_2023_files = "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/*"
