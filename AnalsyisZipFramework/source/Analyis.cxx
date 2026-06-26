@@ -334,6 +334,9 @@ void Analysis::BuildDataFrame() {
     m_node = m_node->Define("timing_saturated", "Timing0_status == 4 || Timing1_status == 4 || Timing2_status == 4 || Timing3_status == 4");
     m_node = m_node->Define("preshower_saturated", "Preshower0_status == 4 || Preshower1_status == 4");
     m_node = m_node->Define("any_saturated", "VetoNu_saturated || VetoStation_saturated || timing_saturated || preshower_saturated");
+
+    m_node = m_node->Define("VetoNuHit", "inputBits & 4");
+    m_node = m_node->Define("VetoNuHitNext", "inputBitsNext & 4");
 }
 
 void Analysis::applyCut(std::string cutExpression, std::string cutName) {
@@ -357,46 +360,17 @@ void Analysis::Run(TString outputFileName) {
 
     if (!isMC) {
         applyCut("distanceToCollidingBCID == 0", "Colliding");
-        applyCut("(inputBits & 0x8) == 0x8 || (inputBits & 0x10) == 0x10 || (inputBits & 0x20) == 0x20 || (inputBits & 0x40) == 0x40", "Trigger");
-
+        // applyCut("VetoNuHit || VetoNuHitNext", "VetoNu triggered in this or next BCID");
+    
         if (m_excludedTimesCut != "") {
             DEBUG("Applying GRL excluded times cut: ", m_excludedTimesCut);
             m_node = m_node->Define("ExcludedTimes", m_excludedTimesCut);
             applyCut("!ExcludedTimes", "Excluded times");
         }
     }
-
-    // Reco query cuts
-    // (((reduced_VetoNu0_charge < 30.0) & (reduced_VetoNu0_charge.notna())) & ((reduced_VetoNu1_charge < 30.0) & (reduced_VetoNu1_charge.notna()))) & 
-    // ((VetoSt20_charge > 40) & (VetoSt21_charge > 40)) & 
-    // (((Track_Y_atTrig > 20) & (Timing_charge_top > 20)) | ((Track_Y_atTrig < -20) & (Timing_charge_bottom > 20)) | ((abs(Track_Y_atTrig) < 20) & (Timing_charge_total > 20))) & 
-    // ((Preshower0_charge > 2.5) & (Preshower1_charge > 2.5)) & 
-    // ((longTracks > 0) &
-    // (Track_nLayers >= 7) &
-    // (Track_nDoF >= 9) & 
-    // (chi2_ndf < 15) &
-    // (Track_pz_gev > 100) & 
-    // (Track_r_atMaxRadius < 95) & 
-    // (Track_rIFT < 95) & 
-    // (Track_rVetoNu < 120) &
-    // (theta_mrad < 25))
-
-    applyCut("Veto20_charge > 40 && Veto21_charge > 40", "Veto20 and Veto21 charge > 40 pC");
-    applyCut("((Track_Y_atTrig[LeadTrack_Idx] > 20 && Timing_charge_top > 20) || \
-               (Track_Y_atTrig[LeadTrack_Idx] < -20 && Timing_charge_bottom > 20) || \
-               (abs(Track_Y_atTrig[LeadTrack_Idx]) < 20 && Timing_charge_total > 20))", "Timing Station Charge > 20 pC");
-    applyCut("Preshower0_charge > 2.5 && Preshower1_charge > 2.5", "Preshower Charge > 2.5 pC");
-    applyCut("longTracks > 0", "At least one long track");
-    applyCut("LeadTrack_nLayers >= 7", "Leading track has at >= 7 layers");
-    applyCut("LeadTrack_nDoF >= 9", "Track nDoF >= 9");
-    applyCut("LeadTrack_Chi2 / LeadTrack_nDoF < 15", "Leading track has chi2/ndof < 15");
-    applyCut("LeadTrack_pz0 > 100", "Track pz > 100 GeV");
-    applyCut("LeadTrack_r_atMaxRadius < 95", "Track R at max radius < 95 mm");
-    applyCut("LeadTrack_rIFT < 95", "Track R at IFT < 95 mm");
-    applyCut("LeadTrack_rVetoNu < 120", "Track rVetoNu < 120 mm");
-    applyCut("LeadTrack_Theta < 0.025", "Leading track theta < 0.025 rad");
-    applyCut("VetoNu0_reduced_charge < 30 && VetoNu1_reduced_charge < 30", "VetoNu0 and VetoNu1 reduced charge < 30 pC");
-    // applyCut("VetoNu0_reduced_charge >= -999 && VetoNu1_reduced_charge >= -999", "Sanity cut to remove events with missing aux data (reduced charge set to -999)");
+    
+    // applyCut("hitsVetoNu0 || hitsVetoNu1", "VetoNu hit"); 
+    applyCut("preshower_saturated", "Preshower0_status == 4 || Preshower1_status == 4");
       
 
     // ── Book ALL actions before triggering any event loop ──────────────────

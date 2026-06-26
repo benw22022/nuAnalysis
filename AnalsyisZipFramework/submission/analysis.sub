@@ -3,7 +3,7 @@ executable  = run_analysis.sh
 arguments   = $(runNumber) $(outputDir)/$(runNumber).root
 
 # Resource requests — add ~20% headroom over measured 6.5 GB
-request_memory = 8000M
+request_memory = 3000M
 request_cpus   = 1
 request_disk   = 2000M
 

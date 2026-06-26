@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
     Analysis analysis("nt", mainFiles);
     if (!auxFiles.empty())
     {
-        analysis.addAuxFiles("tree", auxFiles);
+        // analysis.addAuxFiles("tree", auxFiles);
     }
 
     analysis.isMC = isMC;
