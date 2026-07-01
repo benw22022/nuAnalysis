@@ -24,7 +24,8 @@ source AnalysisZipFramework/setup.sh
 ```
 
 - Compile code
-```
+
+```bash
 mkdir build
 cd build
 cmake ../AnalysisZipFramework
@@ -37,7 +38,7 @@ make
 ./analysis -r <run_number> -o <output_file>
 ```
 
-*Note*: The filepaths and GRLs are obtained from `build/config` at runtime, where the configs are obtained at runtime. They are copied form the source to the build directory when executing `cmake`.
+*Note*: The filepaths and GRLs are obtained from `build/config`, where the configs are obtained at runtime. They are copied from the source folder to the build directory when executing `cmake`.
 
 ## Output file structure
 The output file contains the following trees:
