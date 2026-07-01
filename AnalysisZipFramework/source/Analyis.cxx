@@ -140,6 +140,7 @@ void Analysis::setGRL(const std::vector<TString>& grlJsons, const std::vector<TS
 }
 
 
+// Main setup function that builds the dataframe and sets up the aux chain if present
 void Analysis::BuildDataFrame() {
 
     if (!m_mainChainSet) {
@@ -309,7 +310,6 @@ void Analysis::BuildDataFrame() {
 
 
     // Definitions
-
     m_node = m_node->Define("Timing_charge_bottom", "Timing0_charge + Timing1_charge");
     m_node = m_node->Define("Timing_charge_top", "Timing2_charge + Timing3_charge");
     m_node = m_node->Define("Timing_charge_total", "Timing_charge_top + Timing_charge_bottom");
@@ -345,6 +345,7 @@ void Analysis::BuildDataFrame() {
         m_node = m_node->Define("ExcludedTimes", m_excludedTimesCut);
     }
 
+    // This needs to go at the end of all the definitions, otherwise the aux columns won't be available for cuts
     m_eventIDNode = m_node;
 }
 
@@ -380,6 +381,7 @@ void Analysis::applyCut(std::string cutExpression, std::string cutName) {
 
 }
 
+// Main analysis function that runs the analysis and applies cuts, then saves the output to a file if specified.
 void Analysis::Run(TString outputFileName) {
 
     BuildDataFrame();

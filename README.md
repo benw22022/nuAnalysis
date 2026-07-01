@@ -57,6 +57,6 @@ Currently definitions and cuts are hardcoded in `AnalysisZipFramework/source/Ana
 
 New variable definitions should be added in `Analysis::BuildDataFrame()` using `m_node = m_node->Define(...)`
 
-New cuts should be defined in `Analysis::applyCut()`. Rather than calling `m_node->Filter(...)` directly, one should use the `applyCut` method, which handles some additional book keeping. The syntax is: `applyCut(<cut expression>, <cut name>);`, e.g. `applyCut("LeadTrack_Theta < 25", "Leading track theta < 25 mrad");`. The cut expression follows the usual RDF syntax.
+New cuts should be defined in `Analysis::Run()`. Rather than calling `m_node->Filter(...)` directly, one should use the `applyCut` method, which handles some additional book keeping. The syntax is: `applyCut(<cut expression>, <cut name>);`, e.g. `applyCut("LeadTrack_Theta < 25", "Leading track theta < 25 mrad");`. The cut expression follows the usual RDF syntax.
 
 The RDF Definition syntax is extended through this header file `AnalysisZipFramework/include/RDFDefines.h` which defines some addtional shorthand methods, for example: `m_node = m_node->Define("Track_Theta", "Theta(Track_px0, Track_py0, Track_pz0)");`.
