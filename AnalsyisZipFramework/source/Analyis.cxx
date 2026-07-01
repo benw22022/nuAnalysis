@@ -5,6 +5,8 @@
 #include "MessageService.hpp"
 #include <set>
 #include "GRLUtils.h"
+#include <algorithm>
+
 
 std::vector<TString> Analysis::ExpandAndSort(TString pattern) {
     glob_t globResult;
@@ -134,6 +136,7 @@ void Analysis::addAuxFiles(TString auxFileTreeName, std::vector<TString> auxFile
 void Analysis::setGRL(const std::vector<TString>& grlJsons, const std::vector<TString>& grlCSVs) {
     m_runLumiDict = GRLUtils::getRunNumberLumiDict(grlCSVs);
     m_excludedTimesCut = GRLUtils::makeExcludedTimesCut(grlJsons);
+    m_goodTimesCut = GRLUtils::makeGoodTimesCut(grlJsons);
 }
 
 
@@ -193,8 +196,7 @@ void Analysis::BuildDataFrame() {
         INFO("Loading ", nAux, " aux entries into lookup map...");
         for (Long64_t i = 0; i < nAux; ++i) {
             m_auxChain->GetEntry(i);
-            uint64_t key = (uint64_t)run << 32 | (uint32_t)evt;
-            // key = evt; // Use only event number as key for now, since run number is always the same in the aux files. This is a temporary workaround until we can fix the aux files to include the run number.
+            uint64_t key = getLookupKey(run, evt);
 
             if (auxMap->find(key) != auxMap->end()) {
                 ERROR("Warning: Duplicate (run, event) pair in aux chain: (", run, ", ", evt, "). Overwriting previous entry.");
@@ -220,125 +222,104 @@ void Analysis::BuildDataFrame() {
         m_node = m_node->Define("isCaloNuPeriod", "15821 <= run  && run <= 16924");
         m_node = m_node->Define("caloNuVeto2StatusBug", "(Veto20_status == 528 || Veto21_status == 528) && isCaloNuPeriod");
         m_node = m_node->Define("caloNuVetoNuStatusKeep", "GoodVetoNuStatus && isCaloNuPeriod");
-        m_node = m_node->Define("caloNuStatusCleaning", "!caloNuVeto2StatusBug && caloNuVetoNuStatusKeep");
-        
+        m_node = m_node->Define("caloNuStatusCleaning", "!isCaloNuPeriod || (!caloNuVeto2StatusBug && caloNuVetoNuStatusKeep)");
+
         m_node = m_node->Define("VetoNu0_reduced_charge",
             [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, float VetoNu0_raw_charge) -> float {
                 
-                // Lookup the reduced charge from the aux map
-                // auto it = auxMap->find(eventID);
-                uint64_t key = (uint64_t)run << 32 | (uint32_t)eventID;
-                auto it = auxMap->find(key);
-                // return (it != auxMap->end()) ? it->second.charge35_nu0 : -999.f;
-                // auto reduced_charge = (it != auxMap->end()) ? it->second.charge35_nu0 : -999.f;
-                bool lookup_failed = true;
-                auto reduced_charge = -999.f;
-                if (it != auxMap->end()) {
-                    reduced_charge = it->second.charge35_nu1;
-                    lookup_failed = false;
-                }
+                uint64_t key = getLookupKey(run, eventID);
+                bool lookup_success = auxMap->count(key);
+                auto reduced_charge = -99999.f;
 
-
-                if (lookup_failed) {
-                    ERROR("Warning: Missing aux data for eventID ", eventID, " in run ", run, ". Setting reduced charge to -999.");
-                    m_NVetoNu0_missing_aux++;
-                    std::cerr << "Warning: Missing aux data for eventID " << eventID << " in run " << run << ". Setting reduced charge to -999." << std::endl;
+                if (lookup_success) {
+                    
+                    // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
+                    if (!TimingOK || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu0_raw_charge > 30)){
+                        // m_NVetoNu0_fallbacks++;
+                        // return VetoNu0_raw_charge;
+                        return -1;
+                    }
+                    
+                    auto it = auxMap->find(key);
+                    reduced_charge = it->second.charge35_nu0;
                     return reduced_charge;
                 }
-
-                // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
-                // if (!TimingOK || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu0_raw_charge > 30)){
-                //     m_NVetoNu0_fallbacks++;
-                //     return VetoNu0_raw_charge; 
-                // }
+                
+                ERROR("Warning: Missing aux data for eventID ", eventID, " in run ", run, ". Setting reduced charge to -999.");
+                m_NVetoNu0_missing_aux++;
                 return reduced_charge;
-                // return std::max(reduced_charge, 0.0f);
+                
             }, {"run", "eventID", "TimingOK", "VetoNu0_raw_charge"});
         
         m_node = m_node->Define("VetoNu1_reduced_charge",
             [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, float VetoNu1_raw_charge) -> float {
 
-                // Lookup the reduced charge from the aux map
-                // auto it = auxMap->find(eventID);
-                uint64_t key = (uint64_t)run << 32 | (uint32_t)eventID;
-                auto it = auxMap->find(key);
-                // return (it != auxMap->end()) ? it->second.charge35_nu1 : -999.f;
+                uint64_t key = getLookupKey(run, eventID);
+                auto reduced_charge = -99999.f;
+                bool lookup_success = auxMap->count(key);
+                if (lookup_success) {
 
+                    // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
+                    if (!TimingOK || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu1_raw_charge > 30)){
+                        // m_NVetoNu1_fallbacks++;
+                        // return VetoNu1_raw_charge; 
+                        return -1;
+                    }
 
-                auto reduced_charge = -999.f;
-                bool lookup_failed = true;
-                if (it != auxMap->end()) {
+                    auto it = auxMap->find(key);
                     reduced_charge = it->second.charge35_nu1;
-                    lookup_failed = false;
+                    return reduced_charge;
                 }
 
-
-                if (lookup_failed) {
-                    ERROR("Warning: Missing aux data for eventID ", eventID, " in run ", run, ". Setting reduced charge to -999.");
-                    m_NVetoNu1_missing_aux++;
-                    std::cerr << "Warning: Missing aux data for eventID " << eventID << " in run " << run << ". Setting reduced charge to -999." << std::endl;
-                    return reduced_charge;    
-                }
-
-                // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
-                // if (!TimingOK || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu1_raw_charge > 30)){
-                //     m_NVetoNu1_fallbacks++;
-                //     return VetoNu1_raw_charge; 
-                // }
-                return reduced_charge;
-                // return std::max(reduced_charge, 0.0f);
+                ERROR("Warning: Missing aux data for eventID ", eventID, " in run ", run, ". Setting reduced charge to -999.");
+                m_NVetoNu1_missing_aux++;
+                return reduced_charge;    
                 
+                // return std::max(reduced_charge, 0.0f);
             }, {"run", "eventID", "TimingOK", "VetoNu1_raw_charge"});
+
+        m_node = m_node->Define("AuxLookupSuccess", [auxMap, this](Int_t run, Int_t eventID) -> bool {
+            uint64_t key = getLookupKey(run, eventID);
+            return auxMap->count(key) > 0;
+        }, {"run", "eventID"});
+
+        m_node = m_node->Define("validReducedVetoNu0Charge", "AuxLookupSuccess && TimingOK && !isnan(VetoNu0_reduced_charge) && (VetoNu0_reduced_charge == 0 && VetoNu0_raw_charge > 30)");
+        m_node = m_node->Define("validReducedVetoNu1Charge", "AuxLookupSuccess && TimingOK && !isnan(VetoNu1_reduced_charge) && (VetoNu1_reduced_charge == 0 && VetoNu1_raw_charge > 30)");
+
+        m_node = m_node->Define("fallbackVetoNu0Charge",
+            [this](bool validReducedVetoNu0Charge, float VetoNu0_raw_charge) -> float {
+                if (!validReducedVetoNu0Charge) {
+                    m_NVetoNu0_fallbacks++;
+                    return VetoNu0_raw_charge;
+                }
+                return -1; // Return -1 to indicate no fallback needed
+            }, {"validReducedVetoNu0Charge", "VetoNu0_raw_charge"});
+        
+
+        m_node = m_node->Define("fallbackVetoNu1Charge",
+            [this](bool validReducedVetoNu1Charge, float VetoNu1_raw_charge) -> float {
+                if (!validReducedVetoNu1Charge) {
+                    m_NVetoNu1_fallbacks++;
+                    return VetoNu1_raw_charge;
+                }
+                return -1; // Return -1 to indicate no fallback needed
+            }, {"validReducedVetoNu1Charge", "VetoNu1_raw_charge"});
+
     } // End of aux chain handling
 
 
     // Definitions
-    m_node = m_node->Define("Track_nHits", "Track_nDoF + 5");        
-    m_node = m_node->Define("Track_chi2_per_dof", "Track_Chi2/Track_nDoF");
-    m_node = m_node->Define("Track_pz_charge0", "Track_pz0 * Track_charge");
-    m_node = m_node->Define("Track_theta_x1", "asin(Track_px1/Track_p1)");
-    m_node = m_node->Define("Track_theta_y1", "asin(Track_py1/Track_p1)");
-    m_node = m_node->Define("Track_pt0", "sqrt(Track_px0*Track_px0 + Track_py0*Track_py0)");
-    m_node = m_node->Define("Track_theta0", "asin(Track_pt0/Track_p0)");
-    m_node = m_node->Define("Track_phi0", "acos(Track_px0/Track_pt0)");
-    m_node = m_node->Define("Track_eta0", "-log(tan(Track_theta0/2))");
-    m_node = m_node->Define("Track_theta_x0", "asin(Track_px0/Track_p0)");
-    m_node = m_node->Define("Track_theta_y0", "asin(Track_py0/Track_p0)");
-    m_node = m_node->Define("Track_theta_x0_pos", "Track_theta_x0[Track_charge > 0]");
-    m_node = m_node->Define("Track_theta_x0_neg", "Track_theta_x0[Track_charge < 0]");
-    m_node = m_node->Define("Track_theta_y0_pos", "Track_theta_y0[Track_charge > 0]");
-    m_node = m_node->Define("Track_theta_y0_neg", "Track_theta_y0[Track_charge < 0]");
-    m_node = m_node->Define("Track_x0_pos", "Track_x0[Track_charge > 0]");
-    m_node = m_node->Define("Track_x0_neg", "Track_x0[Track_charge < 0]");
-    m_node = m_node->Define("Track_y0_pos", "Track_y0[Track_charge > 0]");
-    m_node = m_node->Define("Track_y0_neg", "Track_y0[Track_charge < 0]");
 
-    m_node = m_node->Define("Timing_charge_bottom", "Timing0_raw_charge + Timing1_raw_charge");
-    m_node = m_node->Define("Timing_charge_top", "Timing2_raw_charge + Timing3_raw_charge");
+    m_node = m_node->Define("Timing_charge_bottom", "Timing0_charge + Timing1_charge");
+    m_node = m_node->Define("Timing_charge_top", "Timing2_charge + Timing3_charge");
     m_node = m_node->Define("Timing_charge_total", "Timing_charge_top + Timing_charge_bottom");
-    
-    m_node = m_node->Define("hitsVetoNu0", "VetoNu0_raw_charge > 40");
-    m_node = m_node->Define("hitsVetoNu1", "VetoNu1_raw_charge > 40");
 
     m_node = m_node->Define("goodVetoNuStatus", "(VetoNu0_status == 0 || VetoNu0_status == 512) && (VetoNu1_status == 0 || VetoNu1_status == 512)");
-    
-    m_node = m_node->Define("hitsVeto10", "Veto10_charge > 40");
-    m_node = m_node->Define("hitsVeto20", "Veto20_charge > 40");
-    m_node = m_node->Define("hitsVeto21", "Veto21_charge > 40");
 
     m_node = m_node->Define("hitsTiming", "((Track_Y_atTrig[0] > 20 && Timing_charge_top > 20) || \
                                            (Track_Y_atTrig[0] < -20 && Timing_charge_bottom > 20) || \
                                            (Track_Y_atTrig[0] > -20 && Track_Y_atTrig[0] < 20 && Timing_charge_total > 20))");
     
-    m_node = m_node->Define("hitsTiming0", "Timing0_status == 0");
-    m_node = m_node->Define("hitsTiming1", "Timing1_status == 0");
-    m_node = m_node->Define("hitsTiming2", "Timing2_status == 0");
-    m_node = m_node->Define("hitsTiming3", "Timing3_status == 0");
-
-    m_node = m_node->Define("vetoSaturated", "Veto10_raw_charge > 2500 || Veto20_raw_charge > 100 || Veto21_raw_charge > 100");
-    
-    m_node = m_node->Define("hitsPreshower0", "Preshower0_charge > 2.5");
-    m_node = m_node->Define("hitsPreshower1", "Preshower1_charge > 2.5");
 
     m_node = m_node->Define("LeadTrack_Idx", "ROOT::VecOps::ArgMax(Track_pz0)");
     m_node = m_node->Define("Track_rVetoNu","Radius(Track_X_atVetoNu, Track_Y_atVetoNu)");
@@ -348,26 +329,55 @@ void Analysis::BuildDataFrame() {
     m_node = m_node->Define("Track_rIFT", "Radius(Track_X_atVetoStation2, Track_Y_atVetoStation2)");
     m_node = m_node->Define("Track_Theta", "Theta(Track_px0, Track_py0, Track_pz0)");
     m_node = m_node->Define("LeadTrack_pz0", "Track_pz0[LeadTrack_Idx] / 1000");
-    m_node = m_node->Define("LeadTrack_Theta", "Track_Theta[LeadTrack_Idx]");
-    m_node = m_node->Define("LeadTrack_Eta", "-ROOT::VecOps::log(ROOT::VecOps::tan(Track_Theta / 2))[LeadTrack_Idx]");
+    m_node = m_node->Define("LeadTrack_Theta", "Track_Theta[LeadTrack_Idx] * 1000");
+    // m_node = m_node->Define("LeadTrack_Eta", "-ROOT::VecOps::log(ROOT::VecOps::tan(Track_Theta / 2))[LeadTrack_Idx]");
     m_node = m_node->Define("LeadTrack_nLayers", "Track_nLayers[LeadTrack_Idx]");
     m_node = m_node->Define("LeadTrack_nDoF", "Track_nDoF[LeadTrack_Idx]");
     m_node = m_node->Define("LeadTrack_Chi2", "Track_Chi2[LeadTrack_Idx]");
-    
+    m_node = m_node->Define("LeadTrack_Chi2_NDF", "Track_Chi2[LeadTrack_Idx] / Track_nDoF[LeadTrack_Idx]");
+
     m_node = m_node->Define("LeadTrack_rVetoNu", "Track_rVetoNu[LeadTrack_Idx]");
     m_node = m_node->Define("LeadTrack_r_atMaxRadius", "Track_r_atMaxRadius[LeadTrack_Idx]");
     m_node = m_node->Define("LeadTrack_rIFT", "Track_rIFT[LeadTrack_Idx]");
 
-    m_node = m_node->Define("VetoNu_saturated", "VetoNu0_status == 4 || VetoNu1_status == 4");
-    m_node = m_node->Define("VetoStation_saturated", "Veto10_status == 4 || Veto20_status == 4 || Veto21_status == 4");
-    m_node = m_node->Define("timing_saturated", "Timing0_status == 4 || Timing1_status == 4 || Timing2_status == 4 || Timing3_status == 4");
-    m_node = m_node->Define("preshower_saturated", "Preshower0_status == 4 || Preshower1_status == 4");
-    m_node = m_node->Define("any_saturated", "VetoNu_saturated || VetoStation_saturated || timing_saturated || preshower_saturated");
+    if (!isMC) {
+        m_node = m_node->Define("GoodTimes", m_goodTimesCut);
+        m_node = m_node->Define("ExcludedTimes", m_excludedTimesCut);
+    }
+
+    m_eventIDNode = m_node;
+}
+
+void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+    if (from.empty()) return;
+    size_t pos = 0;
+    while ((pos = str.find(from, pos)) != std::string::npos) {
+        str.replace(pos, from.length(), to);
+        pos += to.length();
+    }
 }
 
 void Analysis::applyCut(std::string cutExpression, std::string cutName) {
     INFO("Applying cut: ", cutName, " (", cutExpression, ")");
+
+    std::string pass_cut_name = "passed_" + cutName;
+    const std::vector<std::pair<std::string, std::string>> replacements = {
+        {"<=", "leq"}, {">=", "geq"}, {"==", "eq"},
+        {"<",  "lt"},  {">",  "gt"},
+        {" ",  "_"}, {"&&", "and"}, {"||", "or"}, {"&", "and"}, {"|", "or"}, {"!", "not"},
+        {"(", ""}, {")", ""}, {".", "_"}, {"/", "_"}, {"\\", "_"}, {"[", "_"}, {"]", "_"}, 
+        {"-", "minus"}, {"+", "plus"}, {"*", "times"}, {"%", "percent"}, {"^", "caret"}
+    };
+
+    for (const auto& [from, to] : replacements) {
+        replaceAll(pass_cut_name, from, to);
+    }
+    
+    m_passedCutColNames.push_back(pass_cut_name);
+    m_eventIDNode = m_eventIDNode->Define(pass_cut_name, cutExpression);
+    
     m_node = m_node->Filter(cutExpression, cutName);
+
 }
 
 void Analysis::Run(TString outputFileName) {
@@ -388,9 +398,11 @@ void Analysis::Run(TString outputFileName) {
         applyCut("distanceToCollidingBCID == 0", "Colliding");
         applyCut("(inputBits & 0x8) == 0x8 || (inputBits & 0x10) == 0x10 || (inputBits & 0x20) == 0x20 || (inputBits & 0x40) == 0x40", "Trigger");
 
+        DEBUG("Applying GRL good times cut: ", m_goodTimesCut);
+        applyCut("GoodTimes", "Good times");
+
         if (m_excludedTimesCut != "") {
             DEBUG("Applying GRL excluded times cut: ", m_excludedTimesCut);
-            m_node = m_node->Define("ExcludedTimes", m_excludedTimesCut);
             applyCut("!ExcludedTimes", "Excluded times");
         }
     }
@@ -410,20 +422,26 @@ void Analysis::Run(TString outputFileName) {
     // (Track_rVetoNu < 120) &
     // (theta_mrad < 25))
 
-    applyCut("VetoNu0_reduced_charge >= -999 && VetoNu1_reduced_charge >= -999", "Sanity cut to remove events with missing aux data (reduced charge set to -999)");
-    applyCut("VetoNu0_reduced_charge < 30 && VetoNu1_reduced_charge < 30", "VetoNu0 and VetoNu1 reduced charge < 30 pC");
+    // applyCut("VetoNu0_reduced_charge >= -999 && VetoNu1_reduced_charge >= -999", "Sanity cut to remove events with missing aux data (reduced charge set to -999)");
+    applyCut("AuxLookupSuccess", "Sanity cut to remove events with missing aux data");
+    // applyCut("VetoNu0_reduced_charge < 30 && VetoNu1_reduced_charge < 30", "VetoNu0 and VetoNu1 reduced charge < 30 pC");
+    applyCut("VetoNu0_reduced_charge < 30", "VetoNu0 reduced charge < 30 pC");
+    applyCut("VetoNu1_reduced_charge < 30", "VetoNu1 reduced charge < 30 pC");
+    applyCut("fallbackVetoNu0Charge < 40", "VetoNu0 raw charge < 40 pC (fallback to raw charge if reduced charge invalid)");
+    applyCut("fallbackVetoNu1Charge < 40", "VetoNu1 raw charge < 40 pC (fallback to raw charge if reduced charge invalid)");
+    applyCut("caloNuStatusCleaning", "CaloNu status cleaning");
     applyCut("Veto20_charge > 40 && Veto21_charge > 40", "Veto20 and Veto21 charge > 40 pC");
     applyCut("((Track_Y_atTrig[LeadTrack_Idx] > 20 && Timing_charge_top > 20) || (Track_Y_atTrig[LeadTrack_Idx] < -20 && Timing_charge_bottom > 20) || (abs(Track_Y_atTrig[LeadTrack_Idx]) < 20 && Timing_charge_total > 20))", "Timing Station Charge > 20 pC");
     applyCut("Preshower0_charge > 2.5 && Preshower1_charge > 2.5", "Preshower Charge > 2.5 pC");
     applyCut("longTracks > 0", "At least one long track");
+    applyCut("LeadTrack_pz0 > 100", "Track pz > 100 GeV");
     applyCut("LeadTrack_nLayers >= 7", "Leading track has at >= 7 layers");
     applyCut("LeadTrack_nDoF >= 9", "Track nDoF >= 9");
-    applyCut("LeadTrack_Chi2 / LeadTrack_nDoF < 15", "Leading track has chi2/ndof < 15");
-    applyCut("LeadTrack_pz0 > 100", "Track pz > 100 GeV");
+    applyCut("LeadTrack_Chi2_NDF < 15", "Leading track has chi2/ndof < 15");
     applyCut("LeadTrack_r_atMaxRadius < 95", "Track R at max radius < 95 mm");
     applyCut("LeadTrack_rIFT < 95", "Track R at IFT < 95 mm");
     applyCut("LeadTrack_rVetoNu < 120", "Track rVetoNu < 120 mm");
-    applyCut("LeadTrack_Theta < 0.025", "Leading track theta < 0.025 rad");
+    applyCut("LeadTrack_Theta < 25", "Leading track theta < 25 mrad");
     // applyCut("VetoNu0_reduced_charge != -999 && VetoNu1_reduced_charge != -999", "VetoNu0 and VetoNu1 reduced charge not NaN");
       
 
@@ -502,6 +520,14 @@ void Analysis::Run(TString outputFileName) {
         cutflow_tree->Write();
         file->Close();
         INFO("Wrote cutflow tree");
+
+
+        // ── Event ID pass tree (for debugging) ────────────────────────────
+        opts.fMode = "UPDATE";
+        m_passedCutColNames.push_back("run");
+        m_passedCutColNames.push_back("eventID");
+        m_eventIDNode->Snapshot("eventID_pass", outputFileName, m_passedCutColNames, opts);
+        INFO("Wrote eventID_pass tree with ", m_eventIDNode->Count().GetValue(), " entries.");
 
     } else {
         cutReport->Print();

@@ -6,3 +6,5 @@ logs/
 *.cc
 *.root
 .__afs*
+*.parq
+*.parquet

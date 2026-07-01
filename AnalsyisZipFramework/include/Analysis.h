@@ -50,14 +50,22 @@ class Analysis {
 
         std::unique_ptr<ROOT::RDataFrame> m_df;
         std::optional<ROOT::RDF::RNode> m_node;
+        std::optional<ROOT::RDF::RNode> m_eventIDNode;
+
+        std::vector<std::string> m_passedCutColNames;
 
         std::vector<TString> ExpandAndSort(TString pattern);
 
         std::unordered_map<int, float> m_runLumiDict;
         std::string m_excludedTimesCut{""};
+        std::string m_goodTimesCut{""};
 
         std::atomic<int> m_NVetoNu0_fallbacks{0};
         std::atomic<int> m_NVetoNu1_fallbacks{0};
         std::atomic<int> m_NVetoNu0_missing_aux{0};
         std::atomic<int> m_NVetoNu1_missing_aux{0};
+
+        uint64_t getLookupKey(int run, int event) {
+            return (uint64_t)run << 32 | (uint32_t)event;
+        }
 };

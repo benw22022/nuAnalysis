@@ -1,13 +1,12 @@
 # Create the logs directory first (HTCondor won't create it)
 mkdir -p logs
-
-mkdir -p /eos/home-b/bewilson/analysis_output
+mkdir -p /eos/home-b/bewilson/analysis_output-v3
 
 # Dry run to check expansion
-condor_submit -dry-run - analysis.sub outputDir=/eos/home-b/bewilson/analysis_output
+# condor_submit -dry-run - analysis.sub outputDir=/eos/home-b/bewilson/analysis_output
 
 # # Real submission
-condor_submit analysis.sub outputDir=/eos/home-b/bewilson/analysis_output
+condor_submit analysis.sub outputDir=/eos/home-b/bewilson/analysis_output-v3
 
 # # Monitor
 # condor_q

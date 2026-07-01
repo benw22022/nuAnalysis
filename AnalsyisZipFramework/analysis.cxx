@@ -15,6 +15,7 @@ int main(int argc, char* argv[]) {
     int         runNumber  = -1;
     std::string outputFile = "";
     bool        isMC       = false;
+    bool        verbose    = false;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -41,6 +42,11 @@ int main(int argc, char* argv[]) {
         } else if (arg == "--isMC") {
             isMC = true;
             INFO("Running in MC mode: GRL, BCID and trigger cuts will be skipped.");
+
+        } else if (arg == "--verbose" || arg == "-v") {
+            verbose = true;
+            MessageService::Debug(true);
+            INFO("Running in verbose mode.");
 
         } else {
             ERROR("Unknown argument: ", arg);
