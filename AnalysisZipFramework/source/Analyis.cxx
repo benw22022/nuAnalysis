@@ -528,6 +528,7 @@ void Analysis::Run(TString outputFileName) {
 
 
         // ── Event ID pass tree (for debugging) ────────────────────────────
+        INFO("Writing eventID_pass tree for debugging (might be slow)...");
         opts.fMode = "UPDATE";
         m_passedCutColNames.push_back("run");
         m_passedCutColNames.push_back("eventID");
