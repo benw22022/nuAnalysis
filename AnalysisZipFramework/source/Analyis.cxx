@@ -179,7 +179,7 @@ void Analysis::BuildDataFrame() {
         struct AuxData { float charge35_nu0; float charge35_nu1; };
         
         // auto auxMap = std::make_shared<std::unordered_map<Int_t, AuxData>>();
-        auto auxMap = std::make_shared<std::unordered_map<uint64_t, AuxData>>();
+        auto auxMap = std::make_shared<std::unordered_map<Int_t, AuxData>>();
 
         Int_t  run, evt;
         float charge35_nu0, charge35_nu1;
@@ -197,7 +197,7 @@ void Analysis::BuildDataFrame() {
         INFO("Loading ", nAux, " aux entries into lookup map...");
         for (Long64_t i = 0; i < nAux; ++i) {
             m_auxChain->GetEntry(i);
-            uint64_t key = getLookupKey(run, evt);
+            Int_t key = getLookupKey(run, evt);
 
             if (auxMap->find(key) != auxMap->end()) {
                 ERROR("Warning: Duplicate (run, event) pair in aux chain: (", run, ", ", evt, "). Overwriting previous entry.");
@@ -216,60 +216,65 @@ void Analysis::BuildDataFrame() {
         m_node = m_node->Define("GoodVeto21Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Veto21_status"});
         m_node = m_node->Define("GoodPreshower0Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Preshower0_status"}); 
         m_node = m_node->Define("GoodPreshower1Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Preshower1_status"});
-        m_node = m_node->Define("TimingOK", "GoodVeto20Hit || GoodVeto21Hit || GoodPreshower0Hit || GoodPreshower1Hit");
         m_node = m_node->Define("BadVetoStatus", "Veto20_status == 528 || Veto21_status == 528");
-        m_node = m_node->Define("GoodVetoNuStatus", "((VetoNu0_status == 0 || VetoNu0_status == 1) && (VetoNu1_status == 0 || VetoNu1_status == 1)) || (VetoNu0_status == 0 && VetoNu1_status == 16)");
-        m_node = m_node->Define("GoodScintillatorStatus", "TimingOK && GoodVetoNuStatus && !BadVetoStatus");
+        m_node = m_node->Define("GoodVetoNuStatus", "((VetoNu0_status == 0 || VetoNu0_status == 1) && (VetoNu1_status == 0 || VetoNu1_status == 1)) || (VetoNu0_status == 0 && VetoNu1_status == 16)");;
         m_node = m_node->Define("isCaloNuPeriod", "15821 <= run  && run <= 16924");
+        m_node = m_node->Define("is2024Period", "run >= 1.2e4");
+        m_node = m_node->Define("TimingOK", "(GoodVeto20Hit || GoodVeto21Hit || GoodPreshower0Hit || GoodPreshower1Hit)");
+        m_node = m_node->Define("GoodScintillatorStatus", "TimingOK && GoodVetoNuStatus && !BadVetoStatus");
         m_node = m_node->Define("caloNuVeto2StatusBug", "(Veto20_status == 528 || Veto21_status == 528) && isCaloNuPeriod");
         m_node = m_node->Define("caloNuVetoNuStatusKeep", "GoodVetoNuStatus && isCaloNuPeriod");
         m_node = m_node->Define("caloNuStatusCleaning", "!isCaloNuPeriod || (!caloNuVeto2StatusBug && caloNuVetoNuStatusKeep)");
 
         m_node = m_node->Define("VetoNu0_reduced_charge",
-            [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, float VetoNu0_raw_charge) -> float {
+            [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, bool is2024Period, float VetoNu0_raw_charge) -> float {
                 
-                uint64_t key = getLookupKey(run, eventID);
+                Int_t key = getLookupKey(run, eventID);
                 bool lookup_success = auxMap->count(key);
                 auto reduced_charge = -99999.f;
-
+                
                 if (lookup_success) {
-                    
-                    // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
-                    if (!TimingOK || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu0_raw_charge > 30)){
-                        // m_NVetoNu0_fallbacks++;
-                        // return VetoNu0_raw_charge;
-                        return -1;
-                    }
-                    
+
                     auto it = auxMap->find(key);
                     reduced_charge = it->second.charge35_nu0;
-                    return reduced_charge;
+                    
+                    // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
+                    if (!TimingOK || std::isnan(reduced_charge) || (is2024Period && reduced_charge == 0 && VetoNu0_raw_charge > 30)){
+                        // m_NVetoNu0_fallbacks++;
+                        // return VetoNu0_raw_charge;
+                        return -1234.f;
+                    }
+                    
+    
+                    return std::max(reduced_charge, 0.0f);
                 }
                 
                 ERROR("Warning: Missing aux data for eventID ", eventID, " in run ", run, ". Setting reduced charge to -999.");
                 m_NVetoNu0_missing_aux++;
                 return reduced_charge;
                 
-            }, {"run", "eventID", "TimingOK", "VetoNu0_raw_charge"});
+            }, {"run", "eventID", "TimingOK", "is2024Period", "VetoNu0_raw_charge"});
         
         m_node = m_node->Define("VetoNu1_reduced_charge",
-            [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, float VetoNu1_raw_charge) -> float {
+            [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, bool is2024Period, float VetoNu1_raw_charge) -> float {
 
-                uint64_t key = getLookupKey(run, eventID);
+                Int_t key = getLookupKey(run, eventID);
                 auto reduced_charge = -99999.f;
+                
                 bool lookup_success = auxMap->count(key);
                 if (lookup_success) {
-
-                    // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
-                    if (!TimingOK || std::isnan(reduced_charge) || (reduced_charge == 0 && VetoNu1_raw_charge > 30)){
-                        // m_NVetoNu1_fallbacks++;
-                        // return VetoNu1_raw_charge; 
-                        return -1;
-                    }
-
+                    
                     auto it = auxMap->find(key);
                     reduced_charge = it->second.charge35_nu1;
-                    return reduced_charge;
+
+                    // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
+                    if (!TimingOK || std::isnan(reduced_charge) || (is2024Period && reduced_charge == 0 && VetoNu1_raw_charge > 30)){
+                        // m_NVetoNu1_fallbacks++;
+                        // return VetoNu1_raw_charge; 
+                        return -1234.f;
+                    }
+
+                    return std::max(reduced_charge, 0.0f);
                 }
 
                 ERROR("Warning: Missing aux data for eventID ", eventID, " in run ", run, ". Setting reduced charge to -999.");
@@ -277,15 +282,15 @@ void Analysis::BuildDataFrame() {
                 return reduced_charge;    
                 
                 // return std::max(reduced_charge, 0.0f);
-            }, {"run", "eventID", "TimingOK", "VetoNu1_raw_charge"});
+            }, {"run", "eventID", "TimingOK", "is2024Period", "VetoNu1_raw_charge"});
 
         m_node = m_node->Define("AuxLookupSuccess", [auxMap, this](Int_t run, Int_t eventID) -> bool {
-            uint64_t key = getLookupKey(run, eventID);
+            Int_t key = getLookupKey(run, eventID);
             return auxMap->count(key) > 0;
         }, {"run", "eventID"});
 
-        m_node = m_node->Define("validReducedVetoNu0Charge", "AuxLookupSuccess && TimingOK && !isnan(VetoNu0_reduced_charge) && (VetoNu0_reduced_charge == 0 && VetoNu0_raw_charge > 30)");
-        m_node = m_node->Define("validReducedVetoNu1Charge", "AuxLookupSuccess && TimingOK && !isnan(VetoNu1_reduced_charge) && (VetoNu1_reduced_charge == 0 && VetoNu1_raw_charge > 30)");
+        m_node = m_node->Define("validReducedVetoNu0Charge", "AuxLookupSuccess && VetoNu0_reduced_charge >= 0");
+        m_node = m_node->Define("validReducedVetoNu1Charge", "AuxLookupSuccess && VetoNu1_reduced_charge >= 0");
 
         m_node = m_node->Define("fallbackVetoNu0Charge",
             [this](bool validReducedVetoNu0Charge, float VetoNu0_raw_charge) -> float {
@@ -293,7 +298,7 @@ void Analysis::BuildDataFrame() {
                     m_NVetoNu0_fallbacks++;
                     return VetoNu0_raw_charge;
                 }
-                return -1; // Return -1 to indicate no fallback needed
+                return -1234.f; // Return -1234.f to indicate no fallback needed
             }, {"validReducedVetoNu0Charge", "VetoNu0_raw_charge"});
         
 
@@ -303,7 +308,7 @@ void Analysis::BuildDataFrame() {
                     m_NVetoNu1_fallbacks++;
                     return VetoNu1_raw_charge;
                 }
-                return -1; // Return -1 to indicate no fallback needed
+                return -1234.f; // Return -1234.f to indicate no fallback needed
             }, {"validReducedVetoNu1Charge", "VetoNu1_raw_charge"});
 
     } // End of aux chain handling
@@ -313,8 +318,6 @@ void Analysis::BuildDataFrame() {
     m_node = m_node->Define("Timing_charge_bottom", "Timing0_charge + Timing1_charge");
     m_node = m_node->Define("Timing_charge_top", "Timing2_charge + Timing3_charge");
     m_node = m_node->Define("Timing_charge_total", "Timing_charge_top + Timing_charge_bottom");
-
-    m_node = m_node->Define("goodVetoNuStatus", "(VetoNu0_status == 0 || VetoNu0_status == 512) && (VetoNu1_status == 0 || VetoNu1_status == 512)");
 
     m_node = m_node->Define("hitsTiming", "((Track_Y_atTrig[0] > 20 && Timing_charge_top > 20) || \
                                            (Track_Y_atTrig[0] < -20 && Timing_charge_bottom > 20) || \

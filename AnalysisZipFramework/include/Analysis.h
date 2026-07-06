@@ -65,7 +65,8 @@ class Analysis {
         std::atomic<int> m_NVetoNu0_missing_aux{0};
         std::atomic<int> m_NVetoNu1_missing_aux{0};
 
-        uint64_t getLookupKey(int run, int event) {
-            return (uint64_t)run << 32 | (uint32_t)event;
+        Int_t getLookupKey(int run, Int_t event) {
+            return event;
+            // return (uint64_t)run << 32 | (uint32_t)event;
         }
 };
