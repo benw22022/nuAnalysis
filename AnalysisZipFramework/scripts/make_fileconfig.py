@@ -34,10 +34,12 @@ def main():
     data_2023_files = "/eos/experiment/faser/data0/phys/2023_back/r0021/*"
     data_2024_files = "/eos/experiment/faser/data0/phys/2024_back/r0022/*"
 
-    waveforms_2022_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/*"
+    waveforms_2022_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/waveForms-2022/*"
     waveforms_2023_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/*"
+
     waveforms_2024_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/*"
     waveforms_2024_CaloNu_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/*"
+    waveforms_2024_postCaloNu_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/waveforms_postCaloNu/*"
 
     caloNu_run_range = [15821, 16924]
 
@@ -51,6 +53,7 @@ def main():
     waveforms_2023_cfg = {}
     waveforms_2024_NoCaloNu_cfg = {}
     waveforms_2024_CaloNu_cfg = {}
+    waveforms_2024_PostCaloNu_cfg = {}
 
     for file in glob.glob(data_2022_files):
         run_number = int(file.split("/")[-1])
@@ -86,10 +89,10 @@ def main():
         run_number = int(file.split("/")[-1])
         files = os.path.join(file, "*.root")
 
-        if caloNu_run_range[0] <= run_number <= caloNu_run_range[1]:
-            continue
-        else:
+        if caloNu_run_range[0] > run_number:
             waveforms_2024_NoCaloNu_cfg[run_number] = preappend_to_filepaths(files, "root://eosuser.cern.ch/")
+        else:
+            continue
 
     for file in glob.glob(waveforms_2024_CaloNu_files):
         run_number = int(file.split("/")[-1])
@@ -100,8 +103,17 @@ def main():
         else:
             continue
 
+    for file in glob.glob(waveforms_2024_postCaloNu_files):
+        run_number = int(file.split("/")[-1])
+        files = os.path.join(file, "*.root")
+
+        if run_number > caloNu_run_range[1]:
+            waveforms_2024_PostCaloNu_cfg[run_number] = preappend_to_filepaths(files, "root://eosuser.cern.ch/")
+        else:
+            continue
+
     data_all = data_2022_cfg | data_2023_cfg | data_2024_CaloNu_cfg | data_2024_NoCaloNu_cfg
-    waveforms_all = waveforms_2022_cfg | waveforms_2023_cfg | waveforms_2024_CaloNu_cfg | waveforms_2024_NoCaloNu_cfg
+    waveforms_all = waveforms_2022_cfg | waveforms_2023_cfg | waveforms_2024_CaloNu_cfg | waveforms_2024_NoCaloNu_cfg | waveforms_2024_PostCaloNu_cfg
 
     run_cfg = {}
 
