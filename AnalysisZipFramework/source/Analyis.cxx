@@ -139,6 +139,8 @@ void Analysis::setGRL(const std::vector<TString>& grlJsons, const std::vector<TS
     m_goodTimesCut = GRLUtils::makeGoodTimesCut(grlJsons);
 }
 
+
+
 void Analysis::Define(std::string columnName, std::string expression, DataType dataType) {
     if (dataType == MC && !isMC) {
         INFO("Skipping Define for data: ", columnName);
@@ -151,8 +153,6 @@ void Analysis::Define(std::string columnName, std::string expression, DataType d
 
     m_node = m_node->Define(columnName, expression);
 }
-
-
 
 // Main setup function that builds the dataframe and sets up the aux chain if present
 void Analysis::BuildDataFrame() {
@@ -226,10 +226,10 @@ void Analysis::BuildDataFrame() {
         // Capture auxMap by shared_ptr so it stays alive
         // Define a column which flags if an event had a good hit in either veto station or preshower - need a good hit to trust the reduced charge values from the aux file
         // Veto status 512 is what is recorded as a good hit on the second digitizer (CaloNu period specific)
-        m_node = m_node->Define("GoodVeto20Hit",[](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Veto20_status"});
-        m_node = m_node->Define("GoodVeto21Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Veto21_status"});
-        m_node = m_node->Define("GoodPreshower0Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Preshower0_status"}); 
-        m_node = m_node->Define("GoodPreshower1Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Preshower1_status"});
+        Define("GoodVeto20Hit",[](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Veto20_status"});
+        Define("GoodVeto21Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Veto21_status"});
+        Define("GoodPreshower0Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Preshower0_status"}); 
+        Define("GoodPreshower1Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Preshower1_status"});
 
         Define("BadVetoStatus", "Veto20_status == 528 || Veto21_status == 528", DATA);
         Define("GoodVetoNuStatus", "((VetoNu0_status == 0 || VetoNu0_status == 1) && (VetoNu1_status == 0 || VetoNu1_status == 1)) || (VetoNu0_status == 0 && VetoNu1_status == 16)");;
@@ -241,7 +241,7 @@ void Analysis::BuildDataFrame() {
         Define("caloNuVetoNuStatusKeep", "GoodVetoNuStatus && isCaloNuPeriod", DATA);
         Define("caloNuStatusCleaning", "!isCaloNuPeriod || (!caloNuVeto2StatusBug && caloNuVetoNuStatusKeep)", DATA);
 
-        m_node = m_node->Define("VetoNu0_reduced_charge",
+        Define("VetoNu0_reduced_charge",
             [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, bool is2024Period, float VetoNu0_raw_charge) -> float {
                 
                 Int_t key = getLookupKey(run, eventID);
@@ -260,7 +260,6 @@ void Analysis::BuildDataFrame() {
                         return -1234.f;
                     }
                     
-    
                     return std::max(reduced_charge, 0.0f);
                 }
                 
@@ -270,7 +269,7 @@ void Analysis::BuildDataFrame() {
                 
             }, {"run", "eventID", "TimingOK", "is2024Period", "VetoNu0_raw_charge"});
         
-        m_node = m_node->Define("VetoNu1_reduced_charge",
+        Define("VetoNu1_reduced_charge",
             [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, bool is2024Period, float VetoNu1_raw_charge) -> float {
 
                 Int_t key = getLookupKey(run, eventID);
@@ -299,7 +298,7 @@ void Analysis::BuildDataFrame() {
                 // return std::max(reduced_charge, 0.0f);
             }, {"run", "eventID", "TimingOK", "is2024Period", "VetoNu1_raw_charge"});
 
-        m_node = m_node->Define("AuxLookupSuccess", [auxMap, this](Int_t run, Int_t eventID) -> bool {
+        Define("AuxLookupSuccess", [auxMap, this](Int_t run, Int_t eventID) -> bool {
             Int_t key = getLookupKey(run, eventID);
             return auxMap->count(key) > 0;
         }, {"run", "eventID"});
@@ -307,7 +306,7 @@ void Analysis::BuildDataFrame() {
         Define("validReducedVetoNu0Charge", "AuxLookupSuccess && VetoNu0_reduced_charge >= 0", DATA);
         Define("validReducedVetoNu1Charge", "AuxLookupSuccess && VetoNu1_reduced_charge >= 0", DATA);
 
-        m_node = m_node->Define("fallbackVetoNu0Charge",
+        Define("fallbackVetoNu0Charge",
             [this](bool validReducedVetoNu0Charge, float VetoNu0_raw_charge) -> float {
                 if (!validReducedVetoNu0Charge) {
                     m_NVetoNu0_fallbacks++;
@@ -317,7 +316,7 @@ void Analysis::BuildDataFrame() {
             }, {"validReducedVetoNu0Charge", "VetoNu0_raw_charge"});
         
 
-        m_node = m_node->Define("fallbackVetoNu1Charge",
+        Define("fallbackVetoNu1Charge",
             [this](bool validReducedVetoNu1Charge, float VetoNu1_raw_charge) -> float {
                 if (!validReducedVetoNu1Charge) {
                     m_NVetoNu1_fallbacks++;

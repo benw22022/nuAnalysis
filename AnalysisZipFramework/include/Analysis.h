@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <optional>
 #include <unordered_map>
+#include "MessageService.hpp"
 
 enum DataType { MC, DATA, ALL};
 
@@ -36,6 +37,24 @@ class Analysis {
         bool isMC{false};
 
         void Define(std::string columnName, std::string expression, DataType dataType = ALL);
+
+        template <typename F>
+        void Define(std::string columnName,
+                    F expression,
+                    const ROOT::RDF::ColumnNames_t& columns,
+                    DataType dataType = ALL) {
+
+            if (dataType == MC && !isMC) {
+                INFO("Skipping Define for data: ", columnName);
+                return;
+            }
+            if (dataType == DATA && isMC) {
+                INFO("Skipping Define for MC: ", columnName);
+                return;
+            }
+
+            m_node = m_node->Define(columnName, expression, columns);
+        }
     
     private:
         TString m_mainFileTreeName;
