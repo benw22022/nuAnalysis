@@ -9,6 +9,8 @@
 #include <optional>
 #include <unordered_map>
 
+enum DataType { MC, DATA, ALL};
+
 class Analysis {
     public:
         Analysis();
@@ -27,13 +29,13 @@ class Analysis {
         
         void BuildDataFrame();
 
-        void applyCut(std::string cutExpression, std::string cutName);
-
         void Run(TString outputFileName = "");
 
         void setGRL(const std::vector<TString>& grlJsons, const std::vector<TString>& grlCSVs);
 
         bool isMC{false};
+
+        void Define(std::string columnName, std::string expression, DataType dataType = ALL);
     
     private:
         TString m_mainFileTreeName;
@@ -69,4 +71,6 @@ class Analysis {
             return event;
             // return (uint64_t)run << 32 | (uint32_t)event;
         }
+
+        void applyCut(std::string cutExpression, std::string cutName, DataType dataType = ALL);
 };

@@ -139,6 +139,20 @@ void Analysis::setGRL(const std::vector<TString>& grlJsons, const std::vector<TS
     m_goodTimesCut = GRLUtils::makeGoodTimesCut(grlJsons);
 }
 
+void Analysis::Define(std::string columnName, std::string expression, DataType dataType) {
+    if (dataType == MC && !isMC) {
+        INFO("Skipping Define for data: ", columnName);
+        return;
+    }
+    if (dataType == DATA && isMC) {
+        INFO("Skipping Define for MC: ", columnName);
+        return;
+    }
+
+    m_node = m_node->Define(columnName, expression);
+}
+
+
 
 // Main setup function that builds the dataframe and sets up the aux chain if present
 void Analysis::BuildDataFrame() {
@@ -216,15 +230,16 @@ void Analysis::BuildDataFrame() {
         m_node = m_node->Define("GoodVeto21Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Veto21_status"});
         m_node = m_node->Define("GoodPreshower0Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Preshower0_status"}); 
         m_node = m_node->Define("GoodPreshower1Hit", [](int status) { return !std::isnan(status) && (status & ~512) == 0; }, {"Preshower1_status"});
-        m_node = m_node->Define("BadVetoStatus", "Veto20_status == 528 || Veto21_status == 528");
-        m_node = m_node->Define("GoodVetoNuStatus", "((VetoNu0_status == 0 || VetoNu0_status == 1) && (VetoNu1_status == 0 || VetoNu1_status == 1)) || (VetoNu0_status == 0 && VetoNu1_status == 16)");;
-        m_node = m_node->Define("isCaloNuPeriod", "15821 <= run  && run <= 16924");
-        m_node = m_node->Define("is2024Period", "run >= 1.2e4");
-        m_node = m_node->Define("TimingOK", "(GoodVeto20Hit || GoodVeto21Hit || GoodPreshower0Hit || GoodPreshower1Hit)");
-        m_node = m_node->Define("GoodScintillatorStatus", "TimingOK && GoodVetoNuStatus && !BadVetoStatus");
-        m_node = m_node->Define("caloNuVeto2StatusBug", "(Veto20_status == 528 || Veto21_status == 528) && isCaloNuPeriod");
-        m_node = m_node->Define("caloNuVetoNuStatusKeep", "GoodVetoNuStatus && isCaloNuPeriod");
-        m_node = m_node->Define("caloNuStatusCleaning", "!isCaloNuPeriod || (!caloNuVeto2StatusBug && caloNuVetoNuStatusKeep)");
+
+        Define("BadVetoStatus", "Veto20_status == 528 || Veto21_status == 528", DATA);
+        Define("GoodVetoNuStatus", "((VetoNu0_status == 0 || VetoNu0_status == 1) && (VetoNu1_status == 0 || VetoNu1_status == 1)) || (VetoNu0_status == 0 && VetoNu1_status == 16)");;
+        Define("isCaloNuPeriod", "15821 <= run  && run <= 16924", DATA);
+        Define("is2024Period", "run >= 1.2e4", DATA);
+        Define("TimingOK", "(GoodVeto20Hit || GoodVeto21Hit || GoodPreshower0Hit || GoodPreshower1Hit)");
+        Define("GoodScintillatorStatus", "TimingOK && GoodVetoNuStatus && !BadVetoStatus");
+        Define("caloNuVeto2StatusBug", "(Veto20_status == 528 || Veto21_status == 528) && isCaloNuPeriod", DATA);
+        Define("caloNuVetoNuStatusKeep", "GoodVetoNuStatus && isCaloNuPeriod", DATA);
+        Define("caloNuStatusCleaning", "!isCaloNuPeriod || (!caloNuVeto2StatusBug && caloNuVetoNuStatusKeep)", DATA);
 
         m_node = m_node->Define("VetoNu0_reduced_charge",
             [this, auxMap](Int_t run, Int_t eventID, bool TimingOK, bool is2024Period, float VetoNu0_raw_charge) -> float {
@@ -289,8 +304,8 @@ void Analysis::BuildDataFrame() {
             return auxMap->count(key) > 0;
         }, {"run", "eventID"});
 
-        m_node = m_node->Define("validReducedVetoNu0Charge", "AuxLookupSuccess && VetoNu0_reduced_charge >= 0");
-        m_node = m_node->Define("validReducedVetoNu1Charge", "AuxLookupSuccess && VetoNu1_reduced_charge >= 0");
+        Define("validReducedVetoNu0Charge", "AuxLookupSuccess && VetoNu0_reduced_charge >= 0", DATA);
+        Define("validReducedVetoNu1Charge", "AuxLookupSuccess && VetoNu1_reduced_charge >= 0", DATA);
 
         m_node = m_node->Define("fallbackVetoNu0Charge",
             [this](bool validReducedVetoNu0Charge, float VetoNu0_raw_charge) -> float {
@@ -315,38 +330,36 @@ void Analysis::BuildDataFrame() {
 
 
     // Definitions
-    m_node = m_node->Define("Timing_charge_bottom", "Timing0_charge + Timing1_charge");
-    m_node = m_node->Define("Timing_charge_top", "Timing2_charge + Timing3_charge");
-    m_node = m_node->Define("Timing_charge_total", "Timing_charge_top + Timing_charge_bottom");
+    Define("Timing_charge_bottom", "Timing0_charge + Timing1_charge");
+    Define("Timing_charge_top", "Timing2_charge + Timing3_charge");
+    Define("Timing_charge_total", "Timing_charge_top + Timing_charge_bottom");
 
-    m_node = m_node->Define("hitsTiming", "((Track_Y_atTrig[0] > 20 && Timing_charge_top > 20) || \
-                                           (Track_Y_atTrig[0] < -20 && Timing_charge_bottom > 20) || \
-                                           (Track_Y_atTrig[0] > -20 && Track_Y_atTrig[0] < 20 && Timing_charge_total > 20))");
-    
+    Define("hitsTiming", "((Track_Y_atTrig[0] > 20 && Timing_charge_top > 20) || \
+                        (Track_Y_atTrig[0] < -20 && Timing_charge_bottom > 20) || \
+                        (Track_Y_atTrig[0] > -20 && Track_Y_atTrig[0] < 20 && Timing_charge_total > 20))");
 
-    m_node = m_node->Define("LeadTrack_Idx", "ROOT::VecOps::ArgMax(Track_pz0)");
-    m_node = m_node->Define("Track_rVetoNu","Radius(Track_X_atVetoNu, Track_Y_atVetoNu)");
 
-    m_node = m_node->Define("Track_rVetoStation1", "pow(Track_X_atVetoStation1[LeadTrack_Idx]*Track_X_atVetoStation1[LeadTrack_Idx] + Track_Y_atVetoStation1[LeadTrack_Idx]*Track_Y_atVetoStation1[LeadTrack_Idx], 0.5)");
-    m_node = m_node->Define("Track_rVetoStation2", "pow(Track_X_atVetoStation2[LeadTrack_Idx]*Track_X_atVetoStation2[LeadTrack_Idx] + Track_Y_atVetoStation2[LeadTrack_Idx]*Track_Y_atVetoStation2[LeadTrack_Idx], 0.5)");
-    m_node = m_node->Define("Track_rIFT", "Radius(Track_X_atVetoStation2, Track_Y_atVetoStation2)");
-    m_node = m_node->Define("Track_Theta", "Theta(Track_px0, Track_py0, Track_pz0)");
-    m_node = m_node->Define("LeadTrack_pz0", "Track_pz0[LeadTrack_Idx] / 1000");
-    m_node = m_node->Define("LeadTrack_Theta", "Track_Theta[LeadTrack_Idx] * 1000");
-    // m_node = m_node->Define("LeadTrack_Eta", "-ROOT::VecOps::log(ROOT::VecOps::tan(Track_Theta / 2))[LeadTrack_Idx]");
-    m_node = m_node->Define("LeadTrack_nLayers", "Track_nLayers[LeadTrack_Idx]");
-    m_node = m_node->Define("LeadTrack_nDoF", "Track_nDoF[LeadTrack_Idx]");
-    m_node = m_node->Define("LeadTrack_Chi2", "Track_Chi2[LeadTrack_Idx]");
-    m_node = m_node->Define("LeadTrack_Chi2_NDF", "Track_Chi2[LeadTrack_Idx] / Track_nDoF[LeadTrack_Idx]");
+    Define("LeadTrack_Idx", "ROOT::VecOps::ArgMax(Track_pz0)");
+    Define("Track_rVetoNu","Radius(Track_X_atVetoNu, Track_Y_atVetoNu)");
 
-    m_node = m_node->Define("LeadTrack_rVetoNu", "Track_rVetoNu[LeadTrack_Idx]");
-    m_node = m_node->Define("LeadTrack_r_atMaxRadius", "Track_r_atMaxRadius[LeadTrack_Idx]");
-    m_node = m_node->Define("LeadTrack_rIFT", "Track_rIFT[LeadTrack_Idx]");
+    Define("Track_rVetoStation1", "pow(Track_X_atVetoStation1[LeadTrack_Idx]*Track_X_atVetoStation1[LeadTrack_Idx] + Track_Y_atVetoStation1[LeadTrack_Idx]*Track_Y_atVetoStation1[LeadTrack_Idx], 0.5)");
+    Define("Track_rVetoStation2", "pow(Track_X_atVetoStation2[LeadTrack_Idx]*Track_X_atVetoStation2[LeadTrack_Idx] + Track_Y_atVetoStation2[LeadTrack_Idx]*Track_Y_atVetoStation2[LeadTrack_Idx], 0.5)");
+    Define("Track_rIFT", "Radius(Track_X_atVetoStation2, Track_Y_atVetoStation2)");
+    Define("Track_Theta", "Theta(Track_px0, Track_py0, Track_pz0)");
+    Define("LeadTrack_pz0", "Track_pz0[LeadTrack_Idx] / 1000");
+    Define("LeadTrack_Theta", "Track_Theta[LeadTrack_Idx] * 1000");
+    Define("LeadTrack_nLayers", "Track_nLayers[LeadTrack_Idx]");
+    Define("LeadTrack_nDoF", "Track_nDoF[LeadTrack_Idx]");
+    Define("LeadTrack_Chi2", "Track_Chi2[LeadTrack_Idx]");
+    Define("LeadTrack_Chi2_NDF", "Track_Chi2[LeadTrack_Idx] / Track_nDoF[LeadTrack_Idx]");
 
-    if (!isMC) {
-        m_node = m_node->Define("GoodTimes", m_goodTimesCut);
-        m_node = m_node->Define("ExcludedTimes", m_excludedTimesCut);
-    }
+    Define("LeadTrack_rVetoNu", "Track_rVetoNu[LeadTrack_Idx]");
+    Define("LeadTrack_r_atMaxRadius", "Track_r_atMaxRadius[LeadTrack_Idx]");
+    Define("LeadTrack_rIFT", "Track_rIFT[LeadTrack_Idx]");
+
+    Define("GoodTimes", m_goodTimesCut, DATA);
+    Define("ExcludedTimes", m_excludedTimesCut, DATA);
+
 
     // This needs to go at the end of all the definitions, otherwise the aux columns won't be available for cuts
     m_eventIDNode = m_node;
@@ -361,8 +374,17 @@ void replaceAll(std::string& str, const std::string& from, const std::string& to
     }
 }
 
-void Analysis::applyCut(std::string cutExpression, std::string cutName) {
+void Analysis::applyCut(std::string cutExpression, std::string cutName, DataType dataType) {
     INFO("Applying cut: ", cutName, " (", cutExpression, ")");
+
+    if (dataType == MC && !isMC) {
+        INFO("Skipping cut for data: ", cutName);
+        return;
+    }
+    if (dataType == DATA && isMC) {
+        INFO("Skipping cut for MC: ", cutName);
+        return;
+    }
 
     std::string pass_cut_name = "passed_" + cutName;
     const std::vector<std::pair<std::string, std::string>> replacements = {
@@ -398,43 +420,23 @@ void Analysis::Run(TString outputFileName) {
     auto nEventsBeforeCuts = m_node->Count();
 
     // ── Cuts ──────────────
+    applyCut("distanceToCollidingBCID == 0", "Colliding", DATA);
+    applyCut("(inputBits & 0x8) == 0x8 || (inputBits & 0x10) == 0x10 || (inputBits & 0x20) == 0x20 || (inputBits & 0x40) == 0x40", "Trigger", DATA);
 
-    if (!isMC) {
-        applyCut("distanceToCollidingBCID == 0", "Colliding");
-        applyCut("(inputBits & 0x8) == 0x8 || (inputBits & 0x10) == 0x10 || (inputBits & 0x20) == 0x20 || (inputBits & 0x40) == 0x40", "Trigger");
+    DEBUG("Applying GRL good times cut: ", m_goodTimesCut);
+    applyCut("GoodTimes", "Good times", DATA);
 
-        DEBUG("Applying GRL good times cut: ", m_goodTimesCut);
-        applyCut("GoodTimes", "Good times");
-
-        if (m_excludedTimesCut != "") {
-            DEBUG("Applying GRL excluded times cut: ", m_excludedTimesCut);
-            applyCut("!ExcludedTimes", "Excluded times");
-        }
+    if (m_excludedTimesCut != "") {
+        DEBUG("Applying GRL excluded times cut: ", m_excludedTimesCut);
+        applyCut("!ExcludedTimes", "Excluded times", DATA);
     }
 
-    // Reco query cuts
-    // (((reduced_VetoNu0_charge < 30.0) & (reduced_VetoNu0_charge.notna())) & ((reduced_VetoNu1_charge < 30.0) & (reduced_VetoNu1_charge.notna()))) & 
-    // ((VetoSt20_charge > 40) & (VetoSt21_charge > 40)) & 
-    // (((Track_Y_atTrig > 20) & (Timing_charge_top > 20)) | ((Track_Y_atTrig < -20) & (Timing_charge_bottom > 20)) | ((abs(Track_Y_atTrig) < 20) & (Timing_charge_total > 20))) & 
-    // ((Preshower0_charge > 2.5) & (Preshower1_charge > 2.5)) & 
-    // ((longTracks > 0) &
-    // (Track_nLayers >= 7) &
-    // (Track_nDoF >= 9) & 
-    // (chi2_ndf < 15) &
-    // (Track_pz_gev > 100) & 
-    // (Track_r_atMaxRadius < 95) & 
-    // (Track_rIFT < 95) & 
-    // (Track_rVetoNu < 120) &
-    // (theta_mrad < 25))
-
-    // applyCut("VetoNu0_reduced_charge >= -999 && VetoNu1_reduced_charge >= -999", "Sanity cut to remove events with missing aux data (reduced charge set to -999)");
-    applyCut("AuxLookupSuccess", "Sanity cut to remove events with missing aux data");
-    // applyCut("VetoNu0_reduced_charge < 30 && VetoNu1_reduced_charge < 30", "VetoNu0 and VetoNu1 reduced charge < 30 pC");
+    applyCut("AuxLookupSuccess", "Sanity cut to remove events with missing aux data", DATA);
     applyCut("VetoNu0_reduced_charge < 30", "VetoNu0 reduced charge < 30 pC");
     applyCut("VetoNu1_reduced_charge < 30", "VetoNu1 reduced charge < 30 pC");
-    applyCut("fallbackVetoNu0Charge < 40", "VetoNu0 raw charge < 40 pC (fallback to raw charge if reduced charge invalid)");
-    applyCut("fallbackVetoNu1Charge < 40", "VetoNu1 raw charge < 40 pC (fallback to raw charge if reduced charge invalid)");
-    applyCut("caloNuStatusCleaning", "CaloNu status cleaning");
+    applyCut("fallbackVetoNu0Charge < 40", "VetoNu0 raw charge < 40 pC (fallback to raw charge if reduced charge invalid)", DATA);
+    applyCut("fallbackVetoNu1Charge < 40", "VetoNu1 raw charge < 40 pC (fallback to raw charge if reduced charge invalid)", DATA);
+    applyCut("caloNuStatusCleaning", "CaloNu status cleaning", DATA);
     applyCut("Veto20_charge > 40 && Veto21_charge > 40", "Veto20 and Veto21 charge > 40 pC");
     applyCut("((Track_Y_atTrig[LeadTrack_Idx] > 20 && Timing_charge_top > 20) || (Track_Y_atTrig[LeadTrack_Idx] < -20 && Timing_charge_bottom > 20) || (abs(Track_Y_atTrig[LeadTrack_Idx]) < 20 && Timing_charge_total > 20))", "Timing Station Charge > 20 pC");
     applyCut("Preshower0_charge > 2.5 && Preshower1_charge > 2.5", "Preshower Charge > 2.5 pC");
@@ -447,7 +449,6 @@ void Analysis::Run(TString outputFileName) {
     applyCut("LeadTrack_rIFT < 95", "Track R at IFT < 95 mm");
     applyCut("LeadTrack_rVetoNu < 120", "Track rVetoNu < 120 mm");
     applyCut("LeadTrack_Theta < 25", "Leading track theta < 25 mrad");
-    // applyCut("VetoNu0_reduced_charge != -999 && VetoNu1_reduced_charge != -999", "VetoNu0 and VetoNu1 reduced charge not NaN");
       
 
     // ── Book ALL actions before triggering any event loop ──────────────────
