@@ -16,6 +16,8 @@ int main(int argc, char* argv[]) {
     std::string outputFile = "";
     bool        isMC       = false;
     bool        verbose    = false;
+    bool        useMT      = false;
+    int         nThreads   = 0; // 0 = all available cores (ROOT::EnableImplicitMT() default)
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -38,7 +40,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             outputFile = argv[++i];
-        
+
         } else if (arg == "--isMC") {
             isMC = true;
             INFO("Running in MC mode: GRL, BCID and trigger cuts will be skipped.");
@@ -48,24 +50,53 @@ int main(int argc, char* argv[]) {
             MessageService::Debug(true);
             INFO("Running in verbose mode.");
 
+        } else if (arg == "-j") {
+            useMT = true;
+
+            // Peek at the next argument to see if it's an integer core count.
+            // If there's no next argument, or it doesn't parse as an integer,
+            // treat -j as a bare flag (use all available cores).
+            if (i + 1 < argc) {
+                std::string next = argv[i + 1];
+                try {
+                    size_t pos;
+                    int    parsed = std::stoi(next, &pos);
+                    if (pos == next.size()) {
+                        // Whole string was a valid integer
+                        nThreads = parsed;
+                        ++i; // consume the argument
+                    }
+                } catch (...) {
+                    // Not an integer - leave nThreads at 0, don't consume next arg
+                }
+            }
+
         } else {
             ERROR("Unknown argument: ", arg);
-            ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>]");
+            ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [-j [n]]");
             return 1;
         }
     }
 
     if (runNumber == -1) {
         ERROR("Error: --run <number> is required.");
-        ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>]");
+        ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [-j [n]]");
         return 1;
     }
 
     INFO("Run number:  ", runNumber);
     INFO("Output file: ", (outputFile.empty() ? "(none)" : outputFile));
 
-    INFO("Run number: ", runNumber);
-   
+    if (useMT) {
+        if (nThreads > 0) {
+            INFO("Enabling multithreading with ", nThreads, " threads.");
+            ROOT::EnableImplicitMT(nThreads);
+        } else {
+            INFO("Enabling multithreading with all available cores.");
+            ROOT::EnableImplicitMT();
+        }
+    }
+
     GRLUtils::GRLConfig grlConfig = GRLUtils::readGRLConfig("config/grl_config.json");
     GRLUtils::FileConfig fileConfig = GRLUtils::parseFileConfig("config/file_config.json");
     
