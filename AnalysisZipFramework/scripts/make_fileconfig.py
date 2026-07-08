@@ -2,8 +2,11 @@ import os
 import json
 import glob
 
-def preappend_to_filepaths(paths, preappend="root://eospublic.cern.ch/"):
-    # return [preappend + path for path in paths]
+def preappend_to_filepaths(paths, preappend=""):
+    if isinstance(paths, str):
+        return preappend + paths
+    elif isinstance(paths, list):
+        return [preappend + path for path in paths]
     return paths
 
 
@@ -31,10 +34,10 @@ def main():
     data_2023_files = "/eos/experiment/faser/data0/phys/2023_back/r0021/*"
     data_2024_files = "/eos/experiment/faser/data0/phys/2024_back/r0022/*"
 
-    waveforms_2022_files = "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/*"
-    waveforms_2023_files = "/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/*"
-    waveforms_2024_files = "/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/*"
-    waveforms_2024_CaloNu_files = "/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/*"
+    waveforms_2022_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/WaveForms-2022/*"
+    waveforms_2023_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/*"
+    waveforms_2024_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/*"
+    waveforms_2024_CaloNu_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/*"
 
     caloNu_run_range = [15821, 16924]
 
@@ -52,32 +55,32 @@ def main():
     for file in glob.glob(data_2022_files):
         run_number = int(file.split("/")[-1])
         files = os.path.join(file, "*.root")
-        data_2022_cfg[run_number] = preappend_to_filepaths(files)
+        data_2022_cfg[run_number] = preappend_to_filepaths(files, "root://eospublic.cern.ch/")
 
     for file in glob.glob(data_2023_files):
         run_number = int(file.split("/")[-1])
         files = os.path.join(file, "*.root")
-        data_2023_cfg[run_number] = preappend_to_filepaths(files)
+        data_2023_cfg[run_number] = preappend_to_filepaths(files, "root://eospublic.cern.ch/")
 
     for file in glob.glob(data_2024_files):
         run_number = int(file.split("/")[-1])
         files = os.path.join(file, "*.root")
 
         if caloNu_run_range[0] <= run_number <= caloNu_run_range[1]:
-            data_2024_CaloNu_cfg[run_number] = preappend_to_filepaths(files)
+            data_2024_CaloNu_cfg[run_number] = preappend_to_filepaths(files, "root://eospublic.cern.ch/")
         else:
-            data_2024_NoCaloNu_cfg[run_number] = preappend_to_filepaths(files)
+            data_2024_NoCaloNu_cfg[run_number] = preappend_to_filepaths(files, "root://eospublic.cern.ch/")
         
     
     for file in glob.glob(waveforms_2022_files):
         run_number = int(file.split("/")[-1])
         files = os.path.join(file, "*.root")
-        waveforms_2022_cfg[run_number] = preappend_to_filepaths(files)
+        waveforms_2022_cfg[run_number] = preappend_to_filepaths(files, "root://eosuser.cern.ch/")
     
     for file in glob.glob(waveforms_2023_files):
         run_number = int(file.split("/")[-1])
         files = os.path.join(file, "*.root")
-        waveforms_2023_cfg[run_number] = preappend_to_filepaths(files)
+        waveforms_2023_cfg[run_number] = preappend_to_filepaths(files, "root://eosuser.cern.ch/")
     
     for file in glob.glob(waveforms_2024_files):
         run_number = int(file.split("/")[-1])
@@ -86,14 +89,14 @@ def main():
         if caloNu_run_range[0] <= run_number <= caloNu_run_range[1]:
             continue
         else:
-            waveforms_2024_NoCaloNu_cfg[run_number] = preappend_to_filepaths(files)
+            waveforms_2024_NoCaloNu_cfg[run_number] = preappend_to_filepaths(files, "root://eosuser.cern.ch/")
 
     for file in glob.glob(waveforms_2024_CaloNu_files):
         run_number = int(file.split("/")[-1])
         files = os.path.join(file, "*.root")
 
         if caloNu_run_range[0] <= run_number <= caloNu_run_range[1]:
-            waveforms_2024_CaloNu_cfg[run_number] = preappend_to_filepaths(files)
+            waveforms_2024_CaloNu_cfg[run_number] = preappend_to_filepaths(files, "root://eosuser.cern.ch/")
         else:
             continue
 
