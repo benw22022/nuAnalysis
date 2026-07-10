@@ -92,4 +92,20 @@ class Analysis {
         }
 
         void applyCut(std::string cutExpression, std::string cutName, DataType dataType = ALL);
+
+        struct Hist1DCFG {
+            std::string name;
+            std::string title;
+            std::string columnName;
+            int nBins;
+            double xMin;
+            double xMax;
+        };
+
+
+        void bookHist1D(const Hist1DCFG& cfg);
+        void bookHist2D(const Hist1DCFG& cfgX, const Hist1DCFG& cfgY);
+
+        std::vector<ROOT::RDF::RResultPtr<TH1>> m_histResults;
+
 };

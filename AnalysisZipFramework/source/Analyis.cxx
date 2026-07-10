@@ -154,6 +154,28 @@ void Analysis::Define(std::string columnName, std::string expression, DataType d
     m_node = m_node->Define(columnName, expression);
 }
 
+void Analysis::bookHist1D(const Hist1DCFG& cfg) {
+
+    INFO("Booking 1D histogram: ", cfg.name, " with expression: ", cfg.columnName);
+
+    ROOT::RDF::TH1DModel model(cfg.name.c_str(), cfg.title.c_str(), cfg.nBins, cfg.xMin, cfg.xMax);
+    auto hist = m_node->Histo1D(model, cfg.columnName);
+    
+    m_histResults.push_back(hist);
+}
+
+void Analysis::bookHist2D(const Hist1DCFG& cfgX, const Hist1DCFG& cfgY) {
+
+    INFO("Booking 2D histogram: ", cfgX.name + "_vs_" + cfgY.name, " with expressions: ", cfgX.columnName, " and ", cfgY.columnName);
+    
+    ROOT::RDF::TH2DModel model((cfgX.name + "_vs_" + cfgY.name).c_str(),
+                                (cfgX.title + " vs " + cfgY.title).c_str(),
+                                cfgX.nBins, cfgX.xMin, cfgX.xMax,
+                                cfgY.nBins, cfgY.xMin, cfgY.xMax);
+    auto hist = m_node->Histo2D(model, cfgX.columnName, cfgY.columnName);
+    m_histResults.push_back(hist);
+}
+
 // Main setup function that builds the dataframe and sets up the aux chain if present
 void Analysis::BuildDataFrame() {
 
@@ -254,7 +276,15 @@ void Analysis::BuildDataFrame() {
                     reduced_charge = it->second.charge35_nu0;
                     
                     // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
-                    if (!TimingOK || std::isnan(reduced_charge) || (is2024Period && reduced_charge == 0 && VetoNu0_raw_charge > 30)){
+
+                    bool is2024PeriodCondition = is2024Period && reduced_charge == 0 && VetoNu0_raw_charge > 30;
+
+                    if (is2024PeriodCondition)
+                    {
+                        return -1;
+                    }
+
+                    if (!TimingOK || std::isnan(reduced_charge) || is2024PeriodCondition){
                         // m_NVetoNu0_fallbacks++;
                         // return VetoNu0_raw_charge;
                         return -1234.f;
@@ -282,9 +312,16 @@ void Analysis::BuildDataFrame() {
                     reduced_charge = it->second.charge35_nu1;
 
                     // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
-                    if (!TimingOK || std::isnan(reduced_charge) || (is2024Period && reduced_charge == 0 && VetoNu1_raw_charge > 30)){
-                        // m_NVetoNu1_fallbacks++;
-                        // return VetoNu1_raw_charge; 
+                         bool is2024PeriodCondition = is2024Period && reduced_charge == 0 && VetoNu1_raw_charge > 30;
+
+                    if (is2024PeriodCondition)
+                    {
+                        return -1;
+                    }
+
+                    if (!TimingOK || std::isnan(reduced_charge) || is2024PeriodCondition){
+                        // m_NVetoNu0_fallbacks++;
+                        // return VetoNu0_raw_charge;
                         return -1234.f;
                     }
 
@@ -430,6 +467,9 @@ void Analysis::Run(TString outputFileName) {
         applyCut("!ExcludedTimes", "Excluded times", DATA);
     }
 
+    bookHist1D({"VetoNu0_reduced_charge", "VetoNu0 reduced charge", "VetoNu0_reduced_charge", 2501, -1, 2500});
+    bookHist1D({"VetoNu1_reduced_charge", "VetoNu1 reduced charge", "VetoNu1_reduced_charge", 2501, -1, 2500});
+
     applyCut("AuxLookupSuccess", "Sanity cut to remove events with missing aux data", DATA);
     applyCut("VetoNu0_reduced_charge < 30", "VetoNu0 reduced charge < 30 pC");
     applyCut("VetoNu1_reduced_charge < 30", "VetoNu1 reduced charge < 30 pC");
@@ -462,6 +502,7 @@ void Analysis::Run(TString outputFileName) {
         auto columns = m_node->GetColumnNames();
 
         // ── SINGLE EVENT LOOP ───────────────────────────────────────────────
+        INFO("Writing snapshot of ", columns.size(), " columns to file...");
         m_node->Snapshot(m_mainFileTreeName, outputFileName, columns, opts);
 
         // ── Post-processing to save metadata and cutflow info ───────────────
@@ -526,6 +567,19 @@ void Analysis::Run(TString outputFileName) {
         file->Close();
         INFO("Wrote cutflow tree");
 
+        // ── Histograms ────────────────────────────
+        if (!m_histResults.empty()) {
+            INFO("Writing histograms to file...");
+            // make TDirectory for histograms
+            TFile *histFile = TFile::Open(outputFileName, "UPDATE");
+            histFile->mkdir("histograms");
+            histFile->cd("histograms");
+            for (auto&& hist : m_histResults) {
+                hist->Write();
+            }
+            histFile->Close();
+            INFO("Wrote ", m_histResults.size(), " histograms to file.");
+        }
 
         // ── Event ID pass tree (for debugging) ────────────────────────────
         INFO("Writing eventID_pass tree for debugging (might be slow)...");
