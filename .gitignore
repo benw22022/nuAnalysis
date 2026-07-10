@@ -9,3 +9,4 @@ logs/
 *.parq
 *.parquet
 log
+x509*
