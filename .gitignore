@@ -10,3 +10,5 @@ logs/
 *.parquet
 log
 x509*
+*.png
+*.pdf
