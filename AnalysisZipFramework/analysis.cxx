@@ -121,6 +121,7 @@ int main(int argc, char* argv[]) {
     analysis.setGRL(grlConfig.grlJsons, grlConfig.grlCsvs);
     analysis.Run(outputFile);
 
+    INFO("Analysis completed successfully.");
     return 0;
     
 }

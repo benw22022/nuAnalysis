@@ -209,6 +209,18 @@ void Analysis::BuildDataFrame() {
         m_node = m_node->Alias("VetoSt21_charge", "Veto21_charge");
     }
 
+    // Define some basic cuts for data and MC
+    Define("isCaloNuPeriod", "15821 <= run  && run <= 16924", DATA);
+    Define("isCaloNuPeriod", "200137 <= run && run <= 200147", MC);
+    Define("is2024Period", "run >= 1.2e4", DATA);
+
+    // Truth definitions for MC
+    Define("truth_dec_r", "Radius(truth_dec_x, truth_dec_y)", MC);
+    Define("is_cc", "Contains(truth_pdg, {11, 13, 15})", MC);
+    Define("inFaserNuBox", "inFaserNuBox(truth_dec_x, truth_dec_y, truth_dec_z)", MC);
+    Define("inLeadBlock", "inLeadBlock(truth_dec_x, truth_dec_y, truth_dec_z)", MC);
+    Define("inCaloNuPMT", "inCaloNuPMT(truth_dec_z)", MC);
+
     if (m_auxChainSet) {
         // Build a lookup map from the aux chain manually
         // Key: {run, event}, Value: struct of aux quantities
@@ -255,8 +267,6 @@ void Analysis::BuildDataFrame() {
 
         Define("BadVetoStatus", "Veto20_status == 528 || Veto21_status == 528", DATA);
         Define("GoodVetoNuStatus", "((VetoNu0_status == 0 || VetoNu0_status == 1) && (VetoNu1_status == 0 || VetoNu1_status == 1)) || (VetoNu0_status == 0 && VetoNu1_status == 16)");;
-        Define("isCaloNuPeriod", "15821 <= run  && run <= 16924", DATA);
-        Define("is2024Period", "run >= 1.2e4", DATA);
         Define("TimingOK", "(GoodVeto20Hit || GoodVeto21Hit || GoodPreshower0Hit || GoodPreshower1Hit)");
         Define("GoodScintillatorStatus", "TimingOK && GoodVetoNuStatus && !BadVetoStatus");
         Define("caloNuVeto2StatusBug", "(Veto20_status == 528 || Veto21_status == 528) && isCaloNuPeriod", DATA);
@@ -467,6 +477,13 @@ void Analysis::Run(TString outputFileName) {
         applyCut("!ExcludedTimes", "Excluded times", DATA);
     }
 
+    // MC Truth Cuts
+    applyCut("isCaloNuPeriod && !inCaloNuPMT[0]", "Remove CaloNu PMT region (truth)", MC);
+    applyCut("is_cc", "CC events only", MC);
+    applyCut("abs(truth_pdg[0]) == 14", "nu_mu only", MC);
+    applyCut("((inFaserNuBox[0] || inLeadBlock[0]) && truth_dec_r[0] < 100)", "Fiducial volume cut", MC);
+    applyCut("truth_pz[0] > 100000.0", "Truth pz > 100 GeV", MC);
+    
     bookHist1D({"VetoNu0_reduced_charge", "VetoNu0 reduced charge", "VetoNu0_reduced_charge", 2501, -1, 2500});
     bookHist1D({"VetoNu1_reduced_charge", "VetoNu1 reduced charge", "VetoNu1_reduced_charge", 2501, -1, 2500});
 
