@@ -97,7 +97,7 @@ make
 # ./analysis -r 16000 -o 16000.root
 
 # ./analysis -r 15838 -o 15838.root
-./analysis -r 17230 -o 17230.root
+# ./analysis -r 17230 -o 17230.root
 
 # ./analysis -r 200082 -o 200082.root --isMC &
 # ./analysis -r 200083 -o 200083.root --isMC &
@@ -111,8 +111,8 @@ make
 
 # wait
 
-# ./analysis -r 200139 -o 200139.root --isMC &
-# ./analysis -r 200140 -o 200140.root --isMC &
-# ./analysis -r 200146 -o 200146.root --isMC &
+./analysis -r 200139 -o 200139.1.root --isMC |& tee 200139.log &
+./analysis -r 200140 -o 200140.1.root --isMC |& tee 200140.log &
+./analysis -r 200146 -o 200146.1.root --isMC |& tee 200146.log &
 
-# wait
+wait
