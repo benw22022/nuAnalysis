@@ -1,0 +1,340 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{adjustbox}
+\begin{document}
+
+\begin{table}
+\centering
+\caption{Cutflow for F222}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrr}
+\toprule
+ & passed & efficiency & cumulative\_efficiency & rate [events$/$fb$/$tonne] \\
+\midrule
+Colliding & 64490570 & 1.00 & 1.00 & 7306478.58 \\
+Trigger & 64490517 & 1.00 & 1.00 & 7306472.57 \\
+Good times & 64490517 & 1.00 & 1.00 & 7306472.57 \\
+Excluded times & 64489115 & 1.00 & 1.00 & 7306313.73 \\
+Sanity cut to remove events with missing aux data & 64489115 & 1.00 & 1.00 & 7306313.73 \\
+VetoNu0 reduced charge $<$ 30 pC & 1585944 & 0.02 & 0.02 & 179680.00 \\
+VetoNu1 reduced charge $<$ 30 pC & 1538738 & 0.97 & 0.02 & 174331.79 \\
+VetoNu0 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 1536490 & 1.00 & 0.02 & 174077.10 \\
+VetoNu1 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 1536486 & 1.00 & 0.02 & 174076.64 \\
+CaloNu status cleaning & 1536486 & 1.00 & 0.02 & 174076.64 \\
+Veto20 and Veto21 charge $>$ 40 pC & 1015094 & 0.66 & 0.02 & 115005.38 \\
+Timing Station Charge $>$ 20 pC & 1014388 & 1.00 & 0.02 & 114925.39 \\
+Preshower Charge $>$ 2.5 pC & 1010037 & 1.00 & 0.02 & 114432.45 \\
+At least one long track & 1010037 & 1.00 & 0.02 & 114432.45 \\
+Track pz $>$ 100 GeV & 141136 & 0.14 & 0.00 & 15990.05 \\
+Leading track has at $>$$=$ 7 layers & 129974 & 0.92 & 0.00 & 14725.44 \\
+Track nDoF $>$$=$ 9 & 113943 & 0.88 & 0.00 & 12909.21 \\
+Leading track has chi2$/$ndof $<$ 15 & 107808 & 0.95 & 0.00 & 12214.14 \\
+Track R at max radius $<$ 95 mm & 202 & 0.00 & 0.00 & 22.89 \\
+Track R at IFT $<$ 95 mm & 56 & 0.28 & 0.00 & 6.34 \\
+Track rVetoNu $<$ 120 mm & 54 & 0.96 & 0.00 & 6.12 \\
+Leading track theta $<$ 25 mrad & 52 & 0.96 & 0.00 & 5.89 \\
+\bottomrule
+\end{tabular}
+
+\end{adjustbox}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{Cutflow for F223}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrr}
+\toprule
+ & passed & efficiency & cumulative\_efficiency & rate [events$/$fb$/$tonne] \\
+\midrule
+Colliding & 178446058 & 1.00 & 1.00 & 6944844.09 \\
+Trigger & 178445848 & 1.00 & 1.00 & 6944835.92 \\
+Good times & 178445848 & 1.00 & 1.00 & 6944835.92 \\
+Excluded times & 178445317 & 1.00 & 1.00 & 6944815.25 \\
+Sanity cut to remove events with missing aux data & 178445317 & 1.00 & 1.00 & 6944815.25 \\
+VetoNu0 reduced charge $<$ 30 pC & 3628049 & 0.02 & 0.02 & 141198.05 \\
+VetoNu1 reduced charge $<$ 30 pC & 3514403 & 0.97 & 0.02 & 136775.12 \\
+VetoNu0 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 3507686 & 1.00 & 0.02 & 136513.70 \\
+VetoNu1 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 3507672 & 1.00 & 0.02 & 136513.16 \\
+CaloNu status cleaning & 3507672 & 1.00 & 0.02 & 136513.16 \\
+Veto20 and Veto21 charge $>$ 40 pC & 1837440 & 0.52 & 0.01 & 71510.32 \\
+Timing Station Charge $>$ 20 pC & 1836058 & 1.00 & 0.01 & 71456.53 \\
+Preshower Charge $>$ 2.5 pC & 1828385 & 1.00 & 0.01 & 71157.91 \\
+At least one long track & 1828385 & 1.00 & 0.01 & 71157.91 \\
+Track pz $>$ 100 GeV & 200175 & 0.11 & 0.00 & 7790.50 \\
+Leading track has at $>$$=$ 7 layers & 182855 & 0.91 & 0.00 & 7116.43 \\
+Track nDoF $>$$=$ 9 & 156254 & 0.85 & 0.00 & 6081.16 \\
+Leading track has chi2$/$ndof $<$ 15 & 148155 & 0.95 & 0.00 & 5765.96 \\
+Track R at max radius $<$ 95 mm & 479 & 0.00 & 0.00 & 18.64 \\
+Track R at IFT $<$ 95 mm & 145 & 0.30 & 0.00 & 5.64 \\
+Track rVetoNu $<$ 120 mm & 142 & 0.98 & 0.00 & 5.53 \\
+Leading track theta $<$ 25 mrad & 138 & 0.97 & 0.00 & 5.37 \\
+\bottomrule
+\end{tabular}
+
+\end{adjustbox}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{Cutflow for F231}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrr}
+\toprule
+ & passed & efficiency & cumulative\_efficiency & rate [events$/$fb$/$tonne] \\
+\midrule
+Colliding & 145621076 & 1.00 & 1.00 & 6955466.06 \\
+Trigger & 145620941 & 1.00 & 1.00 & 6955459.61 \\
+Good times & 145620941 & 1.00 & 1.00 & 6955459.61 \\
+Excluded times & 145160063 & 1.00 & 1.00 & 6933446.17 \\
+Sanity cut to remove events with missing aux data & 145160063 & 1.00 & 1.00 & 6933446.17 \\
+VetoNu0 reduced charge $<$ 30 pC & 3178980 & 0.02 & 0.02 & 151841.26 \\
+VetoNu1 reduced charge $<$ 30 pC & 3077124 & 0.97 & 0.02 & 146976.19 \\
+VetoNu0 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 3071943 & 1.00 & 0.02 & 146728.73 \\
+VetoNu1 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 3071928 & 1.00 & 0.02 & 146728.01 \\
+CaloNu status cleaning & 3071928 & 1.00 & 0.02 & 146728.01 \\
+Veto20 and Veto21 charge $>$ 40 pC & 1747316 & 0.57 & 0.01 & 83459.05 \\
+Timing Station Charge $>$ 20 pC & 1746059 & 1.00 & 0.01 & 83399.01 \\
+Preshower Charge $>$ 2.5 pC & 1738962 & 1.00 & 0.01 & 83060.03 \\
+At least one long track & 1738962 & 1.00 & 0.01 & 83060.03 \\
+Track pz $>$ 100 GeV & 185295 & 0.11 & 0.00 & 8850.46 \\
+Leading track has at $>$$=$ 7 layers & 168628 & 0.91 & 0.00 & 8054.37 \\
+Track nDoF $>$$=$ 9 & 144800 & 0.86 & 0.00 & 6916.25 \\
+Leading track has chi2$/$ndof $<$ 15 & 135885 & 0.94 & 0.00 & 6490.43 \\
+Track R at max radius $<$ 95 mm & 392 & 0.00 & 0.00 & 18.72 \\
+Track R at IFT $<$ 95 mm & 125 & 0.32 & 0.00 & 5.97 \\
+Track rVetoNu $<$ 120 mm & 124 & 0.99 & 0.00 & 5.92 \\
+Leading track theta $<$ 25 mrad & 121 & 0.98 & 0.00 & 5.78 \\
+\bottomrule
+\end{tabular}
+
+\end{adjustbox}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{Cutflow for F232}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrr}
+\toprule
+ & passed & efficiency & cumulative\_efficiency & rate [events$/$fb$/$tonne] \\
+\midrule
+Colliding & 61762015 & 1.00 & 1.00 & 6890925.66 \\
+Trigger & 61761805 & 1.00 & 1.00 & 6890902.23 \\
+Good times & 61761805 & 1.00 & 1.00 & 6890902.23 \\
+Excluded times & 61663856 & 1.00 & 1.00 & 6879973.84 \\
+Sanity cut to remove events with missing aux data & 61663856 & 1.00 & 1.00 & 6879973.84 \\
+VetoNu0 reduced charge $<$ 30 pC & 1365190 & 0.02 & 0.02 & 152317.29 \\
+VetoNu1 reduced charge $<$ 30 pC & 1323935 & 0.97 & 0.02 & 147714.38 \\
+VetoNu0 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 1321722 & 1.00 & 0.02 & 147467.47 \\
+VetoNu1 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 1321711 & 1.00 & 0.02 & 147466.24 \\
+CaloNu status cleaning & 1321711 & 1.00 & 0.02 & 147466.24 \\
+Veto20 and Veto21 charge $>$ 40 pC & 742406 & 0.56 & 0.01 & 82831.89 \\
+Timing Station Charge $>$ 20 pC & 741809 & 1.00 & 0.01 & 82765.28 \\
+Preshower Charge $>$ 2.5 pC & 738855 & 1.00 & 0.01 & 82435.70 \\
+At least one long track & 738855 & 1.00 & 0.01 & 82435.70 \\
+Track pz $>$ 100 GeV & 92739 & 0.13 & 0.00 & 10347.10 \\
+Leading track has at $>$$=$ 7 layers & 85383 & 0.92 & 0.00 & 9526.37 \\
+Track nDoF $>$$=$ 9 & 73856 & 0.86 & 0.00 & 8240.28 \\
+Leading track has chi2$/$ndof $<$ 15 & 70493 & 0.95 & 0.00 & 7865.06 \\
+Track R at max radius $<$ 95 mm & 219 & 0.00 & 0.00 & 24.43 \\
+Track R at IFT $<$ 95 mm & 58 & 0.26 & 0.00 & 6.47 \\
+Track rVetoNu $<$ 120 mm & 55 & 0.95 & 0.00 & 6.14 \\
+Leading track theta $<$ 25 mrad & 53 & 0.96 & 0.00 & 5.91 \\
+\bottomrule
+\end{tabular}
+
+\end{adjustbox}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{Cutflow for F241}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrr}
+\toprule
+ & passed & efficiency & cumulative\_efficiency & rate [events$/$fb$/$tonne] \\
+\midrule
+Colliding & 168862918 & 0.99 & 0.99 & 14911234.65 \\
+Trigger & 168862805 & 1.00 & 0.99 & 14911224.67 \\
+Good times & 168862805 & 1.00 & 0.99 & 14911224.67 \\
+Excluded times & 168743073 & 1.00 & 0.99 & 14900651.89 \\
+Sanity cut to remove events with missing aux data & 168743073 & 1.00 & 0.99 & 14900651.89 \\
+VetoNu0 reduced charge $<$ 30 pC & 3225745 & 0.02 & 0.02 & 284845.49 \\
+VetoNu1 reduced charge $<$ 30 pC & 3131600 & 0.97 & 0.02 & 276532.13 \\
+VetoNu0 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 3118838 & 1.00 & 0.02 & 275405.20 \\
+VetoNu1 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 3118815 & 1.00 & 0.02 & 275403.17 \\
+CaloNu status cleaning & 3118815 & 1.00 & 0.02 & 275403.17 \\
+Veto20 and Veto21 charge $>$ 40 pC & 1782811 & 0.57 & 0.01 & 157428.96 \\
+Timing Station Charge $>$ 20 pC & 1781244 & 1.00 & 0.01 & 157290.59 \\
+Preshower Charge $>$ 2.5 pC & 1772625 & 1.00 & 0.01 & 156529.50 \\
+At least one long track & 1772625 & 1.00 & 0.01 & 156529.50 \\
+Track pz $>$ 100 GeV & 190254 & 0.11 & 0.00 & 16800.15 \\
+Leading track has at $>$$=$ 7 layers & 173253 & 0.91 & 0.00 & 15298.90 \\
+Track nDoF $>$$=$ 9 & 150477 & 0.87 & 0.00 & 13287.69 \\
+Leading track has chi2$/$ndof $<$ 15 & 145393 & 0.97 & 0.00 & 12838.75 \\
+Track R at max radius $<$ 95 mm & 375 & 0.00 & 0.00 & 33.11 \\
+Track R at IFT $<$ 95 mm & 70 & 0.19 & 0.00 & 6.18 \\
+Track rVetoNu $<$ 120 mm & 65 & 0.93 & 0.00 & 5.74 \\
+Leading track theta $<$ 25 mrad & 65 & 1.00 & 0.00 & 5.74 \\
+\bottomrule
+\end{tabular}
+
+\end{adjustbox}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{Cutflow for tungsten}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrr}
+\toprule
+ & passed & efficiency & cumulative\_efficiency & rate [events$/$fb$/$tonne] \\
+\midrule
+Colliding & 278662471 & 0.99 & 0.99 & 14929878.80 \\
+Trigger & 278662264 & 1.00 & 0.99 & 14929867.71 \\
+Good times & 278662264 & 1.00 & 0.99 & 14929867.71 \\
+Excluded times & 278662264 & 1.00 & 0.99 & 14929867.71 \\
+Sanity cut to remove events with missing aux data & 278662264 & 1.00 & 0.99 & 14929867.71 \\
+VetoNu0 reduced charge $<$ 30 pC & 5271965 & 0.02 & 0.02 & 282455.68 \\
+VetoNu1 reduced charge $<$ 30 pC & 5127557 & 0.97 & 0.02 & 274718.75 \\
+VetoNu0 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 5108231 & 1.00 & 0.02 & 273683.32 \\
+VetoNu1 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 5108213 & 1.00 & 0.02 & 273682.35 \\
+CaloNu status cleaning & 5108213 & 1.00 & 0.02 & 273682.35 \\
+Veto20 and Veto21 charge $>$ 40 pC & 2903249 & 0.57 & 0.01 & 155547.16 \\
+Timing Station Charge $>$ 20 pC & 2900720 & 1.00 & 0.01 & 155411.66 \\
+Preshower Charge $>$ 2.5 pC & 2886316 & 1.00 & 0.01 & 154639.94 \\
+At least one long track & 2886316 & 1.00 & 0.01 & 154639.94 \\
+Track pz $>$ 100 GeV & 215809 & 0.07 & 0.00 & 11562.38 \\
+Leading track has at $>$$=$ 7 layers & 190361 & 0.88 & 0.00 & 10198.96 \\
+Track nDoF $>$$=$ 9 & 161606 & 0.85 & 0.00 & 8658.35 \\
+Leading track has chi2$/$ndof $<$ 15 & 153155 & 0.95 & 0.00 & 8205.57 \\
+Track R at max radius $<$ 95 mm & 471 & 0.00 & 0.00 & 25.23 \\
+Track R at IFT $<$ 95 mm & 107 & 0.23 & 0.00 & 5.73 \\
+Track rVetoNu $<$ 120 mm & 105 & 0.98 & 0.00 & 5.63 \\
+Leading track theta $<$ 25 mrad & 101 & 0.96 & 0.00 & 5.41 \\
+\bottomrule
+\end{tabular}
+
+\end{adjustbox}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{Cutflow for F242}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrr}
+\toprule
+ & passed & efficiency & cumulative\_efficiency & rate [events$/$fb$/$tonne] \\
+\midrule
+Colliding & 139658553 & 0.99 & 0.99 & 15025402.56 \\
+Trigger & 139658442 & 1.00 & 0.99 & 15025390.62 \\
+Good times & 139658442 & 1.00 & 0.99 & 15025390.62 \\
+Excluded times & 138806459 & 0.99 & 0.99 & 14933728.58 \\
+Sanity cut to remove events with missing aux data & 138806459 & 1.00 & 0.99 & 14933728.58 \\
+VetoNu0 reduced charge $<$ 30 pC & 2630123 & 0.02 & 0.02 & 282966.25 \\
+VetoNu1 reduced charge $<$ 30 pC & 2561696 & 0.97 & 0.02 & 275604.41 \\
+VetoNu0 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 2551155 & 1.00 & 0.02 & 274470.34 \\
+VetoNu1 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 2551144 & 1.00 & 0.02 & 274469.16 \\
+CaloNu status cleaning & 2551144 & 1.00 & 0.02 & 274469.16 \\
+Veto20 and Veto21 charge $>$ 40 pC & 1431774 & 0.56 & 0.01 & 154039.84 \\
+Timing Station Charge $>$ 20 pC & 1430504 & 1.00 & 0.01 & 153903.20 \\
+Preshower Charge $>$ 2.5 pC & 1423577 & 1.00 & 0.01 & 153157.95 \\
+At least one long track & 1423577 & 1.00 & 0.01 & 153157.95 \\
+Track pz $>$ 100 GeV & 129165 & 0.09 & 0.00 & 13896.44 \\
+Leading track has at $>$$=$ 7 layers & 115842 & 0.90 & 0.00 & 12463.06 \\
+Track nDoF $>$$=$ 9 & 99126 & 0.86 & 0.00 & 10664.64 \\
+Leading track has chi2$/$ndof $<$ 15 & 95247 & 0.96 & 0.00 & 10247.31 \\
+Track R at max radius $<$ 95 mm & 263 & 0.00 & 0.00 & 28.30 \\
+Track R at IFT $<$ 95 mm & 49 & 0.19 & 0.00 & 5.27 \\
+Track rVetoNu $<$ 120 mm & 49 & 1.00 & 0.00 & 5.27 \\
+Leading track theta $<$ 25 mrad & 44 & 0.90 & 0.00 & 4.73 \\
+\bottomrule
+\end{tabular}
+
+\end{adjustbox}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{Cutflow for caloNu}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrr}
+\toprule
+ & passed & efficiency & cumulative\_efficiency & rate [events$/$fb$/$tonne] \\
+\midrule
+Colliding & 967678584 & 1.00 & 1.00 & 24484342.74 \\
+Trigger & 967676789 & 1.00 & 1.00 & 24484297.32 \\
+Good times & 967676789 & 1.00 & 1.00 & 24484297.32 \\
+Excluded times & 967324758 & 1.00 & 1.00 & 24475390.18 \\
+Sanity cut to remove events with missing aux data & 967324758 & 1.00 & 1.00 & 24475390.18 \\
+VetoNu0 reduced charge $<$ 30 pC & 17877847 & 0.02 & 0.02 & 452347.86 \\
+VetoNu1 reduced charge $<$ 30 pC & 17446851 & 0.98 & 0.02 & 441442.73 \\
+VetoNu0 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 17374528 & 1.00 & 0.02 & 439612.81 \\
+VetoNu1 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 17374466 & 1.00 & 0.02 & 439611.24 \\
+CaloNu status cleaning & 16941612 & 0.98 & 0.02 & 428659.10 \\
+Veto20 and Veto21 charge $>$ 40 pC & 9178956 & 0.54 & 0.01 & 232247.27 \\
+Timing Station Charge $>$ 20 pC & 9171081 & 1.00 & 0.01 & 232048.01 \\
+Preshower Charge $>$ 2.5 pC & 9125711 & 1.00 & 0.01 & 230900.05 \\
+At least one long track & 9125711 & 1.00 & 0.01 & 230900.05 \\
+Track pz $>$ 100 GeV & 636832 & 0.07 & 0.00 & 16113.21 \\
+Leading track has at $>$$=$ 7 layers & 554691 & 0.87 & 0.00 & 14034.87 \\
+Track nDoF $>$$=$ 9 & 468391 & 0.84 & 0.00 & 11851.30 \\
+Leading track has chi2$/$ndof $<$ 15 & 445201 & 0.95 & 0.00 & 11264.54 \\
+Track R at max radius $<$ 95 mm & 1338 & 0.00 & 0.00 & 33.85 \\
+Track R at IFT $<$ 95 mm & 240 & 0.18 & 0.00 & 6.07 \\
+Track rVetoNu $<$ 120 mm & 235 & 0.98 & 0.00 & 5.95 \\
+Leading track theta $<$ 25 mrad & 228 & 0.97 & 0.00 & 5.77 \\
+\bottomrule
+\end{tabular}
+
+\end{adjustbox}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{Cutflow for F243}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrr}
+\toprule
+ & passed & efficiency & cumulative\_efficiency & rate [events$/$fb$/$tonne] \\
+\midrule
+Colliding & 176214937 & 1.00 & 1.00 & 15003172.68 \\
+Trigger & 176214889 & 1.00 & 1.00 & 15003168.59 \\
+Good times & 176214889 & 1.00 & 1.00 & 15003168.59 \\
+Excluded times & 176214889 & 1.00 & 1.00 & 15003168.59 \\
+Sanity cut to remove events with missing aux data & 176214889 & 1.00 & 1.00 & 15003168.59 \\
+VetoNu0 reduced charge $<$ 30 pC & 3322525 & 0.02 & 0.02 & 282884.17 \\
+VetoNu1 reduced charge $<$ 30 pC & 3241431 & 0.98 & 0.02 & 275979.72 \\
+VetoNu0 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 3227526 & 1.00 & 0.02 & 274795.83 \\
+VetoNu1 raw charge $<$ 40 pC (fallback to raw charge if reduced charge invalid) & 3227510 & 1.00 & 0.02 & 274794.47 \\
+CaloNu status cleaning & 3227510 & 1.00 & 0.02 & 274794.47 \\
+Veto20 and Veto21 charge $>$ 40 pC & 1792214 & 0.56 & 0.01 & 152591.47 \\
+Timing Station Charge $>$ 20 pC & 1790658 & 1.00 & 0.01 & 152458.99 \\
+Preshower Charge $>$ 2.5 pC & 1781605 & 0.99 & 0.01 & 151688.20 \\
+At least one long track & 1781605 & 1.00 & 0.01 & 151688.20 \\
+Track pz $>$ 100 GeV & 143733 & 0.08 & 0.00 & 12237.62 \\
+Leading track has at $>$$=$ 7 layers & 127343 & 0.89 & 0.00 & 10842.15 \\
+Track nDoF $>$$=$ 9 & 108110 & 0.85 & 0.00 & 9204.63 \\
+Leading track has chi2$/$ndof $<$ 15 & 103558 & 0.96 & 0.00 & 8817.07 \\
+Track R at max radius $<$ 95 mm & 274 & 0.00 & 0.00 & 23.33 \\
+Track R at IFT $<$ 95 mm & 50 & 0.18 & 0.00 & 4.26 \\
+Track rVetoNu $<$ 120 mm & 48 & 0.96 & 0.00 & 4.09 \\
+Leading track theta $<$ 25 mrad & 46 & 0.96 & 0.00 & 3.92 \\
+\bottomrule
+\end{tabular}
+
+\end{adjustbox}
+\end{table}
+
+\end{document}
