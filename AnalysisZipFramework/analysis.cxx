@@ -15,6 +15,7 @@ int main(int argc, char* argv[]) {
     int         runNumber  = -1;
     std::string outputFile = "";
     bool        isMC       = false;
+    bool        isAsimov   = false;
     bool        verbose    = false;
     bool        useMT      = false;
     int         nThreads   = 0; // 0 = all available cores (ROOT::EnableImplicitMT() default)
@@ -44,6 +45,10 @@ int main(int argc, char* argv[]) {
         } else if (arg == "--isMC") {
             isMC = true;
             INFO("Running in MC mode: GRL, BCID and trigger cuts will be skipped.");
+        } else if (arg == "--isAsimov") {
+            isAsimov = true;
+            isMC = true; // Asimov mode implies MC
+            INFO("Running in Asimov mode: GRL, BCID cuts will be skipped, no truth cuts will be applied to MC particles.");
 
         } else if (arg == "--verbose" || arg == "-v") {
             verbose = true;
@@ -99,6 +104,7 @@ int main(int argc, char* argv[]) {
 
     GRLUtils::GRLConfig grlConfig = GRLUtils::readGRLConfig("config/grl_config.json");
     GRLUtils::FileConfig fileConfig = GRLUtils::parseFileConfig("config/file_config.json");
+    // GRLUtils::FileConfig fileConfig = GRLUtils::parseFileConfig("config/file_config_late_tracks.json");
     
     std::vector<TString> mainFiles, auxFiles;
     if (fileConfig.count(runNumber) == 0) {
@@ -118,6 +124,7 @@ int main(int argc, char* argv[]) {
     }
 
     analysis.isMC = isMC;
+    analysis.isAsimov = isAsimov;
     analysis.setGRL(grlConfig.grlJsons, grlConfig.grlCsvs);
     analysis.Run(outputFile);
 

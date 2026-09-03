@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include "MessageService.hpp"
 
-enum DataType { MC, DATA, ALL};
+enum DataType { MC, DATA, ALL, ASIMOV };
 
 class Analysis {
     public:
@@ -36,7 +36,11 @@ class Analysis {
 
         bool isMC{false};
 
+        bool isAsimov{false};
+
         void Define(std::string columnName, std::string expression, DataType dataType = ALL);
+
+        const bool isColumnDefined(const std::string& columnName);
 
         template <typename F>
         void Define(std::string columnName,

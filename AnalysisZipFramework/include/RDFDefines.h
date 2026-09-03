@@ -8,17 +8,30 @@
 
 struct FaserNuBox {
     /*Dimensions of the Faser NuBox*/
+    // static constexpr float x_min = -5000;
+    // static constexpr float x_max = 5000;
+    // static constexpr float y_min = -5000;
+    // static constexpr float y_max = 5000;
     static constexpr float x_min = -115;
     static constexpr float x_max = 135;
     static constexpr float y_min = -171;
     static constexpr float y_max = 129;
-    static constexpr float z_min = -3000;
+    
+    // static constexpr float z_min = -3000;
+    static constexpr float z_min = -3500;
+    // static constexpr float z_min = -1950 - 350;
     static constexpr float z_max = -1950;
+    // static constexpr float z_max = -3000 + 525;
+    // static constexpr float z_max = -1950 - 525;
+
+    // static constexpr float z_min = -3065.18;
+    // static constexpr float z_min = -5000;
+    // static constexpr float z_max = 5000;
 
     static bool isInside(float x, float y, float z) {
-        return (x >= x_min && x <= x_max) &&
-               (y >= y_min && y <= y_max) &&
-               (z >= z_min && z <= z_max);
+        return (x > x_min && x < x_max) &&
+               (y > y_min && y < y_max) &&
+               (z > z_min && z < z_max);
     }
 };
 
@@ -32,9 +45,9 @@ struct LeadBlock {
     static constexpr float z_max = -1619.65;
 
     static bool isInside(float x, float y, float z) {
-        return (x >= x_min && x <= x_max) &&
-               (y >= y_min && y <= y_max) &&
-               (z >= z_min && z <= z_max);
+        return (x > x_min && x < x_max) &&
+               (y > y_min && y < y_max) &&
+               (z > z_min && z < z_max);
     }
 };
 
@@ -165,6 +178,21 @@ RVec<T> inFaserNuBox(RVec<T> x, RVec<T> y, RVec<T> z) {
   }
 
   return res;
+}
+
+template<typename T>
+bool inFaserNuBox(T x, T y, T z) {
+  return FaserNuBox::isInside(x, y, z);
+}
+
+template<typename T>
+bool inLeadBlock(T x, T y, T z) {
+  return LeadBlock::isInside(x, y, z);
+}
+
+template<typename T>
+bool inCaloNuPMT(T z) {
+  return CaloNuPMT::isInside(z);
 }
 
 template<typename T>

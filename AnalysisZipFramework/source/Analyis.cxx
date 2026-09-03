@@ -151,12 +151,24 @@ void Analysis::Define(std::string columnName, std::string expression, DataType d
         return;
     }
 
+    INFO("Defining column: ", columnName, " with expression: ", expression);
+
     m_node = m_node->Define(columnName, expression);
+}
+
+const bool Analysis::isColumnDefined(const std::string& columnName) {
+    auto columnNames = m_node->GetColumnNames();
+    return std::find(columnNames.begin(), columnNames.end(), columnName) != columnNames.end();
 }
 
 void Analysis::bookHist1D(const Hist1DCFG& cfg) {
 
     INFO("Booking 1D histogram: ", cfg.name, " with expression: ", cfg.columnName);
+
+    if (!isColumnDefined(cfg.columnName)) {
+        ERROR("Error: Column '", cfg.columnName, "' is not defined in the dataframe. Cannot book histogram.");
+        return;
+    }
 
     ROOT::RDF::TH1DModel model(cfg.name.c_str(), cfg.title.c_str(), cfg.nBins, cfg.xMin, cfg.xMax);
     auto hist = m_node->Histo1D(model, cfg.columnName);
@@ -211,15 +223,17 @@ void Analysis::BuildDataFrame() {
 
     // Define some basic cuts for data and MC
     Define("isCaloNuPeriod", "15821 <= run  && run <= 16924", DATA);
-    Define("isCaloNuPeriod", "200137 <= run && run <= 200147", MC);
+    Define("isCaloNuPeriod", "(200137 <= run && run <= 200147) || (200172 <= run && run <= 200183)", MC);
     Define("is2024Period", "run >= 1.2e4", DATA);
+    Define("is2024Period", "(200091 < run && run < 200101) || (200160 < run && run < 200171) || (200137 <= run && run <= 200147) || (200172 <= run && run <= 200183)", MC);
 
     // Truth definitions for MC
-    Define("truth_dec_r", "Radius(truth_dec_x, truth_dec_y)", MC);
-    Define("is_cc", "Contains(truth_pdg, {11, 13, 15})", MC);
-    Define("inFaserNuBox", "inFaserNuBox(truth_dec_x, truth_dec_y, truth_dec_z)", MC);
-    Define("inLeadBlock", "inLeadBlock(truth_dec_x, truth_dec_y, truth_dec_z)", MC);
-    Define("inCaloNuPMT", "inCaloNuPMT(truth_dec_z)", MC);
+    Define("truth_dec_r", "Radius(truth_dec_x[0], truth_dec_y[0])", MC);
+    Define("is_cc", "Contains(abs(truth_pdg), {11, 13, 15})", MC);
+    Define("decay_box", "inFaserNuBox(truth_dec_x[0], truth_dec_y[0], truth_dec_z[0])", MC);
+    Define("decay_lead", "inLeadBlock(truth_dec_x[0], truth_dec_y[0], truth_dec_z[0])", MC);
+    Define("inCaloNuPMT", "inCaloNuPMT(truth_dec_z[0])", MC);
+    Define("truth_pz_nu", "truth_pz[0] / 1000", MC);
 
     if (m_auxChainSet) {
         // Build a lookup map from the aux chain manually
@@ -297,7 +311,7 @@ void Analysis::BuildDataFrame() {
                     if (!TimingOK || std::isnan(reduced_charge) || is2024PeriodCondition){
                         // m_NVetoNu0_fallbacks++;
                         // return VetoNu0_raw_charge;
-                        return -1234.f;
+                        return -1;
                     }
                     
                     return std::max(reduced_charge, 0.0f);
@@ -322,7 +336,7 @@ void Analysis::BuildDataFrame() {
                     reduced_charge = it->second.charge35_nu1;
 
                     // If there's no good hit in the veto stations or preshower, use the original charge instead of the reduced charge
-                         bool is2024PeriodCondition = is2024Period && reduced_charge == 0 && VetoNu1_raw_charge > 30;
+                    bool is2024PeriodCondition = is2024Period && reduced_charge == 0 && VetoNu1_raw_charge > 30;
 
                     if (is2024PeriodCondition)
                     {
@@ -332,7 +346,7 @@ void Analysis::BuildDataFrame() {
                     if (!TimingOK || std::isnan(reduced_charge) || is2024PeriodCondition){
                         // m_NVetoNu0_fallbacks++;
                         // return VetoNu0_raw_charge;
-                        return -1234.f;
+                        return -1;
                     }
 
                     return std::max(reduced_charge, 0.0f);
@@ -388,6 +402,8 @@ void Analysis::BuildDataFrame() {
     Define("LeadTrack_Idx", "ROOT::VecOps::ArgMax(Track_pz0)");
     Define("Track_rVetoNu","Radius(Track_X_atVetoNu, Track_Y_atVetoNu)");
 
+    Define("Lead_Track_Y_atTrig", "Track_Y_atTrig[LeadTrack_Idx]");
+
     Define("Track_rVetoStation1", "pow(Track_X_atVetoStation1[LeadTrack_Idx]*Track_X_atVetoStation1[LeadTrack_Idx] + Track_Y_atVetoStation1[LeadTrack_Idx]*Track_Y_atVetoStation1[LeadTrack_Idx], 0.5)");
     Define("Track_rVetoStation2", "pow(Track_X_atVetoStation2[LeadTrack_Idx]*Track_X_atVetoStation2[LeadTrack_Idx] + Track_Y_atVetoStation2[LeadTrack_Idx]*Track_Y_atVetoStation2[LeadTrack_Idx], 0.5)");
     Define("Track_rIFT", "Radius(Track_X_atVetoStation2, Track_Y_atVetoStation2)");
@@ -398,11 +414,11 @@ void Analysis::BuildDataFrame() {
     Define("LeadTrack_nDoF", "Track_nDoF[LeadTrack_Idx]");
     Define("LeadTrack_Chi2", "Track_Chi2[LeadTrack_Idx]");
     Define("LeadTrack_Chi2_NDF", "Track_Chi2[LeadTrack_Idx] / Track_nDoF[LeadTrack_Idx]");
-
     Define("LeadTrack_rVetoNu", "Track_rVetoNu[LeadTrack_Idx]");
     Define("LeadTrack_r_atMaxRadius", "Track_r_atMaxRadius[LeadTrack_Idx]");
     Define("LeadTrack_rIFT", "Track_rIFT[LeadTrack_Idx]");
-
+    Define("LeadTrack_charge", "Track_charge[LeadTrack_Idx]");
+    Define("LeadTrack_qop", "Track_charge[LeadTrack_Idx] / Track_pz0[LeadTrack_Idx]");
     Define("GoodTimes", m_goodTimesCut, DATA);
     Define("ExcludedTimes", m_excludedTimesCut, DATA);
 
@@ -421,7 +437,6 @@ void replaceAll(std::string& str, const std::string& from, const std::string& to
 }
 
 void Analysis::applyCut(std::string cutExpression, std::string cutName, DataType dataType) {
-    INFO("Applying cut: ", cutName, " (", cutExpression, ")");
 
     if (dataType == MC && !isMC) {
         INFO("Skipping cut for data: ", cutName);
@@ -431,10 +446,20 @@ void Analysis::applyCut(std::string cutExpression, std::string cutName, DataType
         INFO("Skipping cut for MC: ", cutName);
         return;
     }
+    if (dataType == MC && isAsimov) {
+        INFO("Skipping cut for Asimov: ", cutName);
+        return;
+    }
+    if (dataType == ASIMOV && !isAsimov) {
+        INFO("Skipping cut for data: ", cutName);
+        return;
+    }
+
+    INFO("Applying cut: ", cutName, " (", cutExpression, ")");
 
     std::string pass_cut_name = "passed_" + cutName;
     const std::vector<std::pair<std::string, std::string>> replacements = {
-        {"<=", "leq"}, {">=", "geq"}, {"==", "eq"},
+        {"<=", "leq"}, {">=", "geq"}, {"==", "eq"}, {"=", "eq"},
         {"<",  "lt"},  {">",  "gt"},
         {" ",  "_"}, {"&&", "and"}, {"||", "or"}, {"&", "and"}, {"|", "or"}, {"!", "not"},
         {"(", ""}, {")", ""}, {".", "_"}, {"/", "_"}, {"\\", "_"}, {"[", "_"}, {"]", "_"}, 
@@ -477,26 +502,105 @@ void Analysis::Run(TString outputFileName) {
         applyCut("!ExcludedTimes", "Excluded times", DATA);
     }
 
+    bookHist1D({"crossingAngle", "Crossing angle", "crossingAngle", 400, -200, 200});
+
+    // applyCut("(!is2024Period ) || (crossingAngle == 150.0)", "Crossing angle = 150 in 2024 period");
+    // applyCut("(!is2024Period ) || (crossingAngle > 150.0)", "Crossing angle > 150 in 2024 period");
+
     // MC Truth Cuts
-    applyCut("isCaloNuPeriod && !inCaloNuPMT[0]", "Remove CaloNu PMT region (truth)", MC);
+
+    Define("truth_dec_x_nu", "truth_dec_x[0]");
+    Define("truth_dec_y_nu", "truth_dec_y[0]");
+    Define("truth_dec_z_nu", "truth_dec_z[0]");
+
+    applyCut("(!isCaloNuPeriod) || (isCaloNuPeriod && !inCaloNuPMT)", "Remove CaloNu PMT region (truth)", MC);
     applyCut("is_cc", "CC events only", MC);
     applyCut("abs(truth_pdg[0]) == 14", "nu_mu only", MC);
-    applyCut("((inFaserNuBox[0] || inLeadBlock[0]) && truth_dec_r[0] < 100)", "Fiducial volume cut", MC);
-    applyCut("truth_pz[0] > 100000.0", "Truth pz > 100 GeV", MC);
-    
-    bookHist1D({"VetoNu0_reduced_charge", "VetoNu0 reduced charge", "VetoNu0_reduced_charge", 2501, -1, 2500});
-    bookHist1D({"VetoNu1_reduced_charge", "VetoNu1 reduced charge", "VetoNu1_reduced_charge", 2501, -1, 2500});
 
-    applyCut("AuxLookupSuccess", "Sanity cut to remove events with missing aux data", DATA);
-    applyCut("VetoNu0_reduced_charge < 30", "VetoNu0 reduced charge < 30 pC");
-    applyCut("VetoNu1_reduced_charge < 30", "VetoNu1 reduced charge < 30 pC");
-    applyCut("fallbackVetoNu0Charge < 40", "VetoNu0 raw charge < 40 pC (fallback to raw charge if reduced charge invalid)", DATA);
-    applyCut("fallbackVetoNu1Charge < 40", "VetoNu1 raw charge < 40 pC (fallback to raw charge if reduced charge invalid)", DATA);
+    bookHist2D({"truth_dec_z_nu_preFiducialCuts", "Truth decay z", "truth_dec_z_nu", 200, -4000, -1500}, 
+               {"longTracks_preFiducialCuts", "NlongTracks", "longTracks", 5, 0, 5});
+
+
+    bookHist1D({"truth_dec_x_nu_preFiducialCuts", "Truth decay x", "truth_dec_x_nu", 200, -300, 300});
+    bookHist1D({"truth_dec_y_nu_preFiducialCuts", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
+    bookHist1D({"truth_dec_z_nu_preFiducialCuts", "Truth decay z", "truth_dec_z_nu", 200, -3000, -1500});
+    bookHist1D({"truth_dec_z_nu_preFiducialCuts_ext", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000});
+    bookHist2D({"truth_dec_x_nu_preFiducialCuts", "Truth decay x", "truth_dec_x_nu", 200, -300, 300}, 
+               {"truth_dec_y_nu_preFiducialCuts", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
+
+
+    bookHist2D({"truth_dec_z_nu_preFiducialCuts", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000}, 
+               {"truth_dec_x_nu_preFiducialCuts", "Truth decay x", "truth_dec_x_nu", 200, -300, 300});
+
+    bookHist2D({"truth_dec_z_nu_preFiducialCuts", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000}, 
+               {"truth_dec_y_nu_preFiducialCuts", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
+    
+
+    bookHist1D({"truth_dec_r_preFiducialCuts", "Truth decay r", "truth_dec_r", 200, 0, 300});
+
+    applyCut("decay_box || decay_lead", "In Faser Nu Box or Lead Block", MC);
+    // applyCut("decay_box", "In Faser Nu Box or Lead Block", MC);
+    // applyCut("decay_lead", "In Lead Block", MC);
+    // applyCut("!(decay_box || decay_lead)", "Not in Faser Nu Box or Lead Block", MC);
+    
+    bookHist1D({"truth_dec_r", "Truth decay r", "truth_dec_r", 200, 0, 300});
+    bookHist1D({"truth_dec_x_nu", "Truth decay x", "truth_dec_x_nu", 200, -300, 300});
+    bookHist1D({"truth_dec_y_nu", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
+    bookHist1D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 200, -3000, -1500});
+    bookHist1D({"truth_dec_z_nu_ext", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000});
+    bookHist2D({"truth_dec_x_nu", "Truth decay x", "truth_dec_x_nu", 200, -300, 300}, 
+               {"truth_dec_y_nu", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
+
+    bookHist2D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000}, 
+               {"truth_dec_x_nu", "Truth decay x", "truth_dec_x_nu", 200, -300, 300});
+
+    bookHist2D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000}, 
+               {"truth_dec_y_nu", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
+
+    // applyCut("truth_dec_r < 100", "Truth dec r < 100 mm", MC);
+    bookHist1D({"truth_dec_r_postRCut", "Truth decay r", "truth_dec_r", 200, 0, 300});
+    // applyCut("truth_dec_r < 100", "Truth dec r < 100 mm", MC);
+
+    bookHist2D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 200, -4000, -1500}, 
+               {"longTracks", "NlongTracks", "longTracks", 5, 0, 5});
+
+
+
+    bookHist1D({"truth_pz_nu", "Truth pz", "truth_pz_nu", 200, 0, 10000});
+    auto cols = m_node->GetColumnNames();
+    INFO("Has truth_pz_nu: ", std::find(cols.begin(), cols.end(), "truth_pz_nu") != cols.end());
+
+    applyCut("truth_pz_nu > 100", "Truth pz > 100 GeV", MC);
+
+
+    bookHist1D({"longTracks", "NlongTracks", "longTracks", 5, 0, 5});
+    
+    bookHist1D({"nClusters0_preLongTracks", "nClusters0", "nClusters0", 100, 0, 1000});
+    bookHist1D({"nClusters1_preLongTracks", "nClusters1", "nClusters1", 100, 0, 400});
+    bookHist1D({"nClusters2_preLongTracks", "nClusters2", "nClusters2", 100, 0, 300});
+    bookHist1D({"nClusters3_preLongTracks", "nClusters3", "nClusters3", 100, 0, 200});
+    bookHist1D({"SpacePoints_preLongTracks", "SpacePoints", "SpacePoints", 100, 0, 1000});
+    bookHist1D({"TrackSegments_preLongTracks", "TrackSegments", "TrackSegments", 50, 0, 50});
+
+    applyCut("longTracks > 0", "At least one long track");
+
+    bookHist1D({"nClusters0", "nClusters0", "nClusters0", 100, 0, 1000});
+    bookHist1D({"nClusters1", "nClusters1", "nClusters1", 100, 0, 400});
+    bookHist1D({"nClusters2", "nClusters2", "nClusters2", 100, 0, 300});
+    bookHist1D({"nClusters3", "nClusters3", "nClusters3", 100, 0, 200});
+    bookHist1D({"SpacePoints", "SpacePoints", "SpacePoints", 100, 0, 1000});
+    bookHist1D({"TrackSegments", "TrackSegments", "TrackSegments", 50, 0, 50});
+
     applyCut("caloNuStatusCleaning", "CaloNu status cleaning", DATA);
     applyCut("Veto20_charge > 40 && Veto21_charge > 40", "Veto20 and Veto21 charge > 40 pC");
-    applyCut("((Track_Y_atTrig[LeadTrack_Idx] > 20 && Timing_charge_top > 20) || (Track_Y_atTrig[LeadTrack_Idx] < -20 && Timing_charge_bottom > 20) || (abs(Track_Y_atTrig[LeadTrack_Idx]) < 20 && Timing_charge_total > 20))", "Timing Station Charge > 20 pC");
+
+    bookHist2D({"Lead_Track_Y_atTrig", "Track Y at trigger", "Track_Y_atTrig", 200, -300, 300}, {"Timing_charge_top", "Timing charge top", "Timing_charge_top", 200, 0, 2000});
+    bookHist2D({"Lead_Track_Y_atTrig", "Track Y at trigger", "Track_Y_atTrig", 200, -300, 300}, {"Timing_charge_bottom", "Timing charge bottom", "Timing_charge_bottom", 200, 0, 2000});
+    bookHist2D({"Lead_Track_Y_atTrig", "Track Y at trigger", "Track_Y_atTrig", 200, -300, 300}, {"Timing_charge_total", "Timing charge total", "Timing_charge_total", 200, 0, 2000});
+
+    applyCut("((Track_Y_atTrig[LeadTrack_Idx] > 20 && Timing_charge_top > 20) || (Track_Y_atTrig[LeadTrack_Idx] < -20 && Timing_charge_bottom > 20) || (fabs(Track_Y_atTrig[LeadTrack_Idx]) < 20 && Timing_charge_total > 20))", "Timing Station Charge > 20 pC");
     applyCut("Preshower0_charge > 2.5 && Preshower1_charge > 2.5", "Preshower Charge > 2.5 pC");
-    applyCut("longTracks > 0", "At least one long track");
+    // applyCut("longTracks > 0", "At least one long track");
     applyCut("LeadTrack_pz0 > 100", "Track pz > 100 GeV");
     applyCut("LeadTrack_nLayers >= 7", "Leading track has at >= 7 layers");
     applyCut("LeadTrack_nDoF >= 9", "Track nDoF >= 9");
@@ -505,7 +609,26 @@ void Analysis::Run(TString outputFileName) {
     applyCut("LeadTrack_rIFT < 95", "Track R at IFT < 95 mm");
     applyCut("LeadTrack_rVetoNu < 120", "Track rVetoNu < 120 mm");
     applyCut("LeadTrack_Theta < 25", "Leading track theta < 25 mrad");
-      
+
+    applyCut("AuxLookupSuccess", "Sanity cut to remove events with missing aux data", DATA);
+    
+    bookHist1D({"VetoNu0_reduced_charge", "VetoNu0 reduced charge", "VetoNu0_reduced_charge", 2501, -1, 2500});
+    bookHist1D({"VetoNu1_reduced_charge", "VetoNu1 reduced charge", "VetoNu1_reduced_charge", 2501, -1, 2500});
+
+    bookHist2D({"VetoNu0_reduced_charge", "VetoNu0 reduced charge", "VetoNu0_reduced_charge", 2501, -1, 2500}, 
+               {"VetoNu1_reduced_charge", "VetoNu1 reduced charge", "VetoNu1_reduced_charge", 2501, -1, 2500});
+
+    bookHist2D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 500, -4000, -1500}, 
+               {"VetoNu0_reduced_charge", "VetoNu0 reduced charge", "VetoNu0_reduced_charge", 2501, -1, 2500});
+    
+    bookHist2D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 500, -4000, -1500}, 
+               {"VetoNu1_reduced_charge", "VetoNu1 reduced charge", "VetoNu1_reduced_charge", 2501, -1, 2500});
+
+    applyCut("VetoNu0_reduced_charge < 30", "VetoNu0 reduced charge < 30 pC");
+    applyCut("VetoNu1_reduced_charge < 30", "VetoNu1 reduced charge < 30 pC");
+    applyCut("fallbackVetoNu0Charge < 40", "VetoNu0 raw charge < 40 pC (fallback to raw charge if reduced charge invalid)", DATA);
+    applyCut("fallbackVetoNu1Charge < 40", "VetoNu1 raw charge < 40 pC (fallback to raw charge if reduced charge invalid)", DATA);
+    
 
     // ── Book ALL actions before triggering any event loop ──────────────────
     auto cutReport = m_node->Report();
