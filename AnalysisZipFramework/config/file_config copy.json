@@ -4441,417 +4441,344 @@
     },
     "200080": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200080/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200080/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200082": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200082/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200082/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200084": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200084/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200084/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200086": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200086/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200086/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200081": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200081/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200081/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200083": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200083/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200083/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200085": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200085/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200085/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200087": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200087/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200087/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200088": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200088/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200088/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200089": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200089/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200089/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200090": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200090/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200090/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200091": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200091/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200091/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200093": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200093/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200093/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200095": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200095/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200095/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200097": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200097/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200097/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200092": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200092/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200092/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200094": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200094/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200094/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200096": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200096/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200096/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200098": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200098/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200098/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200099": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200099/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200099/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200100": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200100/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200100/phy/s0014/*"
         ],
         "waveform_paths": []
     },
     "200101": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200101/bck/s0014/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200101/phy/s0014/*"
         ],
         "waveform_paths": []
     },
-    "200104": {
-        "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200104/bck/master_dev/*"
-        ],
-        "waveform_paths": []
-    },
-    "200105": {
-        "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200105/bck/master_dev/*"
-        ],
-        "waveform_paths": []
-    },
-    "200106": {
-        "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200106/bck/master_dev/*"
-        ],
-        "waveform_paths": []
-    },
-    "200107": {
-        "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200107/bck/master_dev/*"
-        ],
-        "waveform_paths": []
-    },
-    "200108": {
-        "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200108/bck/master_dev/*"
-        ],
-        "waveform_paths": []
-    },
-    "200109": {
-        "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200109/bck/master_dev/*"
-        ],
-        "waveform_paths": []
-    },
-    "200110": {
-        "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200110/bck/master_dev/*"
-        ],
-        "waveform_paths": []
-    },
-    "200111": {
-        "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200111/bck/master_dev/*"
-        ],
-        "waveform_paths": []
-    },
-    "200112": {
-        "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200112/bck/master_dev/*"
-        ],
-        "waveform_paths": []
-    },
-    "200113": {
-        "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200113/bck/master_dev/*"
-        ],
-        "waveform_paths": []
-    },
-    "200114": {
-        "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200114/bck/master_dev/*"
-        ],
-        "waveform_paths": []
-    },
-    "200115": {
-        "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200115/bck/master_dev/*"
-        ],
-        "waveform_paths": []
-    },
-
     "200137": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200137/bck/s0015/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200137/phy/s0015/*"
         ],
         "waveform_paths": []
     },
     "200139": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200139/bck/s0015/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200139/phy/s0015/*"
         ],
         "waveform_paths": []
     },
     "200141": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200141/bck/s0015/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200141/phy/s0015/*"
         ],
         "waveform_paths": []
     },
     "200143": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200143/bck/s0015/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200143/phy/s0015/*"
         ],
         "waveform_paths": []
     },
     "200138": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200138/bck/s0015/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200138/phy/s0015/*"
         ],
         "waveform_paths": []
     },
     "200140": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200140/bck/s0015/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200140/phy/s0015/*"
         ],
         "waveform_paths": []
     },
     "200142": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200142/bck/s0015/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200142/phy/s0015/*"
         ],
         "waveform_paths": []
     },
     "200144": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200144/bck/s0015/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200144/phy/s0015/*"
         ],
         "waveform_paths": []
     },
     "200145": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200145/bck/s0015/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200145/phy/s0015/*"
         ],
         "waveform_paths": []
     },
     "200146": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200146/bck/s0015/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200146/phy/s0015/*"
         ],
         "waveform_paths": []
     },
     "200147": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200147/bck/s0015/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200147/phy/s0015/*"
         ],
         "waveform_paths": []
     },
     "200172": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200172/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200172/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200173": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200173/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200173/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200174": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200174/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200174/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200175": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200175/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200175/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200176": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200176/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200176/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200177": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200177/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200177/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200178": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200178/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200178/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200179": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200179/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200179/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200180": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200180/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200180/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200181": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200181/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200181/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200182": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200182/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200182/phy/master_dev/*"
         ],
         "waveform_paths": [] 
     },
     "200183": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200183/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200183/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200160": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200160/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200160/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
 
     "200161": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200161/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200161/phy/master_dev/*"
         ],
         "waveform_paths": []
     }, 
     "200162": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200162/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200162/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200163": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200163/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200163/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200164": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200164/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200164/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200165": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200165/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200165/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200166": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200166/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200166/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200167": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200167/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200167/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200168": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200168/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200168/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200169": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200169/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200169/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200170": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200170/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200170/phy/master_dev/*"
         ],
         "waveform_paths": []
     },
     "200171": {
         "data_paths": [
-            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200171/bck/master_dev/*"
+            "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200171/phy/master_dev/*"
         ],
         "waveform_paths": []
     }

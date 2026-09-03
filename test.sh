@@ -2,117 +2,79 @@
 
 cd build
 make
-# ./analysis -r 17023 -o 17023.root
-# ./analysis -r 200082 -o 200082.root --isMC
-# ./analysis -r 9188 -o 9188.root
-# ./analysis -r 16929 -o   16929.root
-# ./analysis -r 10701 -o   10701.root
 
-# ./analysis -r 11703 -o 11703.root
-# ./analysis -r 15031 -o 15031.root
-# ./analysis -r 16077 -o 16077.root
-# ./analysis -r 8901 -o 8901.root  
-# ./analysis -r 11527 -o 11527.root
-# ./analysis -r 8157 -o 8157.root
+# 2022-23
+./analysis -r 200093 -o 200093.bck.root --isMC &
+./analysis -r 200094 -o 200094.bck.root --isMC &
+./analysis -r 200100 -o 200100.bck.root --isMC &
+./analysis -r 200160 -o 200160.bck.root --isMC &
+./analysis -r 200161 -o 200161.bck.root --isMC &
+./analysis -r 200162 -o 200162.bck.root --isMC &
+./analysis -r 200163 -o 200163.bck.root --isMC &
+./analysis -r 200164 -o 200164.bck.root --isMC &
+./analysis -r 200165 -o 200165.bck.root --isMC &
+./analysis -r 200166 -o 200166.bck.root --isMC &
+./analysis -r 200167 -o 200167.bck.root --isMC &
+./analysis -r 200168 -o 200168.bck.root --isMC &
+./analysis -r 200169 -o 200169.bck.root --isMC &
+./analysis -r 200170 -o 200170.bck.root --isMC &
+./analysis -r 200171 -o 200171.bck.root --isMC &
+wait
 
-# ./analysis -r 8266 -o 8266.root -v
-# ./analysis -r 10604 -o 10604.root
+# 2024 CaloNu
+./analysis -r 200139 -o 200139.bck.root --isMC &
+./analysis -r 200140 -o 200140.bck.root --isMC &
+./analysis -r 200146 -o 200146.bck.root --isMC &
+./analysis -r 200172 -o 200172.bck.root --isMC &
+./analysis -r 200173 -o 200173.bck.root --isMC &
+./analysis -r 200174 -o 200174.bck.root --isMC &
+./analysis -r 200175 -o 200175.bck.root --isMC &
+./analysis -r 200176 -o 200176.bck.root --isMC &
+./analysis -r 200177 -o 200177.bck.root --isMC &
+./analysis -r 200178 -o 200178.bck.root --isMC &
+./analysis -r 200179 -o 200179.bck.root --isMC &
+./analysis -r 200180 -o 200180.bck.root --isMC &
+./analysis -r 200181 -o 200181.bck.root --isMC &
+./analysis -r 200182 -o 200182.bck.root --isMC &
+./analysis -r 200183 -o 200183.bck.root --isMC &
+wait
 
-# ./analysis -r 14590 -o 14590.root  # no events in this run
-# ./analysis -r 14904 -o 14904.root  # no events in this run
-# ./analysis -r 14809 -o 14809.root  # 2 events in this run - match
-# ./analysis -r 14587 -o 14587.root  # no events in this run 
-# ./analysis -r 14765 -o 14765.root  # no events in this run 
-# ./analysis -r 14760 -o 14760.root  # 2 events in this run - match 
-# ./analysis -r 14589 -o 14589.root  # no events in this run
-# ./analysis -r 14810 -o 14810.root  # 1 events in this run - match  
-# ./analysis -r 14766 -o 14766.root  # no events in this run
-# ./analysis -r 14799 -o 14799.root  # 6 events in this run - match
-# ./analysis -r 14771 -o 14771.root  # 1 events in this run - match
-# ./analysis -r 14777 -o 14777.root  # 1 events in this run - match
-# ./analysis -r 14769 -o 14769.root  # 2 events in this run - match
-# ./analysis -r 14905 -o 14905.root # no events in this run
-# ./analysis -r 14645 -o 14645.root # no events in this run
-# ./analysis -r 14647 -o 14647.root # no events in this run
-# ./analysis -r 14593 -o 14593.root # no events in this run
-# ./analysis -r 14764 -o 14764.root  # no events in this run
-# ./analysis -r 14797 -o 14797.root # 2 events in this run - match
-# ./analysis -r 14767 -o 14767.root # 1 events in this run - match
-# ./analysis -r 14644 -o 14644.root # no events in this run
-# ./analysis -r 14804 -o 14804.root # 1 events in this run - match
-# ./analysis -r 14954 -o 14954.root # 1 events in this run - match
-# ./analysis -r 14597 -o 14597.root # no events in this run
-# ./analysis -r 14618 -o 14618.root # no events in this run
-# ./analysis -r 14743 -o 14743.root # 1 events in this run - match2
-# ./analysis -r 14776 -o 14776.root # no events in this run
-# ./analysis -r 14763 -o 14763.root # no events in this run
-# ./analysis -r 14906 -o 14906.root # 3 events in this run - match
-# ./analysis -r 14758 -o 14758.root # 1 events in this run - match
-# ./analysis -r 14588 -o 14588.root # no events in this run
-# ./analysis -r 14733 -o 14733.root # 1 event - but run not in GRL!
+# 2024 No CaloNu
+./analysis -r 200082 -o 200082.bck.root --isMC &
+./analysis -r 200083 -o 200083.bck.root --isMC &
+./analysis -r 200089 -o 200089.bck.root --isMC &
+./analysis -r 200104 -o 200104.bck.root --isMC &
+./analysis -r 200105 -o 200105.bck.root --isMC &
+./analysis -r 200106 -o 200106.bck.root --isMC &
+./analysis -r 200107 -o 200107.bck.root --isMC &
+./analysis -r 200108 -o 200108.bck.root --isMC &
+./analysis -r 200109 -o 200109.bck.root --isMC &
+./analysis -r 200110 -o 200110.bck.root --isMC &
+./analysis -r 200111 -o 200111.bck.root --isMC &
+./analysis -r 200112 -o 200112.bck.root --isMC &
+./analysis -r 200113 -o 200113.bck.root --isMC &
+./analysis -r 200114 -o 200114.bck.root --isMC &
+./analysis -r 200115 -o 200115.bck.root --isMC &
+wait
 
-# ./analysis -r 16937 -o 16937.root
-# ./analysis -r 11613 -o 11613.root
-# ./analysis -r 16934 -o 16934.root
-# ./analysis -r 11213 -o 11213.root
-# ./analysis -r 10881 -o 10881.root
-# ./analysis -r 10701 -o 10701.root
-# ./analysis -r 11070 -o 11070.root
-# ./analysis -r 11527 -o 11527.root
-# ./analysis -r 11703 -o 11703.root
-# ./analysis -r 11093 -o 11093.root
+hadd -f 2024_noCaloNu.bck.root                     200093.bck.root 200094.bck.root 200100.bck.root &
+hadd -f 2024_noCaloNu_FTF_BIC.bck.root             200160.bck.root 200161.bck.root 200162.bck.root &
+hadd -f 2024_noCaloNu_FTFP_INCLXX.bck.root         200163.bck.root 200164.bck.root 200165.bck.root &
+hadd -f 2024_noCaloNu_FTFP_BERT_HP_JEFF33.bck.root 200166.bck.root 200167.bck.root 200168.bck.root &
+hadd -f 2024_noCaloNu_FTFP_BERT_HP_ENDFB8.bck.root 200169.bck.root 200170.bck.root 200171.bck.root &
+wait
 
-# ./analysis -r 10604 -o 10604.root
-# ./analysis -r 14985 -o 14985.root
-# ./analysis -r 16000 -o 16000.root
-# ./analysis -r 16533 -o 16533.root
-# ./analysis -r 9181 -o 9181.root
-# ./analysis -r 16042 -o 16042.root
-# ./analysis -r 15034 -o 15034.root
-# ./analysis -r 9069 -o 9069.root
-# ./analysis -r 9060 -o 9060.root
-# ./analysis -r 9092 -o 9092.root
-# ./analysis -r 15270 -o 15270.root
-# ./analysis -r 8190 -o 8190.root
-# ./analysis -r 8945 -o 8945.root
-# ./analysis -r 11700 -o 11700.root
-# ./analysis -r 16072 -o 16072.root
-# ./analysis -r 16076 -o 16076.root
-# ./analysis -r 8908 -o 8908.root
-# ./analysis -r 15269 -o 15269.root
-# ./analysis -r 8269 -o 8269.root
-# ./analysis -r 11156 -o 11156.root
-# ./analysis -r 10604 -o 10604.root
-# ./analysis -r 8949 -o 8949.root
-# ./analysis -r 15398 -o 15398.root
-# ./analysis -r 15031 -o 15031.root
-# ./analysis -r 14975 -o 14975.root
-# ./analysis -r 16696 -o 16696.root
-# ./analysis -r 8190 -o 8190.root
-# ./analysis -r 15785  -o 15785.root
-# ./analysis -r 8945 -o 8945.root
+hadd -f 2024_CaloNu.bck.root                     200139.bck.root 200140.bck.root 200146.bck.root &
+hadd -f 2024_CaloNu_FTF_BIC.bck.root             200172.bck.root 200173.bck.root 200174.bck.root &
+hadd -f 2024_CaloNu_FTFP_INCLXX.bck.root         200175.bck.root 200176.bck.root 200177.bck.root &
+hadd -f 2024_CaloNu_FTFP_BERT_HP_JEFF33.bck.root 200178.bck.root 200179.bck.root 200180.bck.root &
+hadd -f 2024_CaloNu_FTFP_BERT_HP_ENDFB8.bck.root 200181.bck.root 200182.bck.root 200183.bck.root &
+wait
 
-# ./analysis -r 17023 -o 17023.root
-# ./analysis -r 8945 -o 8945.root
-# ./analysis -r 16000 -o 16000.root
-
-# ./analysis -r 15838 -o 15838.root
-# ./analysis -r 17230 -o 17230.root
-
-# ./analysis -r 200082 -o 200082.root --isMC &
-# ./analysis -r 200083 -o 200083.root --isMC &
-# ./analysis -r 200089 -o 200089.root --isMC &
-
-# wait 
-
-# ./analysis -r 200093 -o 200093.root --isMC &
-# ./analysis -r 200094 -o 200094.root --isMC &
-# ./analysis -r 200100 -o 200100.root --isMC &
-
-# wait
-
-./analysis -r 200139 -o 200139.1.root --isMC |& tee 200139.log &
-./analysis -r 200140 -o 200140.1.root --isMC |& tee 200140.log &
-./analysis -r 200146 -o 200146.1.root --isMC |& tee 200146.log &
+hadd -f 2022_2023.bck.root                     200082.bck.root 200083.bck.root 200089.bck.root &
+hadd -f 2022_2023_FTF_BIC.bck.root             200104.bck.root 200105.bck.root 200106.bck.root &
+hadd -f 2022_2023_FTFP_INCLXX.bck.root         200107.bck.root 200108.bck.root 200109.bck.root &
+hadd -f 2022_2023_FTFP_BERT_HP_JEFF33.bck.root 200110.bck.root 200111.bck.root 200112.bck.root &
+hadd -f 2022_2023_FTFP_BERT_HP_ENDFB8.bck.root 200113.bck.root 200114.bck.root 200115.bck.root &
 
 wait
