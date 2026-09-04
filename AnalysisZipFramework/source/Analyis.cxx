@@ -390,6 +390,10 @@ void Analysis::BuildDataFrame() {
 
 
     // Definitions
+    Define("truth_dec_x_nu", "truth_dec_x[0]");
+    Define("truth_dec_y_nu", "truth_dec_y[0]");
+    Define("truth_dec_z_nu", "truth_dec_z[0]");
+
     Define("Timing_charge_bottom", "Timing0_charge + Timing1_charge");
     Define("Timing_charge_top", "Timing2_charge + Timing3_charge");
     Define("Timing_charge_total", "Timing_charge_top + Timing_charge_bottom");
@@ -508,18 +512,12 @@ void Analysis::Run(TString outputFileName) {
     // applyCut("(!is2024Period ) || (crossingAngle > 150.0)", "Crossing angle > 150 in 2024 period");
 
     // MC Truth Cuts
-
-    Define("truth_dec_x_nu", "truth_dec_x[0]");
-    Define("truth_dec_y_nu", "truth_dec_y[0]");
-    Define("truth_dec_z_nu", "truth_dec_z[0]");
-
     applyCut("(!isCaloNuPeriod) || (isCaloNuPeriod && !inCaloNuPMT)", "Remove CaloNu PMT region (truth)", MC);
     applyCut("is_cc", "CC events only", MC);
     applyCut("abs(truth_pdg[0]) == 14", "nu_mu only", MC);
 
     bookHist2D({"truth_dec_z_nu_preFiducialCuts", "Truth decay z", "truth_dec_z_nu", 200, -4000, -1500}, 
                {"longTracks_preFiducialCuts", "NlongTracks", "longTracks", 5, 0, 5});
-
 
     bookHist1D({"truth_dec_x_nu_preFiducialCuts", "Truth decay x", "truth_dec_x_nu", 200, -300, 300});
     bookHist1D({"truth_dec_y_nu_preFiducialCuts", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
@@ -539,9 +537,6 @@ void Analysis::Run(TString outputFileName) {
     bookHist1D({"truth_dec_r_preFiducialCuts", "Truth decay r", "truth_dec_r", 200, 0, 300});
 
     applyCut("decay_box || decay_lead", "In Faser Nu Box or Lead Block", MC);
-    // applyCut("decay_box", "In Faser Nu Box or Lead Block", MC);
-    // applyCut("decay_lead", "In Lead Block", MC);
-    // applyCut("!(decay_box || decay_lead)", "Not in Faser Nu Box or Lead Block", MC);
     
     bookHist1D({"truth_dec_r", "Truth decay r", "truth_dec_r", 200, 0, 300});
     bookHist1D({"truth_dec_x_nu", "Truth decay x", "truth_dec_x_nu", 200, -300, 300});
@@ -557,10 +552,9 @@ void Analysis::Run(TString outputFileName) {
     bookHist2D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000}, 
                {"truth_dec_y_nu", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
 
-    // applyCut("truth_dec_r < 100", "Truth dec r < 100 mm", MC);
+    applyCut("truth_dec_r < 100", "Truth dec r < 100 mm", MC);
+    
     bookHist1D({"truth_dec_r_postRCut", "Truth decay r", "truth_dec_r", 200, 0, 300});
-    // applyCut("truth_dec_r < 100", "Truth dec r < 100 mm", MC);
-
     bookHist2D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 200, -4000, -1500}, 
                {"longTracks", "NlongTracks", "longTracks", 5, 0, 5});
 
