@@ -454,7 +454,7 @@ void Analysis::applyCut(std::string cutExpression, std::string cutName, DataType
         INFO("Skipping cut for Asimov: ", cutName);
         return;
     }
-    if (dataType == ASIMOV && !isAsimov) {
+    if (dataType == ASIMOV && !isMC) {
         INFO("Skipping cut for data: ", cutName);
         return;
     }
