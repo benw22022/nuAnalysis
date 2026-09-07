@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
         } else if (arg == "--isAsimov") {
             isAsimov = true;
             isMC = true; // Asimov mode implies MC
-            INFO("Running in Asimov mode: GRL, BCID cuts will be skipped, no truth cuts will be applied to MC particles.");
+            INFO("Running in Asimov mode: GRL, BCID cuts will be skipped, no truth cuts will be applied to MC.");
 
         } else if (arg == "--verbose" || arg == "-v") {
             verbose = true;

@@ -232,7 +232,7 @@ void Analysis::BuildDataFrame() {
     Define("is_cc", "Contains(abs(truth_pdg), {11, 13, 15})", MC);
     Define("decay_box", "inFaserNuBox(truth_dec_x[0], truth_dec_y[0], truth_dec_z[0])", MC);
     Define("decay_lead", "inLeadBlock(truth_dec_x[0], truth_dec_y[0], truth_dec_z[0])", MC);
-    Define("inCaloNuPMT", "inCaloNuPMT(truth_dec_z[0])", MC);
+    Define("inCaloNuPMT", "inCaloNuPMT(truth_dec_z[0])", ASIMOV); // Should always be applied to MC due to material mismodelling
     Define("truth_pz_nu", "truth_pz[0] / 1000", MC);
 
     if (m_auxChainSet) {
@@ -512,7 +512,7 @@ void Analysis::Run(TString outputFileName) {
     // applyCut("(!is2024Period ) || (crossingAngle > 150.0)", "Crossing angle > 150 in 2024 period");
 
     // MC Truth Cuts
-    applyCut("(!isCaloNuPeriod) || (isCaloNuPeriod && !inCaloNuPMT)", "Remove CaloNu PMT region (truth)", MC);
+    applyCut("(!isCaloNuPeriod) || (isCaloNuPeriod && !inCaloNuPMT)", "Remove CaloNu PMT region (truth)", ASIMOV);
     applyCut("is_cc", "CC events only", MC);
     applyCut("abs(truth_pdg[0]) == 14", "nu_mu only", MC);
 
