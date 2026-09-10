@@ -625,6 +625,7 @@ void Analysis::Run(TString outputFileName) {
     
 
     // ── Book ALL actions before triggering any event loop ──────────────────
+    // TODO: Move to a Finalise() function
     auto cutReport = m_node->Report();
     auto runsCol   = m_node->Take<int>("run");
 
