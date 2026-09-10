@@ -13,3 +13,5 @@ x509*
 *.png
 *.pdf
 *.tex
+*.bashrc
+*.inputrc
