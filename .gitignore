@@ -15,3 +15,7 @@ x509*
 *.tex
 *.bashrc
 *.inputrc
+*.cache
+Claude outputs
+.ssh
+notebooks/
