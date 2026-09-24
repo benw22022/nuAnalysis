@@ -1,0 +1,20 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nuAnalysis GRL config: official FASER good run lists (from cvmfs)
+#
+# grl_jsons: per-run stable-beam periods ("stable_list") and excluded periods
+#            ("excluded_list"), used for the "Good times" / "Excluded times" cuts on data
+# grl_csvs:  per-run recorded luminosity (lumi_rec, in pb^-1; already accounts for the
+#            excluded periods), written to the output meta tree
+#
+# Select a different GRL config with: ./analysis --grl-config <path>
+# ─────────────────────────────────────────────────────────────────────────────
+
+grl_jsons:
+  - "/cvmfs/faser.cern.ch/repo/sw/runlist/v10/faser_goodrunlist_2022_physics.json"
+  - "/cvmfs/faser.cern.ch/repo/sw/runlist/v10/faser_goodrunlist_2023_physics.json"
+  - "/cvmfs/faser.cern.ch/repo/sw/runlist/v10/faser_goodrunlist_2024_physics.json"
+
+grl_csvs:
+  - "/cvmfs/faser.cern.ch/repo/sw/runlist/v10/faser_goodrunlist_2022_physics.csv"
+  - "/cvmfs/faser.cern.ch/repo/sw/runlist/v10/faser_goodrunlist_2023_physics.csv"
+  - "/cvmfs/faser.cern.ch/repo/sw/runlist/v10/faser_goodrunlist_2024_physics.csv"

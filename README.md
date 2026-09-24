@@ -7,7 +7,7 @@ Analysis framework for running the electron muon neutrino analysis without the n
 ## Getting started
 
 The framework creates an executable called `analysis` which is configured to run over one run at a time (TODO: add multirun functionality)
-The filepaths to the NTuple data and waveform data are defined in `AnalsyisZipFramework/config/file_config.json` and the grl files which are used to get the good times and the luminosity are stored in `AnalsyisZipFramework/config/grl_config.json`
+The filepaths to the NTuple data and waveform data are defined in `AnalysisZipFramework/config/file_config.yaml` and the GRL files which are used to get the good times and the luminosity are listed in `AnalysisZipFramework/config/grl_config.yaml`. All framework configs are YAML (so they can contain comments) and are read with yaml-cpp; the official FASER GRL files themselves are JSON and are read with nlohmann_json. Both libraries come with the LCG view sourced by `setup.sh`.
 
 To get started do:
 
@@ -38,7 +38,21 @@ make
 ./analysis -r <run_number> -o <output_file>
 ```
 
-*Note*: The filepaths and GRLs are obtained from `build/config`, where the configs are obtained at runtime. They are copied from the source folder to the build directory when executing `cmake`.
+Other options:
+
+| Option | Description |
+|---|---|
+| `--file-config <yaml>` | File config to use (default `config/file_config.yaml`), e.g. `config/file_config_late_tracks.yaml` |
+| `--grl-config <yaml>` | GRL config to use (default `config/grl_config.yaml`) |
+| `--isMC` | MC mode: GRL, BCID and trigger cuts are skipped |
+| `--isAsimov` | Asimov mode: MC without the truth selection cuts |
+| `--no-reduced-charge` | Do not use the VetoNu reduced charge; veto on the raw VetoNu charge instead |
+| `-j [n]` | Enable multithreading (all cores, or `n` threads) |
+| `-v` | Verbose output |
+
+*Note*: By default the configs are read from `build/config`. The `*.yaml` files are copied there from `AnalysisZipFramework/config` when `cmake` is run, so re-run `cmake` after editing them (or point `--file-config` / `--grl-config` at the source files).
+
+The file config can be regenerated with `AnalysisZipFramework/scripts/make_fileconfig.py` (data runs only; MC runs are added by hand).
 
 ## Output file structure
 The output file contains the following trees:

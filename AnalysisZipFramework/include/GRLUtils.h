@@ -14,19 +14,14 @@
 namespace fs = std::filesystem;
 using json = nlohmann::json;
 
+// Reading of the official FASER GRL files (JSON good-run lists and CSV luminosities).
+// The framework's own config files are YAML and are read by ConfigUtils.
 namespace GRLUtils {
 
     std::vector<TString> toTStringVector(const std::vector<std::string>& stdStrings);
 
     std::vector<std::string> toStdStringVector(const std::vector<TString>& tStrings);
     
-    struct GRLConfig {
-        std::vector<TString> grlJsons;
-        std::vector<TString> grlCsvs;
-    };
-
-    GRLConfig readGRLConfig(const std::string& configPath);
-
     static std::vector<fs::path> collectFiles(const std::string& dir, const std::string& ext);
 
 
@@ -37,12 +32,5 @@ namespace GRLUtils {
     std::string makeExcludedTimesCut(const std::vector<TString>& jsonFiles);
 
     std::string makeGoodTimesCut(const std::vector<TString>& jsonFiles);
-
-    using FileConfig = std::map<int, std::pair<
-        std::vector<std::string>,   // datapaths
-        std::vector<std::string>    // auxpaths
-    >>;
-
-    FileConfig parseFileConfig(std::string configPath);
 
 } // namespace GRLUtils

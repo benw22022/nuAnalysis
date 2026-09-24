@@ -15,26 +15,6 @@ namespace GRLUtils {
         return result;
     }
 
-    GRLConfig readGRLConfig(const std::string& configPath) {
-        std::ifstream ifs(configPath);
-        if (!ifs.is_open())
-        {
-            ERROR("Could not open config file: ", configPath);
-            throw std::runtime_error("Could not open config file: " + configPath);
-        }
-
-        INFO("Reading GRL config from ", configPath, "...");
-        
-        json j = json::parse(ifs);
-
-        GRLConfig config;
-        config.grlJsons = toTStringVector(j.at("GRLJsons").get<std::vector<std::string>>());
-        config.grlCsvs  = toTStringVector(j.at("GRLCSVs").get<std::vector<std::string>>());
-        
-        ifs.close();
-        INFO("Read GRL config: ", config.grlJsons.size(), " JSON files, ", config.grlCsvs.size(), " CSV files.");
-        return config;
-    }   
 
     // ─── Helper ──────────────────────────────────────────────────────────────────
 
@@ -205,29 +185,6 @@ namespace GRLUtils {
 
         stripTrailing(cutStr, " || ");
         return cutStr;
-    }
-
-    FileConfig parseFileConfig(std::string configPath) {
-        std::ifstream ifs(configPath);
-        if (!ifs.is_open()) {
-            ERROR("Could not open file config: ", configPath);
-            throw std::runtime_error("Could not open file config: " + configPath);
-        }
-
-        INFO("Reading file config from ", configPath, "...");
-        
-        json j = json::parse(ifs);
-
-        FileConfig fileConfig;
-
-        for (const auto& [runStr, paths] : j.items()) {
-            int runNumber = std::stoi(runStr);
-            std::vector<std::string> dataPaths = paths["data_paths"].get<std::vector<std::string>>();
-            std::vector<std::string> auxPaths  = paths["waveform_paths"].get<std::vector<std::string>>();
-            fileConfig[runNumber] = {dataPaths, auxPaths};
-        }
-
-        return fileConfig;
     }
 
 }

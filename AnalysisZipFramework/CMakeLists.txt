@@ -16,19 +16,32 @@ include(${ROOT_USE_FILE})
 message(STATUS "Set ROOT : ${ROOT_USE_FILE}")
 message(STATUS "ROOT : ${ROOT_LIBRARIES}")
 #----------------------------------------------------------------------------
-# Find nlohmann_json (required package)
-find_package( nlohmann_json )
+# Find nlohmann_json (required package): used to read the official FASER GRL .json files
+find_package( nlohmann_json REQUIRED )
+
+#----------------------------------------------------------------------------
+# Find yaml-cpp (required package): used to read the framework's YAML configs.
+# Both are available in the LCG views (LCG_109: yaml-cpp 0.6.3).
+# yaml-cpp < 0.8 exports the target 'yaml-cpp', >= 0.8 exports 'yaml-cpp::yaml-cpp'.
+find_package( yaml-cpp REQUIRED )
+if(TARGET yaml-cpp::yaml-cpp)
+  set(YAML_CPP_TARGET yaml-cpp::yaml-cpp)
+else()
+  set(YAML_CPP_TARGET yaml-cpp)
+endif()
+message(STATUS "yaml-cpp : ${yaml-cpp_VERSION} (${YAML_CPP_TARGET})")
 
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
 #
 include_directories(${PROJECT_SOURCE_DIR}/include 
                     ${ROOT_INCLUDE_DIR}
+                    ${YAML_CPP_INCLUDE_DIR}
                     )
 
 file(GLOB_RECURSE sources ${PROJECT_SOURCE_DIR}/source/*.cxx)
 file(GLOB_RECURSE headers ${PROJECT_SOURCE_DIR}/include/*.h)
-file(GLOB_RECURSE configs RELATIVE ${PROJECT_SOURCE_DIR} config/*.json)
+file(GLOB_RECURSE configs RELATIVE ${PROJECT_SOURCE_DIR} config/*.yaml)
 file(GLOB_RECURSE definitions ${PROJECT_SOURCE_DIR}/include/RDFDefines.h)
 
 #----------------------------------------------------------------------------
@@ -58,6 +71,7 @@ target_compile_definitions(analysis PRIVATE
 
 target_link_libraries(analysis
                       nlohmann_json::nlohmann_json
+                      ${YAML_CPP_TARGET}
                       ${ROOT_LIBRARIES}
                       )
 
