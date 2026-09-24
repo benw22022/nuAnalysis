@@ -19,3 +19,4 @@ x509*
 Claude outputs
 .ssh
 notebooks/
+*.vscode
