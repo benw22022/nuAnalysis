@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <optional>
 #include <unordered_map>
+#include <atomic>
 #include "MessageService.hpp"
 
 enum DataType { MC, DATA, ALL, ASIMOV };
@@ -37,6 +38,14 @@ class Analysis {
         bool isMC{false};
 
         bool isAsimov{false};
+
+        // If false, the reduced VetoNu charge is not used at all: no aux files are loaded
+        // and the VetoNu veto is applied on the raw charge instead (see Run()).
+        bool useReducedCharge{true};
+
+        // Run numbers this job was asked to process. Used to fill the meta tree (lumi),
+        // independently of whether any events pass the cuts.
+        void setRunNumbers(const std::vector<int>& runs) { m_runNumbers = runs; }
 
         void Define(std::string columnName, std::string expression, DataType dataType = ALL);
 
@@ -78,6 +87,13 @@ class Analysis {
         std::optional<ROOT::RDF::RNode> m_eventIDNode;
 
         std::vector<std::string> m_passedCutColNames;
+
+        std::vector<int> m_runNumbers;
+
+        // Where the VetoNu reduced charge comes from (decided in BuildDataFrame)
+        enum class ReducedChargeSource { None, Aux, Native };
+        ReducedChargeSource m_reducedChargeSource{ReducedChargeSource::None};
+        void defineReducedChargeFromAux();
 
         std::vector<TString> ExpandAndSort(TString pattern);
 

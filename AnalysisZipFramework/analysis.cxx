@@ -16,6 +16,7 @@ int main(int argc, char* argv[]) {
     std::string outputFile = "";
     bool        isMC       = false;
     bool        isAsimov   = false;
+    bool        useReducedCharge = true;
     bool        verbose    = false;
     bool        useMT      = false;
     int         nThreads   = 0; // 0 = all available cores (ROOT::EnableImplicitMT() default)
@@ -50,6 +51,10 @@ int main(int argc, char* argv[]) {
             isMC = true; // Asimov mode implies MC
             INFO("Running in Asimov mode: GRL, BCID cuts will be skipped, no truth cuts will be applied to MC.");
 
+        } else if (arg == "--no-reduced-charge") {
+            useReducedCharge = false;
+            INFO("Reduced charge disabled: aux files will not be loaded and the VetoNu veto will use the raw charge.");
+
         } else if (arg == "--verbose" || arg == "-v") {
             verbose = true;
             MessageService::Debug(true);
@@ -78,14 +83,14 @@ int main(int argc, char* argv[]) {
 
         } else {
             ERROR("Unknown argument: ", arg);
-            ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [-j [n]]");
+            ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
             return 1;
         }
     }
 
     if (runNumber == -1) {
         ERROR("Error: --run <number> is required.");
-        ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [-j [n]]");
+        ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
         return 1;
     }
 
@@ -118,15 +123,24 @@ int main(int argc, char* argv[]) {
 
 
     Analysis analysis("nt", mainFiles);
-    if (!auxFiles.empty())
+    if (!auxFiles.empty() && useReducedCharge)
     {
         analysis.addAuxFiles("tree", auxFiles);
     }
 
     analysis.isMC = isMC;
     analysis.isAsimov = isAsimov;
-    analysis.setGRL(grlConfig.grlJsons, grlConfig.grlCsvs);
-    analysis.Run(outputFile);
+    analysis.useReducedCharge = useReducedCharge;
+    analysis.setRunNumbers({runNumber});
+    // Catch exceptions so that buffered log messages are flushed and the job exits with a
+    // non-zero code (an uncaught exception aborts before std::cout is flushed)
+    try {
+        analysis.setGRL(grlConfig.grlJsons, grlConfig.grlCsvs);
+        analysis.Run(outputFile);
+    } catch (const std::exception& e) {
+        ERROR("Analysis failed: ", e.what());
+        return 1;
+    }
 
     INFO("Analysis completed successfully.");
     return 0;

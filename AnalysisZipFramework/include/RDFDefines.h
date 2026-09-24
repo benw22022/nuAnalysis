@@ -5,6 +5,8 @@
 #include "ROOT/RVec.hxx"
 #include "Math/Vector4D.h"
 #include "Math/Vector3D.h"
+#include <limits>
+#include <type_traits>
 
 struct FaserNuBox {
     /*Dimensions of the Faser NuBox*/
@@ -51,6 +53,21 @@ struct CaloNuPMT{
 
 
 using namespace ROOT::VecOps;
+
+// Bounds-checked element access for RVec columns.
+// Returns v[idx] if idx is a valid index, otherwise NaN.
+// Every comparison with NaN is false, so any cut on the value fails, whatever the direction
+// of the cut ("x > a" or "x < b") and whatever the column type.
+// Integer columns are returned as double so that NaN can be represented: a sentinel such as
+// -1 does not work for unsigned types (e.g. Track_nLayers is uint32, where -1 wraps to 4294967295).
+// Use this whenever indexing a vector column (e.g. with LeadTrack_Idx or [0]) in a Define
+// that is evaluated for every event, e.g. the passed_* flags in the eventID_pass tree.
+template <typename T>
+auto SafeAt(const RVec<T>& v, long idx) {
+  using R = std::conditional_t<std::is_floating_point_v<T>, T, double>;
+  if (idx >= 0 && idx < static_cast<long>(v.size())) return static_cast<R>(v[idx]);
+  return std::numeric_limits<R>::quiet_NaN();
+}
 
 template<typename T>
 RVec<T> DeltaTheta(const RVec<T>& theta1, const RVec<T>& theta2) {
