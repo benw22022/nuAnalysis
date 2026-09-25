@@ -71,12 +71,15 @@ namespace ConfigUtils {
     // Apply the output config to the dataframe's columns.
     //   allColumns:     RDF GetColumnNames()        (input branches, aliases and defined columns)
     //   definedColumns: RDF GetDefinedColumnNames() (Define / Redefine)
+    //   notInSaveAll:   columns never included by the save_all_* switches (only by keep entries),
+    //                   e.g. compatibility fallbacks such as Veto11 -> Veto10
     // Prints a WARNING for every keep/drop entry (for the current sample type) that matches no column.
     // Returns the selected columns in the order of allColumns.
     std::vector<std::string> selectOutputColumns(const std::vector<std::string>& allColumns,
                                                  const std::vector<std::string>& definedColumns,
                                                  const OutputColumnsConfig& config,
-                                                 bool isMC);
+                                                 bool isMC,
+                                                 const std::vector<std::string>& notInSaveAll = {});
 
 } // namespace ConfigUtils
 

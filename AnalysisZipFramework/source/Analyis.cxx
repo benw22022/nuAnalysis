@@ -4,6 +4,7 @@
 #include "TInterpreter.h"
 #include "MessageService.hpp"
 #include <set>
+#include <regex>
 #include <filesystem>
 #include <numeric>
 #include <cmath>
@@ -243,19 +244,8 @@ void Analysis::BuildDataFrame() {
     m_df   = std::make_unique<ROOT::RDataFrame>(*m_mainChain);
     m_node = *m_df;
 
-    // Aliases for older NTuples where the branch names were different
-    auto columnNames = m_node->GetColumnNames();
-    if (std::find(columnNames.begin(), columnNames.end(), "VetoSt10_raw_charge") != columnNames.end()) {
-        m_node = m_node->Alias("VetoSt10_raw_charge", "Veto10_raw_charge");
-        m_node = m_node->Alias("VetoSt20_raw_charge", "Veto20_raw_charge");
-        m_node = m_node->Alias("VetoSt21_raw_charge", "Veto21_raw_charge");
-        m_node = m_node->Alias("VetoSt10_status", "Veto10_status");
-        m_node = m_node->Alias("VetoSt20_status", "Veto20_status");
-        m_node = m_node->Alias("VetoSt21_status", "Veto21_status");
-        m_node = m_node->Alias("VetoSt10_charge", "Veto10_charge");
-        m_node = m_node->Alias("VetoSt20_charge", "Veto20_charge");
-        m_node = m_node->Alias("VetoSt21_charge", "Veto21_charge");
-    }
+    // Backwards compatibility with older NTuples: VetoSt* naming, missing Veto11
+    setupVetoCompatibility();
 
     // Define some basic cuts for data and MC
     Define("isCaloNuPeriod", "15821 <= run  && run <= 16924", DATA);
@@ -517,6 +507,86 @@ void Analysis::defineReducedChargeFromAux() {
 
 }
 
+namespace {
+    // Veto11_<var> column that returns Veto10_<var> and counts how often it is evaluated.
+    // Typed (compiled) Define, so it needs the exact column type.
+    template <typename T>
+    void defineCountedFallback(Analysis& analysis, const std::string& target, const std::string& source,
+                               std::shared_ptr<std::atomic<ULong64_t>> counter) {
+        analysis.Define(target,
+            [counter](T value) { counter->fetch_add(1, std::memory_order_relaxed); return value; },
+            {source});
+    }
+}
+
+// Backwards compatibility with older NTuples:
+//  1) Old NTuples name the veto scintillator branches VetoSt<N>_<var> instead of Veto<N>_<var>.
+//     Every VetoSt<N>_<var> gets an alias Veto<N>_<var>, so the code can always use the new names.
+//  2) Veto11 was not read out in 2022-2023 (no free digitiser channel).
+//    If the input has no Veto11_* branches at all, every Veto11_<var> is defined
+//     as the corresponding Veto10_<var>. Its use is counted, and reportVetoFallbacks() prints a
+//     warning at the end of the job for every Veto11 column that was actually used.
+void Analysis::setupVetoCompatibility() {
+    // 1) VetoSt<N>_<var> -> Veto<N>_<var>
+    const std::regex oldVetoName(R"(^VetoSt(\d+)_(.+)$)");
+    std::vector<std::string> aliased;
+    for (const auto& col : m_node->GetColumnNames()) {
+        std::smatch m;
+        if (!std::regex_match(col, m, oldVetoName)) continue;
+        const std::string newName = "Veto" + m[1].str() + "_" + m[2].str();
+        if (isColumnDefined(newName)) continue;
+        m_node = m_node->Alias(newName, col);
+        aliased.push_back(col + " -> " + newName);
+    }
+    if (!aliased.empty()) {
+        INFO("Old NTuple naming: aliased ", aliased.size(), " VetoSt* branches to the Veto* names (e.g. ", aliased.front(), ").");
+        for (const auto& a : aliased) DEBUG("  alias: ", a);
+    }
+
+    // 2) Veto11 -> Veto10 fallback if the input has no Veto11 branches
+    const auto columns = m_node->GetColumnNames();  // includes the aliases above
+    const bool hasVeto11 = std::any_of(columns.begin(), columns.end(),
+                                       [](const std::string& c) { return c.rfind("Veto11_", 0) == 0; });
+    if (hasVeto11) return;
+
+    for (const auto& source : columns) {
+        if (source.rfind("Veto10_", 0) != 0) continue;
+        const std::string target = "Veto11_" + source.substr(7);
+        const std::string type   = m_node->GetColumnType(source);
+        auto counter = std::make_shared<std::atomic<ULong64_t>>(0);
+
+        if      (type == "Float_t"  || type == "float")  defineCountedFallback<Float_t >(*this, target, source, counter);
+        else if (type == "Double_t" || type == "double") defineCountedFallback<Double_t>(*this, target, source, counter);
+        else if (type == "Int_t"    || type == "int")    defineCountedFallback<Int_t   >(*this, target, source, counter);
+        else if (type == "UInt_t"   || type == "unsigned int") defineCountedFallback<UInt_t>(*this, target, source, counter);
+        else if (type == "Bool_t"   || type == "bool")   defineCountedFallback<Bool_t  >(*this, target, source, counter);
+        else {
+            // Unexpected type: plain copy, use not counted
+            m_node = m_node->Define(target, source);
+            counter = nullptr;
+        }
+        m_columnFallbacks.push_back({target, source, counter});
+    }
+
+    if (!m_columnFallbacks.empty()) {
+        INFO("No Veto11 branches in the input (Veto11 was not read out in 2022-2023): ", m_columnFallbacks.size(),
+             " Veto11_* columns will fall back to the Veto10_* values if used. A warning is printed at the end if they are.");
+    }
+}
+
+// Warn about every fallback column that was actually used in the event loop
+void Analysis::reportVetoFallbacks() const {
+    for (const auto& fb : m_columnFallbacks) {
+        if (!fb.nUsed) {
+            WARNING("'", fb.target, "' is not in the input NTuple and was defined as '", fb.source,
+                    "' (use not counted for this column type).");
+        } else if (fb.nUsed->load() > 0) {
+            WARNING("'", fb.target, "' is not in the input NTuple (no Veto11 in 2022-2023): '", fb.source,
+                    "' was used instead for ", fb.nUsed->load(), " events.");
+        }
+    }
+}
+
 // Columns written to the output nt tree, from the output columns config (all columns if no config set)
 std::vector<std::string> Analysis::selectOutputColumns() {
     const auto allColumns = m_node->GetColumnNames();
@@ -524,7 +594,11 @@ std::vector<std::string> Analysis::selectOutputColumns() {
         INFO("No output columns config set: saving all ", allColumns.size(), " columns to ", m_mainFileTreeName, ".");
         return allColumns;
     }
-    const auto columns = ConfigUtils::selectOutputColumns(allColumns, m_node->GetDefinedColumnNames(), *m_outputColumnsConfig, isMC);
+    // Fallback columns (e.g. Veto11 -> Veto10) are compatibility shims, not real branches or framework
+    // variables: they are never included by the save_all_* switches, only if a keep entry asks for them
+    std::vector<std::string> fallbackColumns;
+    for (const auto& fb : m_columnFallbacks) fallbackColumns.push_back(fb.target);
+    const auto columns = ConfigUtils::selectOutputColumns(allColumns, m_node->GetDefinedColumnNames(), *m_outputColumnsConfig, isMC, fallbackColumns);
     INFO("Saving ", columns.size(), " of ", allColumns.size(), " columns to ", m_mainFileTreeName,
          " (config: ", m_outputColumnsConfig->sourcePath, "). Use -v to list them.");
     for (const auto& c : columns) DEBUG("  saving column: ", c);
@@ -880,6 +954,9 @@ void Analysis::Run(TString outputFileName) {
     if (m_node->GetNRuns() > 1) {  // should be exactly 1
         WARNING("Event loop ran multiple times. This is inefficient.");
     }
+
+    // Veto11 -> Veto10 fallback (only reported if used)
+    reportVetoFallbacks();
 
     // Sanity check fallbacks and missing aux data
     // These go here, after event loop has run. If we put them before, they would be printed before the event loop runs and thus always show 0 fallbacks, which is misleading.

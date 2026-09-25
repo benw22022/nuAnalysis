@@ -55,6 +55,11 @@ Other options:
 
 The file config can be regenerated with `AnalysisZipFramework/scripts/make_fileconfig.py` (data runs only; MC runs are added by hand).
 
+## Older NTuples (backwards compatibility)
+
+- Old NTuples name the veto scintillator branches `VetoSt<N>_<var>`. Each gets an alias `Veto<N>_<var>`, so the code (and configs) can always use the new names, e.g. `Veto10_raw_charge`.
+- Veto11 was not read out in 2022-2023 (and some MC has no Veto11 branches). If the input has no `Veto11_*` branches, every `Veto11_<var>` falls back to `Veto10_<var>`. A warning is printed at the end of the job for each `Veto11_*` column that was actually used, with the number of events. The fallback columns are not included by `save_all_*` in the output config, only by explicit `keep` entries.
+
 ## Choosing the columns saved in `nt`
 
 `config/output_columns.yaml` selects which columns are written to the `nt` tree:

@@ -158,12 +158,15 @@ namespace ConfigUtils {
     std::vector<std::string> selectOutputColumns(const std::vector<std::string>& allColumns,
                                                  const std::vector<std::string>& definedColumns,
                                                  const OutputColumnsConfig& config,
-                                                 bool isMC) {
+                                                 bool isMC,
+                                                 const std::vector<std::string>& notInSaveAll) {
         const std::string& src = config.sourcePath;
         const std::set<std::string> defined(definedColumns.begin(), definedColumns.end());
+        const std::set<std::string> excluded(notInSaveAll.begin(), notInSaveAll.end());
         std::set<std::string> selected;
 
         for (const auto& c : allColumns) {
+            if (excluded.count(c)) continue;
             const bool isDefined = defined.count(c) > 0;
             if (( isDefined && config.saveAllDefinedColumns) ||
                 (!isDefined && config.saveAllInputColumns)) {

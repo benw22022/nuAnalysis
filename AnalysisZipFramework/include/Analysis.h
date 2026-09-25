@@ -112,6 +112,16 @@ class Analysis {
         std::shared_ptr<const GRLUtils::GRLTimes> m_grlTimes;
         void defineGRLTimeColumns();
 
+        // Backwards compatibility with older NTuples (see setupVetoCompatibility in Analyis.cxx)
+        void setupVetoCompatibility();
+        void reportVetoFallbacks() const;
+        struct ColumnFallback {
+            std::string target;   // requested column, e.g. Veto11_charge
+            std::string source;   // column used instead, e.g. Veto10_charge
+            std::shared_ptr<std::atomic<ULong64_t>> nUsed;  // events for which the fallback was evaluated (nullptr: not counted)
+        };
+        std::vector<ColumnFallback> m_columnFallbacks;
+
         std::atomic<int> m_NVetoNu0_fallbacks{0};
         std::atomic<int> m_NVetoNu1_fallbacks{0};
         std::atomic<int> m_NVetoNu0_missing_aux{0};
