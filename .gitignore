@@ -20,3 +20,6 @@ Claude outputs
 .ssh
 notebooks/
 *.vscode
+*.alrb
+*.bash_history
+*.asetup
