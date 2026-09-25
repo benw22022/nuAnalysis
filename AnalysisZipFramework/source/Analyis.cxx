@@ -4,6 +4,7 @@
 #include "TInterpreter.h"
 #include "MessageService.hpp"
 #include <set>
+#include <filesystem>
 #include <numeric>
 #include <cmath>
 #include "GRLUtils.h"
@@ -137,8 +138,41 @@ void Analysis::addAuxFiles(TString auxFileTreeName, std::vector<TString> auxFile
 
 void Analysis::setGRL(const std::vector<TString>& grlJsons, const std::vector<TString>& grlCSVs) {
     m_runLumiDict = GRLUtils::getRunNumberLumiDict(grlCSVs);
-    m_excludedTimesCut = GRLUtils::makeExcludedTimesCut(grlJsons);
-    m_goodTimesCut = GRLUtils::makeGoodTimesCut(grlJsons);
+    m_grlTimes = std::make_shared<const GRLUtils::GRLTimes>(GRLUtils::readGRLTimes(grlJsons));
+}
+
+namespace {
+    // Define GoodTimes / ExcludedTimes as compiled lookups. Templated on the type of the eventTime
+    // branch, because RDataFrame needs the exact column type for a compiled (non-JIT) Define.
+    template <typename TTime>
+    void defineGRLTimeColumnsImpl(Analysis& analysis, std::shared_ptr<const GRLUtils::GRLTimes> grl) {
+        analysis.Define("GoodTimes",
+            [grl](Int_t run, TTime eventTime) { return grl->stable.contains(run, static_cast<long long>(eventTime)); },
+            {"run", "eventTime"}, DATA);
+        if (grl->excluded.size() > 0) {
+            analysis.Define("ExcludedTimes",
+                [grl](Int_t run, TTime eventTime) { return grl->excluded.contains(run, static_cast<long long>(eventTime)); },
+                {"run", "eventTime"}, DATA);
+        }
+    }
+}
+
+void Analysis::defineGRLTimeColumns() {
+    if (isMC) return;  // GRL time cuts are data only
+    if (!m_grlTimes) {
+        throw std::runtime_error("GRL not set: call Analysis::setGRL() before Run()");
+    }
+    for (int run : m_runNumbers) {
+        if (!m_grlTimes->stable.hasRun(run)) {
+            WARNING("Run ", run, " has no stable periods in the GRL: all its events will fail the 'Good times' cut.");
+        }
+    }
+    const std::string timeType = m_node->GetColumnType("eventTime");
+    if      (timeType == "Int_t"     || timeType == "int")                defineGRLTimeColumnsImpl<Int_t>(*this, m_grlTimes);
+    else if (timeType == "UInt_t"    || timeType == "unsigned int")       defineGRLTimeColumnsImpl<UInt_t>(*this, m_grlTimes);
+    else if (timeType == "Long64_t"  || timeType == "long long")          defineGRLTimeColumnsImpl<Long64_t>(*this, m_grlTimes);
+    else if (timeType == "ULong64_t" || timeType == "unsigned long long") defineGRLTimeColumnsImpl<ULong64_t>(*this, m_grlTimes);
+    else throw std::runtime_error("Unsupported type for the eventTime column: " + timeType);
 }
 
 
@@ -313,8 +347,7 @@ void Analysis::BuildDataFrame() {
     Define("LeadTrack_rIFT", "SafeAt(Track_rIFT, LeadTrack_Idx)");
     Define("LeadTrack_charge", "SafeAt(Track_charge, LeadTrack_Idx)");
     Define("LeadTrack_qop", "LeadTrack_charge / SafeAt(Track_pz0, LeadTrack_Idx)");
-    Define("GoodTimes", m_goodTimesCut, DATA);
-    if (!m_excludedTimesCut.empty()) Define("ExcludedTimes", m_excludedTimesCut, DATA);
+    defineGRLTimeColumns();  // GoodTimes / ExcludedTimes (data only)
 
 
     // This needs to go at the end of all the definitions, otherwise the aux columns won't be available for cuts
@@ -333,6 +366,12 @@ void Analysis::defineReducedChargeFromAux() {
 
     Int_t  run, evt;
     float charge35_nu0, charge35_nu1;
+
+    // Only read the four branches we need (GetEntry would otherwise decompress every branch)
+    m_auxChain->SetBranchStatus("*", false);
+    for (const char* b : {"run", "event", "myVetoNu0_rawCharge35", "myVetoNu1_rawCharge35"}) {
+        m_auxChain->SetBranchStatus(b, true);
+    }
 
     m_auxChain->SetBranchAddress("run",                   &run);
     m_auxChain->SetBranchAddress("event",                 &evt);
@@ -545,11 +584,9 @@ void Analysis::Run(TString outputFileName) {
     applyCut("distanceToCollidingBCID == 0", "Colliding", DATA);
     applyCut("(inputBits & 0x8) == 0x8 || (inputBits & 0x10) == 0x10 || (inputBits & 0x20) == 0x20 || (inputBits & 0x40) == 0x40", "Trigger", DATA);
 
-    DEBUG("Applying GRL good times cut: ", m_goodTimesCut);
     applyCut("GoodTimes", "Good times", DATA);
 
-    if (m_excludedTimesCut != "") {
-        DEBUG("Applying GRL excluded times cut: ", m_excludedTimesCut);
+    if (m_grlTimes && m_grlTimes->excluded.size() > 0) {
         applyCut("!ExcludedTimes", "Excluded times", DATA);
     }
 
@@ -697,13 +734,27 @@ void Analysis::Run(TString outputFileName) {
     if (outputFileName != "") {
         INFO("Saving snapshot to ", outputFileName, "...");
 
+        // Both snapshots are booked lazily so that they are filled in ONE event loop together with
+        // the cutflow, histograms and counters booked above.
+        // RDataFrame cannot write two trees to the same file in one event loop, so the eventID_pass
+        // tree is written to a temporary file next to the output and copied in afterwards
+        // (a fast, basket-level copy: no re-reading of the input).
         auto opts = ROOT::RDF::RSnapshotOptions();
         opts.fMode = "RECREATE";
+        opts.fLazy = true;
         auto columns = m_node->GetColumnNames();
+        auto ntSnapshot = m_node->Snapshot(m_mainFileTreeName, outputFileName, columns, opts);
 
-        // ── SINGLE EVENT LOOP ───────────────────────────────────────────────
-        INFO("Writing snapshot of ", columns.size(), " columns to file...");
-        m_node->Snapshot(m_mainFileTreeName, outputFileName, columns, opts);
+        const std::string eventIDTmpFile = std::string(outputFileName.Data()) + ".eventID_pass.tmp.root";
+        m_passedCutColNames.push_back("run");
+        m_passedCutColNames.push_back("eventID");
+        auto eventIDSnapshot = m_eventIDNode->Snapshot("eventID_pass", eventIDTmpFile, m_passedCutColNames, opts);
+
+        // ── THE event loop ──────────────────────────────────────────────────
+        INFO("Running the event loop: writing ", columns.size(), " columns to ", m_mainFileTreeName, " and ",
+             m_passedCutColNames.size(), " columns to eventID_pass...");
+        ntSnapshot.GetValue();       // triggers the (single) event loop
+        eventIDSnapshot.GetValue();  // already filled by the same loop
 
         // ── Post-processing to save metadata and cutflow info ───────────────
         TFile *file = TFile::Open(outputFileName, "UPDATE");
@@ -787,20 +838,32 @@ void Analysis::Run(TString outputFileName) {
             INFO("Wrote ", m_histResults.size(), " histograms to file.");
         }
 
-        // ── Event ID pass tree (for debugging) ────────────────────────────
-        INFO("Writing eventID_pass tree for debugging (might be slow)...");
-        opts.fMode = "UPDATE";
-        m_passedCutColNames.push_back("run");
-        m_passedCutColNames.push_back("eventID");
-        m_eventIDNode->Snapshot("eventID_pass", outputFileName, m_passedCutColNames, opts);
-        INFO("Wrote eventID_pass tree with ", m_eventIDNode->Count().GetValue(), " entries.");
+        // ── Event ID pass tree: copy from the temporary file into the output ─
+        {
+            std::unique_ptr<TFile> tmpFile(TFile::Open(eventIDTmpFile.c_str(), "READ"));
+            std::unique_ptr<TFile> outFile(TFile::Open(outputFileName, "UPDATE"));
+            if (!tmpFile || tmpFile->IsZombie() || !outFile || outFile->IsZombie()) {
+                throw std::runtime_error("Could not open " + eventIDTmpFile + " or " + std::string(outputFileName.Data()) + " to copy the eventID_pass tree");
+            }
+            auto* eventIDTree = tmpFile->Get<TTree>("eventID_pass");
+            if (!eventIDTree) {
+                throw std::runtime_error("eventID_pass tree not found in " + eventIDTmpFile);
+            }
+            outFile->cd();
+            TTree* copy = eventIDTree->CloneTree(-1, "fast");
+            copy->Write();
+            INFO("Wrote eventID_pass tree with ", copy->GetEntries(), " entries.");
+            outFile->Close();
+            tmpFile->Close();
+        }
+        std::filesystem::remove(eventIDTmpFile);
 
     } else {
         cutReport->Print();
     }
 
     INFO("Total event loop runs: ", m_node->GetNRuns());
-    if (m_node->GetNRuns() > 1) {
+    if (m_node->GetNRuns() > 1) {  // should be exactly 1
         WARNING("Event loop ran multiple times. This is inefficient.");
     }
 

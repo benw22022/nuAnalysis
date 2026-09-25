@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <atomic>
 #include "MessageService.hpp"
+#include "GRLUtils.h"
+#include <memory>
 
 enum DataType { MC, DATA, ALL, ASIMOV };
 
@@ -98,8 +100,9 @@ class Analysis {
         std::vector<TString> ExpandAndSort(TString pattern);
 
         std::unordered_map<int, float> m_runLumiDict;
-        std::string m_excludedTimesCut{""};
-        std::string m_goodTimesCut{""};
+        // Good / excluded time ranges per run from the GRL (used by the GoodTimes / ExcludedTimes columns)
+        std::shared_ptr<const GRLUtils::GRLTimes> m_grlTimes;
+        void defineGRLTimeColumns();
 
         std::atomic<int> m_NVetoNu0_fallbacks{0};
         std::atomic<int> m_NVetoNu1_fallbacks{0};

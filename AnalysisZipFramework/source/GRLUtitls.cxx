@@ -16,24 +16,6 @@ namespace GRLUtils {
     }
 
 
-    // ─── Helper ──────────────────────────────────────────────────────────────────
-
-    // Collect all files with a given extension from a directory
-    static std::vector<fs::path> collectFiles(const std::string& dir, const std::string& ext) {
-        std::vector<fs::path> files;
-        for (const auto& entry : fs::directory_iterator(dir))
-            if (entry.path().extension() == ext)
-                files.push_back(entry.path());
-        return files;
-    }
-
-    // Strip a trailing suffix from a string (mirrors Python's rstrip on a token)
-    static void stripTrailing(std::string& s, const std::string& suffix) {
-        if (s.size() >= suffix.size() &&
-            s.compare(s.size() - suffix.size(), suffix.size(), suffix) == 0)
-            s.erase(s.size() - suffix.size());
-    }
-
     // ─── Functions ───────────────────────────────────────────────────────────────
 
     /**
@@ -82,109 +64,47 @@ namespace GRLUtils {
     }
 
     /**
-    * Parse JSON GRL files to build a filter string that removes excluded time periods.
-    * Returns a string suitable for use with RDataFrame::Filter().
-    * Returns "" if there are no excluded periods.
+    * Parse the official FASER GRL JSON files into per-run time ranges:
+    *   stable_list   -> good (stable beam) periods, used for the "Good times" cut
+    *   excluded_list -> periods to remove, used for the "Excluded times" cut
+    * Ranges are inclusive: start_utime <= eventTime <= stop_utime.
+    * (Replaces the previous approach of building one huge JIT filter string.)
     */
-    std::string makeExcludedTimesCut(const std::vector<TString>& jsonFiles) {
-
-        if (jsonFiles.empty()) {
-            ERROR("No GRL .json found!");
-            throw std::runtime_error("No files found");
-        }
-        
-        struct TimeRange { long long start; long long stop; };
-        std::unordered_map<std::string, std::vector<TimeRange>> excludedTimes;
-        int nExcluded = 0;
-
-        for (const auto& grlFile : jsonFiles) {
-            INFO("Parsing GRL JSON file ", grlFile, " for excluded times...");
-            std::ifstream f(grlFile);
-            if (!f.is_open()) {
-                ERROR("Could not open GRL JSON file: ", grlFile);
-                throw std::runtime_error("File open error");
-            }
-            json grlDict = json::parse(f);
-
-            for (const auto& [runNumber, runInfo] : grlDict.items()) {
-                if (!runInfo.contains("excluded_list")) continue;
-                for (const auto& excl : runInfo["excluded_list"]) {
-                    excludedTimes[runNumber].push_back({
-                        excl["start_utime"].get<long long>(),
-                        excl["stop_utime"].get<long long>()
-                    });
-                    ++nExcluded;
-                }
-            }
-        }
-
-        if (nExcluded == 0) return "";
-
-        INFO("Applying cuts to remove ", nExcluded, " excluded periods...");
-
-        std::string cutStr;
-        for (const auto& [runNumber, exclusionList] : excludedTimes) {
-            for (const auto& range : exclusionList) {
-                cutStr += "((eventTime >= " + std::to_string(range.start) +
-                        ") && (eventTime <= " + std::to_string(range.stop) +
-                        ") && (run == " + runNumber + "))";
-                if (nExcluded > 1) cutStr += " || ";
-            }
-        }
-
-        stripTrailing(cutStr, " || ");
-        return cutStr;
-    }
-
-    /**
-    * Parse JSON GRL files to build a filter string that selects stable (good) time periods.
-    * Returns a string suitable for use with RDataFrame::Filter().
-    */
-    std::string makeGoodTimesCut(const std::vector<TString>& jsonFiles) {
+    GRLTimes readGRLTimes(const std::vector<TString>& jsonFiles) {
 
         if (jsonFiles.empty()) {
             ERROR("No GRL .json found!");
             throw std::runtime_error("No files found");
         }
 
-        struct TimeRange { long long start; long long stop; };
-        std::unordered_map<std::string, std::vector<TimeRange>> goodTimes;
-        int nGood = 0;
-
+        GRLTimes times;
         for (const auto& grlFile : jsonFiles) {
             std::ifstream f(grlFile);
-            
             if (!f.is_open()) {
                 ERROR("Could not open GRL JSON file: ", grlFile);
                 throw std::runtime_error("File open error");
             }
 
-            INFO("Parsing GRL JSON file ", grlFile, " for good times...");
-            json grlDict = json::parse(f);
+            INFO("Parsing GRL JSON file ", grlFile, " for good and excluded times...");
+            const json grlDict = json::parse(f);
 
-            for (const auto& [runNumber, runInfo] : grlDict.items()) {
-                for (const auto& stable : runInfo["stable_list"]) {
-                    goodTimes[runNumber].push_back({
-                        stable["start_utime"].get<long long>(),
-                        stable["stop_utime"].get<long long>()
-                    });
-                    ++nGood;
+            for (const auto& [runStr, runInfo] : grlDict.items()) {
+                const int run = std::stoi(runStr);
+                if (runInfo.contains("stable_list")) {
+                    for (const auto& r : runInfo.at("stable_list")) {
+                        times.stable.add(run, r.at("start_utime").get<long long>(), r.at("stop_utime").get<long long>());
+                    }
+                }
+                if (runInfo.contains("excluded_list")) {
+                    for (const auto& r : runInfo.at("excluded_list")) {
+                        times.excluded.add(run, r.at("start_utime").get<long long>(), r.at("stop_utime").get<long long>());
+                    }
                 }
             }
         }
 
-        std::string cutStr;
-        for (const auto& [runNumber, stableList] : goodTimes) {
-            for (const auto& range : stableList) {
-                cutStr += "((eventTime >= " + std::to_string(range.start) +
-                        ") && (eventTime <= " + std::to_string(range.stop) +
-                        ") && (run == " + runNumber + "))";
-                if (nGood > 1) cutStr += " || ";
-            }
-        }
-
-        stripTrailing(cutStr, " || ");
-        return cutStr;
+        INFO("Read ", times.stable.size(), " good (stable) periods and ", times.excluded.size(), " excluded periods from the GRL.");
+        return times;
     }
 
 }
