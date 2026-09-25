@@ -45,6 +45,7 @@ Other options:
 | `--file-config <yaml>` | File config to use (default `config/file_config.yaml`), e.g. `config/file_config_late_tracks.yaml` |
 | `--grl-config <yaml>` | GRL config to use (default `config/grl_config.yaml`) |
 | `--output-config <yaml>` | Which columns to save in the output `nt` tree (default `config/output_columns.yaml`) |
+| `--cuts-config <yaml>` | Cuts and histograms (default `config/cuts.yaml`) |
 | `--isMC` | MC mode: GRL, BCID and trigger cuts are skipped |
 | `--isAsimov` | Asimov mode: MC without the truth selection cuts |
 | `--no-reduced-charge` | Do not use the VetoNu reduced charge; veto on the raw VetoNu charge instead |
@@ -88,12 +89,32 @@ The output file contains the following trees:
 
 An example condor submission script can be found here `AnalysisZipFramework/submission/run_submission.sh`. This file, and `AnalysisZipFramework/submission/run_analysis.sh` need to be modified so that file paths align with your own.
 
-## Modifying cuts
+## Cuts and histograms
 
-Currently definitions and cuts are hardcoded in `AnalysisZipFramework/source/Analyis.cxx`. The member variable `m_node` is the main ROOT `RDataFrame` object.
+Cuts and histograms are configured in `config/cuts.yaml` (select another file with `--cuts-config`). Cuts are applied in the order of the file:
 
-New variable definitions should be added in `Analysis::BuildDataFrame()` using `m_node = m_node->Define(...)`
+```yaml
+Histograms:                       # booked on all events, before the first cut
+  - name: pz_all_events
+    x: {variable: LeadTrack_pz0, edges: [0, 50, 100, 200, 500, 1000]}
 
-New cuts should be defined in `Analysis::Run()`. Rather than calling `m_node->Filter(...)` directly, one should use the `applyCut` method, which handles some additional book keeping. The syntax is: `applyCut(<cut expression>, <cut name>);`, e.g. `applyCut("LeadTrack_Theta < 25", "Leading track theta < 25 mrad");`. The cut expression follows the usual RDF syntax.
+Cuts:
+  Track pz > 100 GeV:             # name in the cutflow (eventID_pass flag: passed_<name>)
+    expression: "LeadTrack_pz0 > 100"
+    data_type: ALL                # optional: ALL, DATA, MC (not in Asimov mode) or ASIMOV (all MC)
+    requires: [reduced_charge]    # optional: reduced_charge, aux_reduced_charge, native_reduced_charge, no_reduced_charge
+    histograms:                   # optional, booked after this cut
+      - name: theta_vs_pz
+        title: "Theta vs pz;p_{z} [GeV];#theta [mrad]"
+        data_type: ALL            # optional
+        x: {variable: LeadTrack_pz0, bins: 100, min: 0, max: 5000}
+        y: {variable: LeadTrack_Theta, edges: [0, 5, 10, 25, 50]}   # optional: makes it 2D
+```
+
+Each histogram axis has either `bins`/`min`/`max` or `edges`. Histogram names must be unique. Histograms attached to a cut are booked at that point of the selection even if the cut itself is not applied to the current sample; they follow their own `data_type`/`requires`. Quote expressions, especially ones starting with `!` (YAML reads an unquoted leading `!` as a tag). The header of `config/cuts.yaml` documents all options.
+
+## Modifying definitions
+
+New variable definitions are still added in C++, in `Analysis::BuildDataFrame()` (`AnalysisZipFramework/source/Analyis.cxx`), using the `Define(...)` method.
 
 The RDF Definition syntax is extended through this header file `AnalysisZipFramework/include/RDFDefines.h` which defines some addtional shorthand methods, for example: `m_node = m_node->Define("Track_Theta", "Theta(Track_px0, Track_py0, Track_pz0)");`.

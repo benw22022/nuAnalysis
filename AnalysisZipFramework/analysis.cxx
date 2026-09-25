@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
     std::string fileConfigPath = "config/file_config.yaml";
     std::string grlConfigPath  = "config/grl_config.yaml";
     std::string outputConfigPath = "config/output_columns.yaml";
+    std::string cutsConfigPath   = "config/cuts.yaml";
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -70,6 +71,13 @@ int main(int argc, char* argv[]) {
             }
             outputConfigPath = argv[++i];
 
+        } else if (arg == "--cuts-config") {
+            if (i + 1 >= argc) {
+                ERROR("Error: --cuts-config requires an argument.");
+                return 1;
+            }
+            cutsConfigPath = argv[++i];
+
         } else if (arg == "--isMC") {
             isMC = true;
             INFO("Running in MC mode: GRL, BCID and trigger cuts will be skipped.");
@@ -110,14 +118,14 @@ int main(int argc, char* argv[]) {
 
         } else {
             ERROR("Unknown argument: ", arg);
-            ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
+            ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
             return 1;
         }
     }
 
     if (runNumber == -1) {
         ERROR("Error: --run <number> is required.");
-        ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
+        ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
         return 1;
     }
 
@@ -137,11 +145,14 @@ int main(int argc, char* argv[]) {
     INFO("File config: ", fileConfigPath);
     INFO("GRL config:  ", grlConfigPath);
     INFO("Output config: ", outputConfigPath);
+    INFO("Cuts config:   ", cutsConfigPath);
 
     ConfigUtils::GRLConfig  grlConfig;
     ConfigUtils::FileConfig fileConfig;
     ConfigUtils::OutputColumnsConfig outputConfig;
+    ConfigUtils::SelectionConfig selection;
     try {
+        selection    = ConfigUtils::readSelectionConfig(cutsConfigPath);
         grlConfig    = ConfigUtils::readGRLConfig(grlConfigPath);
         fileConfig   = ConfigUtils::readFileConfig(fileConfigPath);
         outputConfig = ConfigUtils::readOutputColumnsConfig(outputConfigPath);
@@ -169,6 +180,7 @@ int main(int argc, char* argv[]) {
     analysis.useReducedCharge = useReducedCharge;
     analysis.setRunNumbers({runNumber});
     analysis.setOutputColumns(outputConfig);
+    analysis.setSelection(selection);
     // Catch exceptions so that buffered log messages are flushed and the job exits with a
     // non-zero code (an uncaught exception aborts before std::cout is flushed)
     try {

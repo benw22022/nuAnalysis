@@ -150,11 +150,10 @@ namespace {
         analysis.Define("GoodTimes",
             [grl](Int_t run, TTime eventTime) { return grl->stable.contains(run, static_cast<long long>(eventTime)); },
             {"run", "eventTime"}, DATA);
-        if (grl->excluded.size() > 0) {
-            analysis.Define("ExcludedTimes",
-                [grl](Int_t run, TTime eventTime) { return grl->excluded.contains(run, static_cast<long long>(eventTime)); },
-                {"run", "eventTime"}, DATA);
-        }
+        // Always defined (false for every event if the GRL has no excluded periods)
+        analysis.Define("ExcludedTimes",
+            [grl](Int_t run, TTime eventTime) { return grl->excluded.contains(run, static_cast<long long>(eventTime)); },
+            {"run", "eventTime"}, DATA);
     }
 }
 
@@ -198,31 +197,121 @@ const bool Analysis::isColumnDefined(const std::string& columnName) {
     return std::find(columnNames.begin(), columnNames.end(), columnName) != columnNames.end();
 }
 
-void Analysis::bookHist1D(const Hist1DCFG& cfg) {
+// ── Selection helpers ───────────────────────────────────────────────────────
 
-    INFO("Booking 1D histogram: ", cfg.name, " with expression: ", cfg.columnName);
+// data_type semantics (see config/cuts.yaml):
+//   ALL:    every sample
+//   DATA:   data only
+//   MC:     MC, but not in Asimov mode (truth selection)
+//   ASIMOV: all MC, including Asimov mode
+bool Analysis::appliesTo(DataType dataType) const {
+    switch (dataType) {
+        case ALL:    return true;
+        case DATA:   return !isMC;
+        case MC:     return isMC && !isAsimov;
+        case ASIMOV: return isMC;
+    }
+    return true;
+}
 
-    if (!isColumnDefined(cfg.columnName)) {
-        ERROR("Error: Column '", cfg.columnName, "' is not defined in the dataframe. Cannot book histogram.");
+DataType Analysis::parseDataType(const std::string& dataType) {
+    if (dataType == "ALL")    return ALL;
+    if (dataType == "DATA")   return DATA;
+    if (dataType == "MC")     return MC;
+    if (dataType == "ASIMOV") return ASIMOV;
+    throw std::runtime_error("Unknown data_type '" + dataType + "'");
+}
+
+bool Analysis::requirementsMet(const std::vector<std::string>& requirements, std::string& why) const {
+    auto sourceName = [this]() -> std::string {
+        switch (m_reducedChargeSource) {
+            case ReducedChargeSource::Aux:    return "aux files";
+            case ReducedChargeSource::Native: return "input NTuple";
+            case ReducedChargeSource::None:   return "none (--no-reduced-charge)";
+        }
+        return "?";
+    };
+    for (const auto& r : requirements) {
+        bool ok = true;
+        if      (r == "reduced_charge")        ok = m_reducedChargeSource != ReducedChargeSource::None;
+        else if (r == "aux_reduced_charge")    ok = m_reducedChargeSource == ReducedChargeSource::Aux;
+        else if (r == "native_reduced_charge") ok = m_reducedChargeSource == ReducedChargeSource::Native;
+        else if (r == "no_reduced_charge")     ok = m_reducedChargeSource == ReducedChargeSource::None;
+        else throw std::runtime_error("Unknown requirement '" + r + "'");
+        if (!ok) {
+            why = "requires " + r + ", reduced charge source is " + sourceName();
+            return false;
+        }
+    }
+    return true;
+}
+
+// Book a 1D or 2D histogram at the current point of the selection
+void Analysis::bookHistogram(const ConfigUtils::HistogramConfig& cfg) {
+    if (!appliesTo(parseDataType(cfg.dataType))) {
+        DEBUG("Skipping histogram ", cfg.name, " (data_type ", cfg.dataType, ")");
+        ++m_nHistSkipped;
+        return;
+    }
+    std::string why;
+    if (!requirementsMet(cfg.requirements, why)) {
+        DEBUG("Skipping histogram ", cfg.name, " (", why, ")");
+        ++m_nHistSkipped;
+        return;
+    }
+    for (const auto* axis : {&cfg.x, cfg.y ? &*cfg.y : nullptr}) {
+        if (axis && !isColumnDefined(axis->variable)) {
+            WARNING("Histogram '", cfg.name, "': column '", axis->variable, "' does not exist in the dataframe. Histogram not booked.");
+            ++m_nHistSkipped;
+            return;
+        }
+    }
+
+    const auto& x = cfg.x;
+    if (!cfg.y) {
+        DEBUG("Booking 1D histogram ", cfg.name, " of ", x.variable);
+        const auto model = x.hasEdges()
+            ? ROOT::RDF::TH1DModel(cfg.name.c_str(), cfg.title.c_str(), static_cast<int>(x.edges.size()) - 1, x.edges.data())
+            : ROOT::RDF::TH1DModel(cfg.name.c_str(), cfg.title.c_str(), x.nBins, x.min, x.max);
+        m_histResults.push_back(m_node->Histo1D(model, x.variable));
         return;
     }
 
-    ROOT::RDF::TH1DModel model(cfg.name.c_str(), cfg.title.c_str(), cfg.nBins, cfg.xMin, cfg.xMax);
-    auto hist = m_node->Histo1D(model, cfg.columnName);
-    
-    m_histResults.push_back(hist);
+    const auto& y = *cfg.y;
+    DEBUG("Booking 2D histogram ", cfg.name, " of ", y.variable, " vs ", x.variable);
+    const char* n = cfg.name.c_str();
+    const char* ti = cfg.title.c_str();
+    const int nxe = static_cast<int>(x.edges.size()) - 1, nye = static_cast<int>(y.edges.size()) - 1;
+    ROOT::RDF::TH2DModel model;
+    if      (!x.hasEdges() && !y.hasEdges()) model = ROOT::RDF::TH2DModel(n, ti, x.nBins, x.min, x.max, y.nBins, y.min, y.max);
+    else if ( x.hasEdges() && !y.hasEdges()) model = ROOT::RDF::TH2DModel(n, ti, nxe, x.edges.data(), y.nBins, y.min, y.max);
+    else if (!x.hasEdges() &&  y.hasEdges()) model = ROOT::RDF::TH2DModel(n, ti, x.nBins, x.min, x.max, nye, y.edges.data());
+    else                                     model = ROOT::RDF::TH2DModel(n, ti, nxe, x.edges.data(), nye, y.edges.data());
+    m_histResults.push_back(m_node->Histo2D(model, x.variable, y.variable));
 }
 
-void Analysis::bookHist2D(const Hist1DCFG& cfgX, const Hist1DCFG& cfgY) {
+// Apply the cuts and book the histograms of the selection config, in file order
+void Analysis::applySelection() {
+    if (!m_selection) {
+        throw std::runtime_error("No selection config set: call Analysis::setSelection() before Run()");
+    }
+    INFO("Applying selection from ", m_selection->sourcePath, "...");
 
-    INFO("Booking 2D histogram: ", cfgX.name + "_vs_" + cfgY.name, " with expressions: ", cfgX.columnName, " and ", cfgY.columnName);
-    
-    ROOT::RDF::TH2DModel model((cfgX.name + "_vs_" + cfgY.name).c_str(),
-                                (cfgX.title + " vs " + cfgY.title).c_str(),
-                                cfgX.nBins, cfgX.xMin, cfgX.xMax,
-                                cfgY.nBins, cfgY.xMin, cfgY.xMax);
-    auto hist = m_node->Histo2D(model, cfgX.columnName, cfgY.columnName);
-    m_histResults.push_back(hist);
+    for (const auto& h : m_selection->histograms) bookHistogram(h);  // before any cut
+
+    for (const auto& cut : m_selection->cuts) {
+        std::string why;
+        if (!requirementsMet(cut.requirements, why)) {
+            INFO("Skipping cut: ", cut.name, " (", why, ")");
+        } else {
+            applyCut(cut.expression, cut.name, parseDataType(cut.dataType));
+        }
+        // Histograms attached to a cut are booked at this point of the selection even if the cut
+        // itself is not applied to this sample; they have their own data_type / requires.
+        for (const auto& h : cut.histograms) bookHistogram(h);
+    }
+
+    INFO("Booked ", m_histResults.size(), " histograms (", m_nHistSkipped, " skipped for this sample / reduced charge source; use -v for details).");
 }
 
 // Main setup function that builds the dataframe and sets up the aux chain if present
@@ -616,20 +705,8 @@ void replaceAll(std::string& str, const std::string& from, const std::string& to
 
 void Analysis::applyCut(std::string cutExpression, std::string cutName, DataType dataType) {
 
-    if (dataType == MC && !isMC) {
-        INFO("Skipping cut for data: ", cutName);
-        return;
-    }
-    if (dataType == DATA && isMC) {
-        INFO("Skipping cut for MC: ", cutName);
-        return;
-    }
-    if (dataType == MC && isAsimov) {
-        INFO("Skipping cut for Asimov: ", cutName);
-        return;
-    }
-    if (dataType == ASIMOV && !isMC) {
-        INFO("Skipping cut for data: ", cutName);
+    if (!appliesTo(dataType)) {
+        INFO("Skipping cut for ", (isAsimov ? "Asimov" : (isMC ? "MC" : "data")), ": ", cutName);
         return;
     }
 
@@ -648,6 +725,10 @@ void Analysis::applyCut(std::string cutExpression, std::string cutName, DataType
         replaceAll(pass_cut_name, from, to);
     }
     
+    if (std::find(m_passedCutColNames.begin(), m_passedCutColNames.end(), pass_cut_name) != m_passedCutColNames.end()) {
+        throw std::runtime_error("Cut name '" + cutName + "' gives the eventID_pass flag '" + pass_cut_name +
+                                 "', which is already used by another cut. Please rename one of the cuts.");
+    }
     m_passedCutColNames.push_back(pass_cut_name);
     m_eventIDNode = m_eventIDNode->Define(pass_cut_name, cutExpression);
     
@@ -668,148 +749,8 @@ void Analysis::Run(TString outputFileName) {
 
     auto nEventsBeforeCuts = m_node->Count();
 
-    // ── Cuts ──────────────
-    applyCut("distanceToCollidingBCID == 0", "Colliding", DATA);
-    applyCut("(inputBits & 0x8) == 0x8 || (inputBits & 0x10) == 0x10 || (inputBits & 0x20) == 0x20 || (inputBits & 0x40) == 0x40", "Trigger", DATA);
-
-    applyCut("GoodTimes", "Good times", DATA);
-
-    if (m_grlTimes && m_grlTimes->excluded.size() > 0) {
-        applyCut("!ExcludedTimes", "Excluded times", DATA);
-    }
-
-    bookHist1D({"crossingAngle", "Crossing angle", "crossingAngle", 400, -200, 200});
-
-    // applyCut("(!is2024Period ) || (crossingAngle == 150.0)", "Crossing angle = 150 in 2024 period");
-    // applyCut("(!is2024Period ) || (crossingAngle > 150.0)", "Crossing angle > 150 in 2024 period");
-
-    // MC Truth Cuts
-    applyCut("(!isCaloNuPeriod) || (isCaloNuPeriod && !inCaloNuPMT)", "Remove CaloNu PMT region (truth)", ASIMOV);
-    applyCut("is_cc", "CC events only", MC);
-    applyCut("abs(SafeAt(truth_pdg, 0)) == 14", "nu_mu only", MC);
-
-    bookHist2D({"truth_dec_z_nu_preFiducialCuts", "Truth decay z", "truth_dec_z_nu", 200, -4000, -1500}, 
-               {"longTracks_preFiducialCuts", "NlongTracks", "longTracks", 5, 0, 5});
-
-    bookHist1D({"truth_dec_x_nu_preFiducialCuts", "Truth decay x", "truth_dec_x_nu", 200, -300, 300});
-    bookHist1D({"truth_dec_y_nu_preFiducialCuts", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
-    bookHist1D({"truth_dec_z_nu_preFiducialCuts", "Truth decay z", "truth_dec_z_nu", 200, -3000, -1500});
-    bookHist1D({"truth_dec_z_nu_preFiducialCuts_ext", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000});
-    bookHist2D({"truth_dec_x_nu_preFiducialCuts", "Truth decay x", "truth_dec_x_nu", 200, -300, 300}, 
-               {"truth_dec_y_nu_preFiducialCuts", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
-
-
-    bookHist2D({"truth_dec_z_nu_preFiducialCuts", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000}, 
-               {"truth_dec_x_nu_preFiducialCuts", "Truth decay x", "truth_dec_x_nu", 200, -300, 300});
-
-    bookHist2D({"truth_dec_z_nu_preFiducialCuts", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000}, 
-               {"truth_dec_y_nu_preFiducialCuts", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
-    
-
-    bookHist1D({"truth_dec_r_preFiducialCuts", "Truth decay r", "truth_dec_r", 200, 0, 300});
-
-    applyCut("decay_box || decay_lead", "In Faser Nu Box or Lead Block", MC);
-    
-    bookHist1D({"truth_dec_r", "Truth decay r", "truth_dec_r", 200, 0, 300});
-    bookHist1D({"truth_dec_x_nu", "Truth decay x", "truth_dec_x_nu", 200, -300, 300});
-    bookHist1D({"truth_dec_y_nu", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
-    bookHist1D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 200, -3000, -1500});
-    bookHist1D({"truth_dec_z_nu_ext", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000});
-    bookHist2D({"truth_dec_x_nu", "Truth decay x", "truth_dec_x_nu", 200, -300, 300}, 
-               {"truth_dec_y_nu", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
-
-    bookHist2D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000}, 
-               {"truth_dec_x_nu", "Truth decay x", "truth_dec_x_nu", 200, -300, 300});
-
-    bookHist2D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 500, -4000, 4000}, 
-               {"truth_dec_y_nu", "Truth decay y", "truth_dec_y_nu", 200, -300, 300});
-
-    applyCut("truth_dec_r < 100", "Truth dec r < 100 mm", MC);
-    
-    bookHist1D({"truth_dec_r_postRCut", "Truth decay r", "truth_dec_r", 200, 0, 300});
-    bookHist2D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 200, -4000, -1500}, 
-               {"longTracks", "NlongTracks", "longTracks", 5, 0, 5});
-
-
-
-    bookHist1D({"truth_pz_nu", "Truth pz", "truth_pz_nu", 200, 0, 10000});
-    auto cols = m_node->GetColumnNames();
-    INFO("Has truth_pz_nu: ", std::find(cols.begin(), cols.end(), "truth_pz_nu") != cols.end());
-
-    applyCut("truth_pz_nu > 100", "Truth pz > 100 GeV", MC);
-
-
-    bookHist1D({"longTracks", "NlongTracks", "longTracks", 5, 0, 5});
-    
-    bookHist1D({"nClusters0_preLongTracks", "nClusters0", "nClusters0", 100, 0, 1000});
-    bookHist1D({"nClusters1_preLongTracks", "nClusters1", "nClusters1", 100, 0, 400});
-    bookHist1D({"nClusters2_preLongTracks", "nClusters2", "nClusters2", 100, 0, 300});
-    bookHist1D({"nClusters3_preLongTracks", "nClusters3", "nClusters3", 100, 0, 200});
-    bookHist1D({"SpacePoints_preLongTracks", "SpacePoints", "SpacePoints", 100, 0, 1000});
-    bookHist1D({"TrackSegments_preLongTracks", "TrackSegments", "TrackSegments", 50, 0, 50});
-
-    applyCut("longTracks > 0", "At least one long track");
-
-    bookHist1D({"nClusters0", "nClusters0", "nClusters0", 100, 0, 1000});
-    bookHist1D({"nClusters1", "nClusters1", "nClusters1", 100, 0, 400});
-    bookHist1D({"nClusters2", "nClusters2", "nClusters2", 100, 0, 300});
-    bookHist1D({"nClusters3", "nClusters3", "nClusters3", 100, 0, 200});
-    bookHist1D({"SpacePoints", "SpacePoints", "SpacePoints", 100, 0, 1000});
-    bookHist1D({"TrackSegments", "TrackSegments", "TrackSegments", 50, 0, 50});
-
-    applyCut("caloNuStatusCleaning", "CaloNu status cleaning", DATA);
-    applyCut("Veto20_charge > 40 && Veto21_charge > 40", "Veto20 and Veto21 charge > 40 pC");
-
-    bookHist2D({"Lead_Track_Y_atTrig", "Lead track Y at trigger", "Lead_Track_Y_atTrig", 200, -300, 300}, {"Timing_charge_top", "Timing charge top", "Timing_charge_top", 200, 0, 2000});
-    bookHist2D({"Lead_Track_Y_atTrig", "Lead track Y at trigger", "Lead_Track_Y_atTrig", 200, -300, 300}, {"Timing_charge_bottom", "Timing charge bottom", "Timing_charge_bottom", 200, 0, 2000});
-    bookHist2D({"Lead_Track_Y_atTrig", "Lead track Y at trigger", "Lead_Track_Y_atTrig", 200, -300, 300}, {"Timing_charge_total", "Timing charge total", "Timing_charge_total", 200, 0, 2000});
-
-    applyCut("hitsTiming", "Timing Station Charge > 20 pC");  // see hitsTiming definition in BuildDataFrame()
-    applyCut("Preshower0_charge > 2.5 && Preshower1_charge > 2.5", "Preshower Charge > 2.5 pC");
-    // applyCut("longTracks > 0", "At least one long track");
-    applyCut("LeadTrack_pz0 > 100", "Track pz > 100 GeV");
-    applyCut("LeadTrack_nLayers >= 7", "Leading track has at >= 7 layers");
-    applyCut("LeadTrack_nDoF >= 9", "Track nDoF >= 9");
-    applyCut("LeadTrack_Chi2_NDF < 15", "Leading track has chi2/ndof < 15");
-    applyCut("LeadTrack_r_atMaxRadius < 95", "Track R at max radius < 95 mm");
-    applyCut("LeadTrack_rIFT < 95", "Track R at IFT < 95 mm");
-    applyCut("LeadTrack_rVetoNu < 120", "Track rVetoNu < 120 mm");
-    applyCut("LeadTrack_Theta < 25", "Leading track theta < 25 mrad");
-
-    // ── VetoNu veto ────────────────────────────────────────────────────
-    if (m_reducedChargeSource == ReducedChargeSource::Aux) {
-        applyCut("AuxLookupSuccess", "Sanity cut to remove events with missing aux data");
-    }
-
-    if (m_reducedChargeSource != ReducedChargeSource::None) {
-        bookHist1D({"VetoNu0_reduced_charge", "VetoNu0 reduced charge", "VetoNu0_reduced_charge", 2501, -1, 2500});
-        bookHist1D({"VetoNu1_reduced_charge", "VetoNu1 reduced charge", "VetoNu1_reduced_charge", 2501, -1, 2500});
-
-        bookHist2D({"VetoNu0_reduced_charge", "VetoNu0 reduced charge", "VetoNu0_reduced_charge", 2501, -1, 2500}, 
-                   {"VetoNu1_reduced_charge", "VetoNu1 reduced charge", "VetoNu1_reduced_charge", 2501, -1, 2500});
-
-        bookHist2D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 500, -4000, -1500}, 
-                   {"VetoNu0_reduced_charge", "VetoNu0 reduced charge", "VetoNu0_reduced_charge", 2501, -1, 2500});
-        
-        bookHist2D({"truth_dec_z_nu", "Truth decay z", "truth_dec_z_nu", 500, -4000, -1500}, 
-                   {"VetoNu1_reduced_charge", "VetoNu1 reduced charge", "VetoNu1_reduced_charge", 2501, -1, 2500});
-
-        applyCut("VetoNu0_reduced_charge < 30", "VetoNu0 reduced charge < 30 pC");
-        applyCut("VetoNu1_reduced_charge < 30", "VetoNu1 reduced charge < 30 pC");
-    }
-
-    if (m_reducedChargeSource == ReducedChargeSource::Aux) {
-        applyCut("fallbackVetoNu0Charge < 40", "VetoNu0 raw charge < 40 pC (fallback to raw charge if reduced charge invalid)");
-        applyCut("fallbackVetoNu1Charge < 40", "VetoNu1 raw charge < 40 pC (fallback to raw charge if reduced charge invalid)");
-    }
-
-    if (m_reducedChargeSource == ReducedChargeSource::None) {
-        // Same raw-charge threshold as the fallback used when the reduced charge is invalid
-        bookHist1D({"VetoNu0_raw_charge", "VetoNu0 raw charge", "VetoNu0_raw_charge", 2501, -1, 2500});
-        bookHist1D({"VetoNu1_raw_charge", "VetoNu1 raw charge", "VetoNu1_raw_charge", 2501, -1, 2500});
-        applyCut("VetoNu0_raw_charge < 40", "VetoNu0 raw charge < 40 pC");
-        applyCut("VetoNu1_raw_charge < 40", "VetoNu1 raw charge < 40 pC");
-    }
+    // ── Cuts and histograms from the selection config ──────────────────
+    applySelection();
 
     // ── Book ALL actions before triggering any event loop ──────────────────
     // TODO: Move to a Finalise() function

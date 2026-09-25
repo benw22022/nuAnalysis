@@ -6,6 +6,7 @@
 // The official FASER GRL files (cvmfs) are JSON and are still read by GRLUtils.
 // ─────────────────────────────────────────────────────────────────────────────
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 #include <yaml-cpp/yaml.h>
@@ -64,6 +65,45 @@ namespace ConfigUtils {
 
     OutputColumnsConfig readOutputColumnsConfig(const std::string& configPath);
 
+    // ── Selection config (config/cuts.yaml): cuts and histograms ─────────────
+    // One histogram axis: a column and EITHER a fixed binning (bins, min, max) OR bin edges
+    struct AxisConfig {
+        std::string variable;
+        int nBins{0};
+        double min{0.}, max{0.};
+        std::vector<double> edges;   // variable binning if not empty
+        bool hasEdges() const { return !edges.empty(); }
+    };
+
+    struct HistogramConfig {
+        std::string name;                   // unique in the whole config (used as the object name in the output file)
+        std::string title;                  // defaults to name
+        std::string dataType{"ALL"};        // ALL, DATA, MC or ASIMOV (see cuts.yaml)
+        std::vector<std::string> requirements;  // e.g. reduced_charge (see knownRequirements())
+        AxisConfig x;
+        std::optional<AxisConfig> y;        // 2D if set
+    };
+
+    struct CutConfig {
+        std::string name;                   // cutflow name (also used for the eventID_pass flag)
+        std::string expression;             // RDataFrame filter expression
+        std::string dataType{"ALL"};
+        std::vector<std::string> requirements;
+        std::vector<HistogramConfig> histograms;  // booked after this cut
+    };
+
+    struct SelectionConfig {
+        std::vector<HistogramConfig> histograms;  // top-level 'Histograms': booked before the first cut
+        std::vector<CutConfig> cuts;              // in file order
+        std::string sourcePath;
+    };
+
+    SelectionConfig readSelectionConfig(const std::string& configPath);
+
+    // Allowed values for data_type and requires
+    const std::vector<std::string>& knownDataTypes();
+    const std::vector<std::string>& knownRequirements();
+
     // Columns that are always written to the output tree, whatever the config says
     // (needed to match nt events to the eventID_pass tree and to friend trees)
     const std::vector<std::string>& mandatoryOutputColumns();
@@ -93,6 +133,13 @@ namespace ConfigUtils {
         const YAML::Node value = node[key];
         if (!value || value.IsNull()) {
             throw std::runtime_error(context + ": missing required key '" + key + "'");
+        }
+        // An unquoted value starting with '!' is read by YAML as a "tag" (and the value is lost),
+        // e.g. expression: !ExcludedTimes. Quoted values have tag "!", plain values "?".
+        const std::string& tag = value.Tag();
+        if (tag.size() > 1 && tag[0] == '!') {
+            throw std::runtime_error(context + ": the value of '" + key + "' (line " + std::to_string(value.Mark().line + 1) +
+                                     ") starts with '" + tag + "', which YAML reads as a tag. Put the value in quotes, e.g. \"" + tag + "\"");
         }
         try {
             return value.as<T>();

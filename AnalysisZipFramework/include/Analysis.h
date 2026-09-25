@@ -54,6 +54,9 @@ class Analysis {
         // If not set, all columns are written.
         void setOutputColumns(const ConfigUtils::OutputColumnsConfig& config) { m_outputColumnsConfig = config; }
 
+        // Cuts and histograms to apply (see config/cuts.yaml). Required before Run().
+        void setSelection(const ConfigUtils::SelectionConfig& selection) { m_selection = selection; }
+
         void Define(std::string columnName, std::string expression, DataType dataType = ALL);
 
         const bool isColumnDefined(const std::string& columnName);
@@ -134,18 +137,17 @@ class Analysis {
 
         void applyCut(std::string cutExpression, std::string cutName, DataType dataType = ALL);
 
-        struct Hist1DCFG {
-            std::string name;
-            std::string title;
-            std::string columnName;
-            int nBins;
-            double xMin;
-            double xMax;
-        };
+        // Cuts and histograms from the selection config (config/cuts.yaml)
+        std::optional<ConfigUtils::SelectionConfig> m_selection;
+        void applySelection();
+        void bookHistogram(const ConfigUtils::HistogramConfig& cfg);
+        std::size_t m_nHistSkipped{0};
 
-
-        void bookHist1D(const Hist1DCFG& cfg);
-        void bookHist2D(const Hist1DCFG& cfgX, const Hist1DCFG& cfgY);
+        // Does something with this data_type apply to the current sample (data / MC / Asimov)?
+        bool appliesTo(DataType dataType) const;
+        static DataType parseDataType(const std::string& dataType);
+        // Are all 'requires' conditions met? If not, `why` explains which one is not.
+        bool requirementsMet(const std::vector<std::string>& requirements, std::string& why) const;
 
         std::vector<ROOT::RDF::RResultPtr<TH1>> m_histResults;
 
