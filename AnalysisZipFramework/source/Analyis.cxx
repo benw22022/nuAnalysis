@@ -290,6 +290,52 @@ void Analysis::bookHistogram(const ConfigUtils::HistogramConfig& cfg) {
     m_histResults.push_back(m_node->Histo2D(model, x.variable, y.variable));
 }
 
+// Define the columns of the definitions config, in file order
+void Analysis::applyDefinitions() {
+    if (!m_definitions) {
+        throw std::runtime_error("No definitions config set: call Analysis::setDefinitions() before Run()");
+    }
+    // Position of each definition in the file, to catch expressions using a definition from further down
+    const auto& defs = m_definitions->definitions;
+    std::unordered_map<std::string, std::size_t> position;
+    for (std::size_t i = 0; i < defs.size(); ++i) position[defs[i].name] = i;
+    const std::regex identifier(R"([A-Za-z_][A-Za-z0-9_]*)");
+
+    std::size_t nDefined = 0, nSkipped = 0;
+    for (std::size_t i = 0; i < defs.size(); ++i) {
+        const auto& d = defs[i];
+        if (!appliesTo(parseDataType(d.dataType))) {
+            DEBUG("Skipping definition ", d.name, " (data_type ", d.dataType, ")");
+            ++nSkipped;
+            continue;
+        }
+        std::string why;
+        if (!requirementsMet(d.requirements, why)) {
+            DEBUG("Skipping definition ", d.name, " (", why, ")");
+            ++nSkipped;
+            continue;
+        }
+        if (isColumnDefined(d.name)) {
+            throw std::runtime_error(m_definitions->sourcePath + ": definition '" + d.name +
+                                     "' already exists as a column (input branch or built-in definition). Please use a different name.");
+        }
+        for (auto it = std::sregex_iterator(d.expression.begin(), d.expression.end(), identifier); it != std::sregex_iterator(); ++it) {
+            const std::string token = it->str();
+            auto pos = position.find(token);
+            if (pos != position.end() && pos->second > i && !isColumnDefined(token)) {
+                throw std::runtime_error(m_definitions->sourcePath + ": definition '" + d.name + "' uses '" + token +
+                                         "', which is defined further down the file. Definitions are created in file order: move '" +
+                                         token + "' above '" + d.name + "'.");
+            }
+        }
+        DEBUG("Defining ", d.name, " = ", d.expression);
+        m_node = m_node->Define(d.name, d.expression);
+        ++nDefined;
+    }
+    INFO("Defined ", nDefined, " columns from ", m_definitions->sourcePath, " (", nSkipped,
+         " skipped for this sample / reduced charge source; use -v for details).");
+}
+
 // Apply the cuts and book the histograms of the selection config, in file order
 void Analysis::applySelection() {
     if (!m_selection) {
@@ -336,28 +382,19 @@ void Analysis::BuildDataFrame() {
     // Backwards compatibility with older NTuples: VetoSt* naming, missing Veto11
     setupVetoCompatibility();
 
-    // Define some basic cuts for data and MC
+    // ── Built-in definitions ────────────────────────────────────────────────
+    // These stay in C++ because the built-in reduced-charge code relies on them.
+    // All other definitions are in config/definitions.yaml (applied at the end of this function).
+    // Run periods
     Define("isCaloNuPeriod", "15821 <= run  && run <= 16924", DATA);
     Define("isCaloNuPeriod", "(200137 <= run && run <= 200147) || (200172 <= run && run <= 200183)", MC);
     Define("is2024Period", "run >= 1.2e4", DATA);
     Define("is2024Period", "(200091 < run && run < 200101) || (200160 <= run && run <= 200171) || (200137 <= run && run <= 200147) || (200172 <= run && run <= 200183)", MC);
 
-    // Truth definitions for MC
-    // [0] is the incoming neutrino. SafeAt guards against empty truth vectors (see RDFDefines.h)
-    Define("truth_dec_r", "Radius(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0))", MC);
-    Define("is_cc", "Contains(abs(truth_pdg), {11, 13, 15})", MC);
-    Define("decay_box", "inFaserNuBox(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0), SafeAt(truth_dec_z, 0))", MC);
-    Define("decay_lead", "inLeadBlock(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0), SafeAt(truth_dec_z, 0))", MC);
-    Define("inCaloNuPMT", "inCaloNuPMT(SafeAt(truth_dec_z, 0))", ASIMOV); // Should always be applied to MC due to material mismodelling
-    Define("truth_pz_nu", "SafeAt(truth_pz, 0) / 1000", MC);
-
-    // ── Scintillator status cleaning (data only; uses only NTuple branches) ──
+    // Scintillator status flags (data only; used by the built-in GoodScintillatorStatus)
     if (!isMC) {
         Define("BadVetoStatus", "Veto20_status == 528 || Veto21_status == 528", DATA);
         Define("GoodVetoNuStatus", "((VetoNu0_status == 0 || VetoNu0_status == 1) && (VetoNu1_status == 0 || VetoNu1_status == 1)) || (VetoNu0_status == 0 && VetoNu1_status == 16)", DATA);
-        Define("caloNuVeto2StatusBug", "(Veto20_status == 528 || Veto21_status == 528) && isCaloNuPeriod", DATA);
-        Define("caloNuVetoNuStatusKeep", "GoodVetoNuStatus && isCaloNuPeriod", DATA);
-        Define("caloNuStatusCleaning", "!isCaloNuPeriod || (!caloNuVeto2StatusBug && caloNuVetoNuStatusKeep)", DATA);
     }
 
     // ── VetoNu reduced charge ─────────────────────────────────────────────
@@ -387,46 +424,11 @@ void Analysis::BuildDataFrame() {
     }
 
 
-    // Definitions
-    Define("truth_dec_x_nu", "SafeAt(truth_dec_x, 0)");
-    Define("truth_dec_y_nu", "SafeAt(truth_dec_y, 0)");
-    Define("truth_dec_z_nu", "SafeAt(truth_dec_z, 0)");
-
-    Define("Timing_charge_bottom", "Timing0_charge + Timing1_charge");
-    Define("Timing_charge_top", "Timing2_charge + Timing3_charge");
-    Define("Timing_charge_total", "Timing_charge_top + Timing_charge_bottom");
-
-    // Leading track = highest pz track. LeadTrack_Idx = -1 if the event has no tracks.
-    // All LeadTrack_* variables use SafeAt, so events without a track get NaN (float) or -1 (int)
-    // and fail every lead-track cut, instead of reading out of bounds. This matters for the
-    // passed_* flags in eventID_pass, which are evaluated on every event before any cuts.
-    Define("hasLeadTrack", "Track_pz0.size() > 0");
-    Define("LeadTrack_Idx", "Track_pz0.empty() ? -1 : static_cast<int>(ROOT::VecOps::ArgMax(Track_pz0))");
-    Define("Track_rVetoNu","Radius(Track_X_atVetoNu, Track_Y_atVetoNu)");
-
-    Define("Lead_Track_Y_atTrig", "SafeAt(Track_Y_atTrig, LeadTrack_Idx)");
-
-    // Timing station hit consistent with the leading track's y position at the trigger station
-    Define("hitsTiming", "((Lead_Track_Y_atTrig > 20 && Timing_charge_top > 20) || \
-                        (Lead_Track_Y_atTrig < -20 && Timing_charge_bottom > 20) || \
-                        (fabs(Lead_Track_Y_atTrig) < 20 && Timing_charge_total > 20))");
-
-    Define("Track_rVetoStation1", "Radius(SafeAt(Track_X_atVetoStation1, LeadTrack_Idx), SafeAt(Track_Y_atVetoStation1, LeadTrack_Idx))");
-    Define("Track_rVetoStation2", "Radius(SafeAt(Track_X_atVetoStation2, LeadTrack_Idx), SafeAt(Track_Y_atVetoStation2, LeadTrack_Idx))");
-    Define("Track_rIFT", "Radius(Track_X_atVetoStation2, Track_Y_atVetoStation2)");
-    Define("Track_Theta", "Theta(Track_px0, Track_py0, Track_pz0)");
-    Define("LeadTrack_pz0", "SafeAt(Track_pz0, LeadTrack_Idx) / 1000");
-    Define("LeadTrack_Theta", "SafeAt(Track_Theta, LeadTrack_Idx) * 1000");
-    Define("LeadTrack_nLayers", "SafeAt(Track_nLayers, LeadTrack_Idx)");
-    Define("LeadTrack_nDoF", "SafeAt(Track_nDoF, LeadTrack_Idx)");
-    Define("LeadTrack_Chi2", "SafeAt(Track_Chi2, LeadTrack_Idx)");
-    Define("LeadTrack_Chi2_NDF", "LeadTrack_Chi2 / LeadTrack_nDoF");
-    Define("LeadTrack_rVetoNu", "SafeAt(Track_rVetoNu, LeadTrack_Idx)");
-    Define("LeadTrack_r_atMaxRadius", "SafeAt(Track_r_atMaxRadius, LeadTrack_Idx)");
-    Define("LeadTrack_rIFT", "SafeAt(Track_rIFT, LeadTrack_Idx)");
-    Define("LeadTrack_charge", "SafeAt(Track_charge, LeadTrack_Idx)");
-    Define("LeadTrack_qop", "LeadTrack_charge / SafeAt(Track_pz0, LeadTrack_Idx)");
     defineGRLTimeColumns();  // GoodTimes / ExcludedTimes (data only)
+
+    // ── Definitions from config/definitions.yaml ────────────────────────────
+    // After all built-in columns, so they can use them (period flags, reduced charge, GoodTimes, ...)
+    applyDefinitions();
 
 
     // This needs to go at the end of all the definitions, otherwise the aux columns won't be available for cuts

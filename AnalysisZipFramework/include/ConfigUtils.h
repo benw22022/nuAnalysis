@@ -100,6 +100,21 @@ namespace ConfigUtils {
 
     SelectionConfig readSelectionConfig(const std::string& configPath);
 
+    // ── Definitions config (config/definitions.yaml): new columns ───────────
+    struct DefinitionConfig {
+        std::string name;                   // new column name (must be a valid C++ identifier)
+        std::string expression;             // RDataFrame Define expression
+        std::string dataType{"ALL"};        // same meaning as for cuts
+        std::vector<std::string> requirements;
+    };
+
+    struct DefinitionsConfig {
+        std::vector<DefinitionConfig> definitions;  // in file order
+        std::string sourcePath;
+    };
+
+    DefinitionsConfig readDefinitionsConfig(const std::string& configPath);
+
     // Allowed values for data_type and requires
     const std::vector<std::string>& knownDataTypes();
     const std::vector<std::string>& knownRequirements();

@@ -54,6 +54,9 @@ class Analysis {
         // If not set, all columns are written.
         void setOutputColumns(const ConfigUtils::OutputColumnsConfig& config) { m_outputColumnsConfig = config; }
 
+        // Extra column definitions (see config/definitions.yaml). Required before Run().
+        void setDefinitions(const ConfigUtils::DefinitionsConfig& definitions) { m_definitions = definitions; }
+
         // Cuts and histograms to apply (see config/cuts.yaml). Required before Run().
         void setSelection(const ConfigUtils::SelectionConfig& selection) { m_selection = selection; }
 
@@ -136,6 +139,10 @@ class Analysis {
         }
 
         void applyCut(std::string cutExpression, std::string cutName, DataType dataType = ALL);
+
+        // Column definitions from the definitions config (config/definitions.yaml)
+        std::optional<ConfigUtils::DefinitionsConfig> m_definitions;
+        void applyDefinitions();
 
         // Cuts and histograms from the selection config (config/cuts.yaml)
         std::optional<ConfigUtils::SelectionConfig> m_selection;

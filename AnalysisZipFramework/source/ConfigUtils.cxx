@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <set>
 #include <fnmatch.h>
+#include <regex>
 
 namespace ConfigUtils {
 
@@ -240,6 +241,46 @@ namespace ConfigUtils {
 
         INFO("Read selection config: ", config.cuts.size(), " cuts, ", histNames.size(), " histograms (",
              config.histograms.size(), " before the first cut).");
+        return config;
+    }
+
+    // ── Definitions config ──────────────────────────────────────────────────
+    DefinitionsConfig readDefinitionsConfig(const std::string& configPath) {
+        INFO("Reading definitions config from ", configPath, "...");
+        const YAML::Node root = loadYAML(configPath);
+        warnUnknownKeys(root, {"Definitions"}, configPath);
+
+        DefinitionsConfig config;
+        config.sourcePath = configPath;
+        const YAML::Node defs = root["Definitions"];
+        if (!defs || defs.IsNull()) {
+            WARNING(configPath, ": no 'Definitions' found, no columns will be defined from this file.");
+            return config;
+        }
+        if (!defs.IsMap()) throw std::runtime_error(configPath + ": 'Definitions' must be a map of <column name>: {expression, ...}" + lineOf(defs));
+
+        static const std::regex identifier("^[A-Za-z_][A-Za-z0-9_]*$");
+        std::set<std::string> names;
+        for (const auto& kv : defs) {   // yaml-cpp keeps the order of the file
+            DefinitionConfig d;
+            d.name = kv.first.as<std::string>();
+            const std::string ctx = configPath + ": definition '" + d.name + "'";
+            if (!std::regex_match(d.name, identifier)) {
+                throw std::runtime_error(ctx + lineOf(kv.first) + ": the name must be a valid C++ identifier (letters, digits, '_'; not starting with a digit), because expressions refer to columns by name");
+            }
+            if (!names.insert(d.name).second) throw std::runtime_error(ctx + lineOf(kv.first) + " is defined more than once");
+            const YAML::Node& c = kv.second;
+            if (!c.IsMap()) throw std::runtime_error(ctx + ": expected a map with at least 'expression'" + lineOf(c));
+            warnUnknownKeys(c, {"expression", "data_type", "requires"}, ctx);
+            d.expression = getRequired<std::string>(c, "expression", ctx);
+            if (d.expression.find_first_not_of(" \t\n") == std::string::npos) {
+                throw std::runtime_error(ctx + ": expression is empty" + lineOf(c["expression"]));
+            }
+            d.dataType     = readDataType(c, ctx);
+            d.requirements = readRequires(c, ctx);
+            config.definitions.push_back(d);
+        }
+        INFO("Read definitions config: ", config.definitions.size(), " definitions.");
         return config;
     }
 

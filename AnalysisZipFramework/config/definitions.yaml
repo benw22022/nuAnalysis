@@ -1,0 +1,164 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nuAnalysis definitions config: new columns defined at runtime
+#
+# Definitions:
+#   <column name>:       name of the new column (letters, digits and '_' only)
+#     expression:        RDataFrame Define expression (required), e.g. "LeadTrack_pz0 / 1000"
+#     data_type:         ALL (default), DATA, MC or ASIMOV (optional)
+#     requires:          [conditions] (optional)
+#
+# Definitions are created in the order of this file, so each one can use the input branches,
+# the built-in columns (below) and the definitions above it.
+#
+# data_type (same meaning as in cuts.yaml):
+#   ALL     every sample
+#   DATA    data only
+#   MC      MC only, NOT in --isAsimov mode
+#   ASIMOV  all MC, including --isAsimov mode (use this for truth variables)
+#
+# requires: skipped unless ALL are met
+#   reduced_charge          VetoNu reduced charge available (from aux files or the input NTuple)
+#   aux_reduced_charge      reduced charge taken from aux (waveform) files
+#   native_reduced_charge   reduced charge taken from branches in the input NTuple
+#   no_reduced_charge       reduced charge disabled (--no-reduced-charge)
+#
+# Built-in columns (defined in Analysis::BuildDataFrame before this file, can be used here):
+#   isCaloNuPeriod, is2024Period                         run periods (data and MC)
+#   BadVetoStatus, GoodVetoNuStatus                      scintillator status flags (data)
+#   Veto<N>_* aliases for old VetoSt<N>_* branches, Veto11_* -> Veto10_* fallback if no Veto11
+#   VetoNu0/1_reduced_charge (from aux files), AuxLookupSuccess, TimingOK, GoodVeto2?Hit,
+#   GoodPreshower?Hit, GoodScintillatorStatus, validReducedVetoNu?Charge, fallbackVetoNu?Charge
+#   GoodTimes, ExcludedTimes                             GRL (data)
+#
+# Helper functions usable in expressions (SafeAt, Radius, Theta, inFaserNuBox, ...) are in
+# include/RDFDefines.h; add new C++ helper functions there if an expression gets complicated.
+#
+# YAML tips: quote expressions; an unquoted value starting with '!' is read as a YAML tag.
+# Long expressions can be split over several lines inside the quotes.
+#
+# Select a different config with: ./analysis --definitions-config <path>
+# ─────────────────────────────────────────────────────────────────────────────
+
+Definitions:
+
+  # ── MC truth ([0] is the incoming neutrino; SafeAt guards against empty truth vectors) ──
+  truth_dec_r:
+    expression: "Radius(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0))"
+    data_type: ASIMOV
+
+  is_cc:
+    expression: "Contains(abs(truth_pdg), {11, 13, 15})"
+    data_type: ASIMOV
+
+  decay_box:
+    expression: "inFaserNuBox(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0), SafeAt(truth_dec_z, 0))"
+    data_type: ASIMOV
+
+  decay_lead:
+    expression: "inLeadBlock(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0), SafeAt(truth_dec_z, 0))"
+    data_type: ASIMOV
+
+  inCaloNuPMT:    # always cut on in MC (material mismodelling); NaN-safe, also defined for data
+    expression: "inCaloNuPMT(SafeAt(truth_dec_z, 0))"
+
+  truth_pz_nu:    # GeV
+    expression: "SafeAt(truth_pz, 0) / 1000"
+    data_type: ASIMOV
+
+  truth_dec_x_nu:
+    expression: "SafeAt(truth_dec_x, 0)"
+
+  truth_dec_y_nu:
+    expression: "SafeAt(truth_dec_y, 0)"
+
+  truth_dec_z_nu:
+    expression: "SafeAt(truth_dec_z, 0)"
+
+  # ── CaloNu period scintillator status cleaning (data) ────────────────────────
+  caloNuVeto2StatusBug:
+    expression: "(Veto20_status == 528 || Veto21_status == 528) && isCaloNuPeriod"
+    data_type: DATA
+
+  caloNuVetoNuStatusKeep:
+    expression: "GoodVetoNuStatus && isCaloNuPeriod"
+    data_type: DATA
+
+  caloNuStatusCleaning:
+    expression: "!isCaloNuPeriod || (!caloNuVeto2StatusBug && caloNuVetoNuStatusKeep)"
+    data_type: DATA
+
+  # ── Timing station ───────────────────────────────────────────────────────────
+  Timing_charge_bottom:
+    expression: "Timing0_charge + Timing1_charge"
+
+  Timing_charge_top:
+    expression: "Timing2_charge + Timing3_charge"
+
+  Timing_charge_total:
+    expression: "Timing_charge_top + Timing_charge_bottom"
+
+  # ── Tracks ───────────────────────────────────────────────────────────────────
+  # Leading track = highest pz track. LeadTrack_Idx = -1 if the event has no tracks.
+  # All LeadTrack_* variables use SafeAt, so events without a track get NaN and fail every
+  # lead-track cut instead of reading out of bounds (matters for the eventID_pass flags).
+  hasLeadTrack:
+    expression: "Track_pz0.size() > 0"
+
+  LeadTrack_Idx:
+    expression: "Track_pz0.empty() ? -1 : static_cast<int>(ROOT::VecOps::ArgMax(Track_pz0))"
+
+  Track_rVetoNu:
+    expression: "Radius(Track_X_atVetoNu, Track_Y_atVetoNu)"
+
+  Lead_Track_Y_atTrig:
+    expression: "SafeAt(Track_Y_atTrig, LeadTrack_Idx)"
+
+  hitsTiming:     # timing station hit consistent with the lead track's y position at the trigger station
+    expression: "((Lead_Track_Y_atTrig > 20 && Timing_charge_top > 20) ||
+                  (Lead_Track_Y_atTrig < -20 && Timing_charge_bottom > 20) ||
+                  (fabs(Lead_Track_Y_atTrig) < 20 && Timing_charge_total > 20))"
+
+  Track_rVetoStation1:
+    expression: "Radius(SafeAt(Track_X_atVetoStation1, LeadTrack_Idx), SafeAt(Track_Y_atVetoStation1, LeadTrack_Idx))"
+
+  Track_rVetoStation2:
+    expression: "Radius(SafeAt(Track_X_atVetoStation2, LeadTrack_Idx), SafeAt(Track_Y_atVetoStation2, LeadTrack_Idx))"
+
+  Track_rIFT:
+    expression: "Radius(Track_X_atVetoStation2, Track_Y_atVetoStation2)"
+
+  Track_Theta:
+    expression: "Theta(Track_px0, Track_py0, Track_pz0)"
+
+  LeadTrack_pz0:      # GeV
+    expression: "SafeAt(Track_pz0, LeadTrack_Idx) / 1000"
+
+  LeadTrack_Theta:    # mrad
+    expression: "SafeAt(Track_Theta, LeadTrack_Idx) * 1000"
+
+  LeadTrack_nLayers:
+    expression: "SafeAt(Track_nLayers, LeadTrack_Idx)"
+
+  LeadTrack_nDoF:
+    expression: "SafeAt(Track_nDoF, LeadTrack_Idx)"
+
+  LeadTrack_Chi2:
+    expression: "SafeAt(Track_Chi2, LeadTrack_Idx)"
+
+  LeadTrack_Chi2_NDF:
+    expression: "LeadTrack_Chi2 / LeadTrack_nDoF"
+
+  LeadTrack_rVetoNu:
+    expression: "SafeAt(Track_rVetoNu, LeadTrack_Idx)"
+
+  LeadTrack_r_atMaxRadius:
+    expression: "SafeAt(Track_r_atMaxRadius, LeadTrack_Idx)"
+
+  LeadTrack_rIFT:
+    expression: "SafeAt(Track_rIFT, LeadTrack_Idx)"
+
+  LeadTrack_charge:
+    expression: "SafeAt(Track_charge, LeadTrack_Idx)"
+
+  LeadTrack_qop:
+    expression: "LeadTrack_charge / SafeAt(Track_pz0, LeadTrack_Idx)"

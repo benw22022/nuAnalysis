@@ -45,6 +45,7 @@ Other options:
 | `--file-config <yaml>` | File config to use (default `config/file_config.yaml`), e.g. `config/file_config_late_tracks.yaml` |
 | `--grl-config <yaml>` | GRL config to use (default `config/grl_config.yaml`) |
 | `--output-config <yaml>` | Which columns to save in the output `nt` tree (default `config/output_columns.yaml`) |
+| `--definitions-config <yaml>` | New column definitions (default `config/definitions.yaml`) |
 | `--cuts-config <yaml>` | Cuts and histograms (default `config/cuts.yaml`) |
 | `--isMC` | MC mode: GRL, BCID and trigger cuts are skipped |
 | `--isAsimov` | Asimov mode: MC without the truth selection cuts |
@@ -113,8 +114,22 @@ Cuts:
 
 Each histogram axis has either `bins`/`min`/`max` or `edges`. Histogram names must be unique. Histograms attached to a cut are booked at that point of the selection even if the cut itself is not applied to the current sample; they follow their own `data_type`/`requires`. Quote expressions, especially ones starting with `!` (YAML reads an unquoted leading `!` as a tag). The header of `config/cuts.yaml` documents all options.
 
-## Modifying definitions
+## Definitions
 
-New variable definitions are still added in C++, in `Analysis::BuildDataFrame()` (`AnalysisZipFramework/source/Analyis.cxx`), using the `Define(...)` method.
+New columns are defined in `config/definitions.yaml` (select another file with `--definitions-config`), in the order of the file:
 
-The RDF Definition syntax is extended through this header file `AnalysisZipFramework/include/RDFDefines.h` which defines some addtional shorthand methods, for example: `m_node = m_node->Define("Track_Theta", "Theta(Track_px0, Track_py0, Track_pz0)");`.
+```yaml
+Definitions:
+  LeadTrack_pz0:                     # new column name
+    expression: "SafeAt(Track_pz0, LeadTrack_Idx) / 1000"
+  truth_pz_nu:
+    expression: "SafeAt(truth_pz, 0) / 1000"
+    data_type: ASIMOV                # optional: ALL, DATA, MC or ASIMOV (as in cuts.yaml)
+  VetoNu_total_reduced_charge:
+    expression: "VetoNu0_reduced_charge + VetoNu1_reduced_charge"
+    requires: [reduced_charge]       # optional (as in cuts.yaml)
+```
+
+The definitions are created after the built-in columns, so they can use them: the run period flags `isCaloNuPeriod` and `is2024Period`, the scintillator status flags, the reduced charge and its helper columns, `GoodTimes`/`ExcludedTimes` and the Veto aliases/fallbacks. These built-ins stay in C++ (`Analysis::BuildDataFrame()` in `AnalysisZipFramework/source/Analyis.cxx`) because the reduced-charge code relies on them. The header of `config/definitions.yaml` lists them.
+
+Expressions can use the helper functions in `AnalysisZipFramework/include/RDFDefines.h` (e.g. `SafeAt`, `Radius`, `Theta`, `inFaserNuBox`), for example `expression: "Theta(Track_px0, Track_py0, Track_pz0)"`. For more complicated logic, add a C++ function there and call it from the YAML expression.
