@@ -11,6 +11,7 @@
 #include <atomic>
 #include "MessageService.hpp"
 #include "GRLUtils.h"
+#include "ConfigUtils.h"
 #include <memory>
 
 enum DataType { MC, DATA, ALL, ASIMOV };
@@ -48,6 +49,10 @@ class Analysis {
         // Run numbers this job was asked to process. Used to fill the meta tree (lumi),
         // independently of whether any events pass the cuts.
         void setRunNumbers(const std::vector<int>& runs) { m_runNumbers = runs; }
+
+        // Which columns to write to the output nt tree (see config/output_columns.yaml).
+        // If not set, all columns are written.
+        void setOutputColumns(const ConfigUtils::OutputColumnsConfig& config) { m_outputColumnsConfig = config; }
 
         void Define(std::string columnName, std::string expression, DataType dataType = ALL);
 
@@ -91,6 +96,9 @@ class Analysis {
         std::vector<std::string> m_passedCutColNames;
 
         std::vector<int> m_runNumbers;
+
+        std::optional<ConfigUtils::OutputColumnsConfig> m_outputColumnsConfig;
+        std::vector<std::string> selectOutputColumns();
 
         // Where the VetoNu reduced charge comes from (decided in BuildDataFrame)
         enum class ReducedChargeSource { None, Aux, Native };

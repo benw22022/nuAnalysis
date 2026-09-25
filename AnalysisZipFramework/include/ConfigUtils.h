@@ -48,6 +48,36 @@ namespace ConfigUtils {
 
     FileConfig readFileConfig(const std::string& configPath);
 
+    // ── Output columns config (config/output_columns.yaml) ──────────────────
+    // Which columns of the dataframe are written to the output 'nt' tree.
+    // Entries in keep / keep_mc / keep_data / drop are exact column names or glob patterns
+    // (*, ?, [...]), e.g. "LeadTrack_*".
+    struct OutputColumnsConfig {
+        bool saveAllInputColumns{false};    // every branch of the input NTuple (incl. aliases)
+        bool saveAllDefinedColumns{false};  // every column created with Define/Redefine at runtime
+        std::vector<std::string> keep;      // extra columns for all samples
+        std::vector<std::string> keepMC;    // extra columns for MC only (e.g. truth)
+        std::vector<std::string> keepData;  // extra columns for data only
+        std::vector<std::string> drop;      // removed from the selection (applied last)
+        std::string sourcePath;             // config file this was read from (for log messages)
+    };
+
+    OutputColumnsConfig readOutputColumnsConfig(const std::string& configPath);
+
+    // Columns that are always written to the output tree, whatever the config says
+    // (needed to match nt events to the eventID_pass tree and to friend trees)
+    const std::vector<std::string>& mandatoryOutputColumns();
+
+    // Apply the output config to the dataframe's columns.
+    //   allColumns:     RDF GetColumnNames()        (input branches, aliases and defined columns)
+    //   definedColumns: RDF GetDefinedColumnNames() (Define / Redefine)
+    // Prints a WARNING for every keep/drop entry (for the current sample type) that matches no column.
+    // Returns the selected columns in the order of allColumns.
+    std::vector<std::string> selectOutputColumns(const std::vector<std::string>& allColumns,
+                                                 const std::vector<std::string>& definedColumns,
+                                                 const OutputColumnsConfig& config,
+                                                 bool isMC);
+
 } // namespace ConfigUtils
 
 // ── Template implementations ────────────────────────────────────────────────

@@ -517,6 +517,20 @@ void Analysis::defineReducedChargeFromAux() {
 
 }
 
+// Columns written to the output nt tree, from the output columns config (all columns if no config set)
+std::vector<std::string> Analysis::selectOutputColumns() {
+    const auto allColumns = m_node->GetColumnNames();
+    if (!m_outputColumnsConfig) {
+        INFO("No output columns config set: saving all ", allColumns.size(), " columns to ", m_mainFileTreeName, ".");
+        return allColumns;
+    }
+    const auto columns = ConfigUtils::selectOutputColumns(allColumns, m_node->GetDefinedColumnNames(), *m_outputColumnsConfig, isMC);
+    INFO("Saving ", columns.size(), " of ", allColumns.size(), " columns to ", m_mainFileTreeName,
+         " (config: ", m_outputColumnsConfig->sourcePath, "). Use -v to list them.");
+    for (const auto& c : columns) DEBUG("  saving column: ", c);
+    return columns;
+}
+
 void replaceAll(std::string& str, const std::string& from, const std::string& to) {
     if (from.empty()) return;
     size_t pos = 0;
@@ -742,7 +756,7 @@ void Analysis::Run(TString outputFileName) {
         auto opts = ROOT::RDF::RSnapshotOptions();
         opts.fMode = "RECREATE";
         opts.fLazy = true;
-        auto columns = m_node->GetColumnNames();
+        const auto columns = selectOutputColumns();
         auto ntSnapshot = m_node->Snapshot(m_mainFileTreeName, outputFileName, columns, opts);
 
         const std::string eventIDTmpFile = std::string(outputFileName.Data()) + ".eventID_pass.tmp.root";

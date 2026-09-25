@@ -44,6 +44,7 @@ Other options:
 |---|---|
 | `--file-config <yaml>` | File config to use (default `config/file_config.yaml`), e.g. `config/file_config_late_tracks.yaml` |
 | `--grl-config <yaml>` | GRL config to use (default `config/grl_config.yaml`) |
+| `--output-config <yaml>` | Which columns to save in the output `nt` tree (default `config/output_columns.yaml`) |
 | `--isMC` | MC mode: GRL, BCID and trigger cuts are skipped |
 | `--isAsimov` | Asimov mode: MC without the truth selection cuts |
 | `--no-reduced-charge` | Do not use the VetoNu reduced charge; veto on the raw VetoNu charge instead |
@@ -54,7 +55,23 @@ Other options:
 
 The file config can be regenerated with `AnalysisZipFramework/scripts/make_fileconfig.py` (data runs only; MC runs are added by hand).
 
-## Output file structure
+## Choosing the columns saved in `nt`
+
+`config/output_columns.yaml` selects which columns are written to the `nt` tree:
+
+```yaml
+nt:
+  save_all_input_columns: false   # every branch of the input NTuple
+  save_all_defined_columns: true  # every column created at runtime with Define/Redefine
+  keep: [eventTime, "Veto*_charge"]   # exact names or glob patterns (*, ?, [...])
+  keep_mc: ["truth_*"]                # MC only
+  keep_data: []                       # data only
+  drop: ["Track_*"]                   # applied last
+```
+
+A warning is printed for any entry that matches no column. `run` and `eventID` are always saved. The default config saves all columns. Saving fewer columns reduces the output file size, the memory used by the output buffers and the time spent writing.
+
+## Output file structure
 The output file contains the following trees:
 
 - `nt`: Contains the kinematics from the physics NTuples as well as any additional variable definitions
