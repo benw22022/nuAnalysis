@@ -132,4 +132,6 @@ Definitions:
 
 The definitions are created after the built-in columns, so they can use them: the run period flags `isCaloNuPeriod` and `is2024Period`, the scintillator status flags, the reduced charge and its helper columns, `GoodTimes`/`ExcludedTimes` and the Veto aliases/fallbacks. These built-ins stay in C++ (`Analysis::BuildDataFrame()` in `AnalysisZipFramework/source/Analyis.cxx`) because the reduced-charge code relies on them. The header of `config/definitions.yaml` lists them.
 
+When adding columns in C++, use `Analysis::Define`, `Analysis::Redefine` and `Analysis::Alias` rather than `m_node->Define(...)`: they apply the same `data_type` meaning as the YAML configs, give a clear error if the name already exists, and record every column (name, expression, `data_type`, origin) in the definition log, which is summarised in the job output (full list with `-v`).
+
 Expressions can use the helper functions in `AnalysisZipFramework/include/RDFDefines.h` (e.g. `SafeAt`, `Radius`, `Theta`, `inFaserNuBox`), for example `expression: "Theta(Track_px0, Track_py0, Track_pz0)"`. For more complicated logic, add a C++ function there and call it from the YAML expression.

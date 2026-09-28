@@ -4,6 +4,7 @@
 #include "TInterpreter.h"
 #include "MessageService.hpp"
 #include <set>
+#include <map>
 #include <regex>
 #include <filesystem>
 #include <numeric>
@@ -177,22 +178,59 @@ void Analysis::defineGRLTimeColumns() {
 
 
 
-void Analysis::Define(std::string columnName, std::string expression, DataType dataType) {
-    if (dataType == MC && !isMC) {
-        INFO("Skipping Define for data: ", columnName);
-        return;
-    }
-    if (dataType == DATA && isMC) {
-        INFO("Skipping Define for MC: ", columnName);
-        return;
-    }
+// ── Adding columns ──────────────────────────────────────────────────────────
 
-    INFO("Defining column: ", columnName, " with expression: ", expression);
-
-    m_node = m_node->Define(columnName, expression);
+bool Analysis::Define(const std::string& name, const std::string& expression, DataType dataType, const std::string& origin) {
+    if (!appliesTo(dataType)) {
+        DEBUG("Skipping definition ", name, " (not for this sample)");
+        return false;
+    }
+    checkNewColumnName(name, origin);
+    DEBUG("Defining ", name, " = ", expression, "  [", origin, "]");
+    m_node = m_node->Define(name, expression);
+    recordDefinition("Define", name, expression, dataType, origin);
+    return true;
 }
 
-const bool Analysis::isColumnDefined(const std::string& columnName) {
+void Analysis::Alias(const std::string& alias, const std::string& column, const std::string& origin) {
+    checkNewColumnName(alias, origin);
+    if (!isColumnDefined(column)) {
+        throw std::runtime_error(origin + ": cannot create alias '" + alias + "' for '" + column + "', no column with that name exists");
+    }
+    DEBUG("Alias ", alias, " -> ", column, "  [", origin, "]");
+    m_node = m_node->Alias(alias, column);
+    recordDefinition("Alias", alias, column, ALL, origin);
+}
+
+void Analysis::checkNewColumnName(const std::string& name, const std::string& origin) {
+    if (isColumnDefined(name)) {
+        throw std::runtime_error(origin + ": cannot define '" + name + "', a column with that name already exists "
+                                 "(input branch, alias or earlier definition). Please use a different name.");
+    }
+}
+
+void Analysis::recordDefinition(const std::string& kind, const std::string& name, const std::string& expression,
+                                DataType dataType, const std::string& origin) {
+    m_definitionLog.push_back({kind, name, expression, dataTypeName(dataType), origin});
+}
+
+std::string Analysis::joinColumns(const ROOT::RDF::ColumnNames_t& columns) {
+    std::string out;
+    for (const auto& c : columns) out += (out.empty() ? "" : ", ") + c;
+    return out;
+}
+
+std::string Analysis::dataTypeName(DataType dataType) {
+    switch (dataType) {
+        case ALL:    return "ALL";
+        case DATA:   return "DATA";
+        case MC:     return "MC";
+        case ASIMOV: return "ASIMOV";
+    }
+    return "?";
+}
+
+bool Analysis::isColumnDefined(const std::string& columnName) {
     auto columnNames = m_node->GetColumnNames();
     return std::find(columnNames.begin(), columnNames.end(), columnName) != columnNames.end();
 }
@@ -304,20 +342,11 @@ void Analysis::applyDefinitions() {
     std::size_t nDefined = 0, nSkipped = 0;
     for (std::size_t i = 0; i < defs.size(); ++i) {
         const auto& d = defs[i];
-        if (!appliesTo(parseDataType(d.dataType))) {
-            DEBUG("Skipping definition ", d.name, " (data_type ", d.dataType, ")");
-            ++nSkipped;
-            continue;
-        }
         std::string why;
         if (!requirementsMet(d.requirements, why)) {
             DEBUG("Skipping definition ", d.name, " (", why, ")");
             ++nSkipped;
             continue;
-        }
-        if (isColumnDefined(d.name)) {
-            throw std::runtime_error(m_definitions->sourcePath + ": definition '" + d.name +
-                                     "' already exists as a column (input branch or built-in definition). Please use a different name.");
         }
         for (auto it = std::sregex_iterator(d.expression.begin(), d.expression.end(), identifier); it != std::sregex_iterator(); ++it) {
             const std::string token = it->str();
@@ -328,9 +357,8 @@ void Analysis::applyDefinitions() {
                                          token + "' above '" + d.name + "'.");
             }
         }
-        DEBUG("Defining ", d.name, " = ", d.expression);
-        m_node = m_node->Define(d.name, d.expression);
-        ++nDefined;
+        if (Define(d.name, d.expression, parseDataType(d.dataType), m_definitions->sourcePath)) ++nDefined;
+        else ++nSkipped;
     }
     INFO("Defined ", nDefined, " columns from ", m_definitions->sourcePath, " (", nSkipped,
          " skipped for this sample / reduced charge source; use -v for details).");
@@ -387,9 +415,9 @@ void Analysis::BuildDataFrame() {
     // All other definitions are in config/definitions.yaml (applied at the end of this function).
     // Run periods
     Define("isCaloNuPeriod", "15821 <= run  && run <= 16924", DATA);
-    Define("isCaloNuPeriod", "(200137 <= run && run <= 200147) || (200172 <= run && run <= 200183)", MC);
+    Define("isCaloNuPeriod", "(200137 <= run && run <= 200147) || (200172 <= run && run <= 200183)", ASIMOV);  // all MC
     Define("is2024Period", "run >= 1.2e4", DATA);
-    Define("is2024Period", "(200091 < run && run < 200101) || (200160 <= run && run <= 200171) || (200137 <= run && run <= 200147) || (200172 <= run && run <= 200183)", MC);
+    Define("is2024Period", "(200091 < run && run < 200101) || (200160 <= run && run <= 200171) || (200137 <= run && run <= 200147) || (200172 <= run && run <= 200183)", ASIMOV);  // all MC
 
     // Scintillator status flags (data only; used by the built-in GoodScintillatorStatus)
     if (!isMC) {
@@ -429,6 +457,14 @@ void Analysis::BuildDataFrame() {
     // ── Definitions from config/definitions.yaml ────────────────────────────
     // After all built-in columns, so they can use them (period flags, reduced charge, GoodTimes, ...)
     applyDefinitions();
+
+    // Summary of all added columns (full list with -v)
+    std::map<std::string, int> perOrigin;
+    for (const auto& r : m_definitionLog) perOrigin[r.origin]++;
+    std::string summary;
+    for (const auto& [origin, n] : perOrigin) summary += (summary.empty() ? "" : ", ") + std::to_string(n) + " " + origin;
+    INFO("Added ", m_definitionLog.size(), " columns: ", summary, ".");
+    for (const auto& r : m_definitionLog) DEBUG("  ", r.kind, " ", r.name, " = ", r.expression, "  [", r.dataType, ", ", r.origin, "]");
 
 
     // This needs to go at the end of all the definitions, otherwise the aux columns won't be available for cuts
@@ -493,8 +529,8 @@ void Analysis::defineReducedChargeFromAux() {
 
     // If the input also has native reduced-charge branches, Redefine them with the aux values
     auto defineOrRedefine = [this](const std::string& name, auto f, const ROOT::RDF::ColumnNames_t& cols) {
-        if (isColumnDefined(name)) m_node = m_node->Redefine(name, f, cols);
-        else                       Define(name, f, cols);
+        if (isColumnDefined(name)) Redefine(name, f, cols, "aux reduced charge");
+        else                       Define(name, f, cols, ALL, "aux reduced charge");
     };
 
     defineOrRedefine("VetoNu0_reduced_charge",
@@ -606,7 +642,7 @@ namespace {
                                std::shared_ptr<std::atomic<ULong64_t>> counter) {
         analysis.Define(target,
             [counter](T value) { counter->fetch_add(1, std::memory_order_relaxed); return value; },
-            {source});
+            {source}, ALL, "Veto compatibility (Veto11 fallback)");
     }
 }
 
@@ -626,7 +662,7 @@ void Analysis::setupVetoCompatibility() {
         if (!std::regex_match(col, m, oldVetoName)) continue;
         const std::string newName = "Veto" + m[1].str() + "_" + m[2].str();
         if (isColumnDefined(newName)) continue;
-        m_node = m_node->Alias(newName, col);
+        Alias(newName, col, "Veto compatibility (old VetoSt naming)");
         aliased.push_back(col + " -> " + newName);
     }
     if (!aliased.empty()) {
@@ -653,7 +689,7 @@ void Analysis::setupVetoCompatibility() {
         else if (type == "Bool_t"   || type == "bool")   defineCountedFallback<Bool_t  >(*this, target, source, counter);
         else {
             // Unexpected type: plain copy, use not counted
-            m_node = m_node->Define(target, source);
+            Define(target, source, ALL, "Veto compatibility (Veto11 fallback)");
             counter = nullptr;
         }
         m_columnFallbacks.push_back({target, source, counter});
