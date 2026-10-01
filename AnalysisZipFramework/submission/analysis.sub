@@ -12,6 +12,10 @@ log    = logs/analysis_$(ClusterId).log
 output = logs/analysis_$(ClusterId).$(ProcId)-$(runNumber).out
 error  = logs/analysis_$(ClusterId).$(ProcId)-$(runNumber).err
 
+use_x509userproxy = True
+x509userproxy = /home/ppd/bewilson/work/nuAnalysis/AnalysisZipFramework/submission/x509up_u8900093
+#x509userproxy = $ENV(X509_USER_PROXY)
+
 +JobFlavour = "espresso"  
 
 

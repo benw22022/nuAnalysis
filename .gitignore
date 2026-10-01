@@ -9,3 +9,17 @@ logs/
 *.parq
 *.parquet
 log
+x509*
+*.png
+*.pdf
+*.tex
+*.bashrc
+*.inputrc
+*.cache
+Claude outputs
+.ssh
+notebooks/
+*.vscode
+*.alrb
+*.bash_history
+*.asetup

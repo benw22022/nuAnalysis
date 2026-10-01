@@ -6,6 +6,7 @@
 
 #include "MessageService.hpp"
 #include "GRLUtils.h"
+#include "ConfigUtils.h"
 
 #include <iostream>
 #include <string>
@@ -15,9 +16,18 @@ int main(int argc, char* argv[]) {
     int         runNumber  = -1;
     std::string outputFile = "";
     bool        isMC       = false;
+    bool        isAsimov   = false;
+    bool        useReducedCharge = true;
     bool        verbose    = false;
     bool        useMT      = false;
     int         nThreads   = 0; // 0 = all available cores (ROOT::EnableImplicitMT() default)
+    // Config file paths (relative to the working directory, normally the build directory,
+    // where cmake copies the config/ folder)
+    std::string fileConfigPath = "config/file_config.yaml";
+    std::string grlConfigPath  = "config/grl_config.yaml";
+    std::string outputConfigPath = "config/output_columns.yaml";
+    std::string cutsConfigPath   = "config/cuts.yaml";
+    std::string definitionsConfigPath = "config/definitions.yaml";
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -41,9 +51,52 @@ int main(int argc, char* argv[]) {
             }
             outputFile = argv[++i];
 
+        } else if (arg == "--file-config") {
+            if (i + 1 >= argc) {
+                ERROR("Error: --file-config requires an argument.");
+                return 1;
+            }
+            fileConfigPath = argv[++i];
+
+        } else if (arg == "--grl-config") {
+            if (i + 1 >= argc) {
+                ERROR("Error: --grl-config requires an argument.");
+                return 1;
+            }
+            grlConfigPath = argv[++i];
+
+        } else if (arg == "--output-config") {
+            if (i + 1 >= argc) {
+                ERROR("Error: --output-config requires an argument.");
+                return 1;
+            }
+            outputConfigPath = argv[++i];
+
+        } else if (arg == "--cuts-config") {
+            if (i + 1 >= argc) {
+                ERROR("Error: --cuts-config requires an argument.");
+                return 1;
+            }
+            cutsConfigPath = argv[++i];
+
+        } else if (arg == "--definitions-config") {
+            if (i + 1 >= argc) {
+                ERROR("Error: --definitions-config requires an argument.");
+                return 1;
+            }
+            definitionsConfigPath = argv[++i];
+
         } else if (arg == "--isMC") {
             isMC = true;
             INFO("Running in MC mode: GRL, BCID and trigger cuts will be skipped.");
+        } else if (arg == "--isAsimov") {
+            isAsimov = true;
+            isMC = true; // Asimov mode implies MC
+            INFO("Running in Asimov mode: GRL, BCID cuts will be skipped, no truth cuts will be applied to MC.");
+
+        } else if (arg == "--no-reduced-charge") {
+            useReducedCharge = false;
+            INFO("Reduced charge disabled: aux files will not be loaded and the VetoNu veto will use the raw charge.");
 
         } else if (arg == "--verbose" || arg == "-v") {
             verbose = true;
@@ -73,14 +126,14 @@ int main(int argc, char* argv[]) {
 
         } else {
             ERROR("Unknown argument: ", arg);
-            ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [-j [n]]");
+            ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
             return 1;
         }
     }
 
     if (runNumber == -1) {
         ERROR("Error: --run <number> is required.");
-        ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [-j [n]]");
+        ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
         return 1;
     }
 
@@ -97,30 +150,60 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    GRLUtils::GRLConfig grlConfig = GRLUtils::readGRLConfig("config/grl_config.json");
-    GRLUtils::FileConfig fileConfig = GRLUtils::parseFileConfig("config/file_config.json");
-    
-    std::vector<TString> mainFiles, auxFiles;
-    if (fileConfig.count(runNumber) == 0) {
-        ERROR("No file configuration found for run ", runNumber);
+    INFO("File config: ", fileConfigPath);
+    INFO("GRL config:  ", grlConfigPath);
+    INFO("Output config: ", outputConfigPath);
+    INFO("Definitions config: ", definitionsConfigPath);
+    INFO("Cuts config:   ", cutsConfigPath);
+
+    ConfigUtils::GRLConfig  grlConfig;
+    ConfigUtils::FileConfig fileConfig;
+    ConfigUtils::OutputColumnsConfig outputConfig;
+    ConfigUtils::SelectionConfig selection;
+    ConfigUtils::DefinitionsConfig definitions;
+    try {
+        definitions  = ConfigUtils::readDefinitionsConfig(definitionsConfigPath);
+        selection    = ConfigUtils::readSelectionConfig(cutsConfigPath);
+        grlConfig    = ConfigUtils::readGRLConfig(grlConfigPath);
+        fileConfig   = ConfigUtils::readFileConfig(fileConfigPath);
+        outputConfig = ConfigUtils::readOutputColumnsConfig(outputConfigPath);
+    } catch (const std::exception& e) {
+        ERROR("Failed to read config: ", e.what());
         return 1;
-    } else {
-        mainFiles = GRLUtils::toTStringVector(fileConfig[runNumber].first);
-        auxFiles = GRLUtils::toTStringVector(fileConfig[runNumber].second);
-        INFO("Found ", mainFiles.size(), " main files and ", auxFiles.size(), " aux files for run ", runNumber);
     }
 
+    if (fileConfig.count(runNumber) == 0) {
+        ERROR("No file configuration found for run ", runNumber, " in ", fileConfigPath);
+        return 1;
+    }
+    const std::vector<TString> mainFiles = GRLUtils::toTStringVector(fileConfig[runNumber].dataPaths);
+    const std::vector<TString> auxFiles  = GRLUtils::toTStringVector(fileConfig[runNumber].waveformPaths);
+    INFO("Found ", mainFiles.size(), " main files and ", auxFiles.size(), " aux files for run ", runNumber);
 
     Analysis analysis("nt", mainFiles);
-    if (!auxFiles.empty())
+    if (!auxFiles.empty() && useReducedCharge)
     {
         analysis.addAuxFiles("tree", auxFiles);
     }
 
     analysis.isMC = isMC;
-    analysis.setGRL(grlConfig.grlJsons, grlConfig.grlCsvs);
-    analysis.Run(outputFile);
+    analysis.isAsimov = isAsimov;
+    analysis.useReducedCharge = useReducedCharge;
+    analysis.setRunNumbers({runNumber});
+    analysis.setOutputColumns(outputConfig);
+    analysis.setDefinitions(definitions);
+    analysis.setSelection(selection);
+    // Catch exceptions so that buffered log messages are flushed and the job exits with a
+    // non-zero code (an uncaught exception aborts before std::cout is flushed)
+    try {
+        analysis.setGRL(GRLUtils::toTStringVector(grlConfig.grlJsons), GRLUtils::toTStringVector(grlConfig.grlCsvs));
+        analysis.Run(outputFile);
+    } catch (const std::exception& e) {
+        ERROR("Analysis failed: ", e.what());
+        return 1;
+    }
 
+    INFO("Analysis completed successfully.");
     return 0;
     
 }
