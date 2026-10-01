@@ -409,6 +409,8 @@ void Analysis::BuildDataFrame() {
 
     // Backwards compatibility with older NTuples: VetoSt* naming, missing Veto11
     setupVetoCompatibility();
+    // 2024 dual calorimeter readout: Calo* -> CaloLo* if there is no single-readout Calo
+    setupCaloCompatibility();
 
     // ── Built-in definitions ────────────────────────────────────────────────
     // These stay in C++ because the built-in reduced-charge code relies on them.
@@ -635,14 +637,14 @@ void Analysis::defineReducedChargeFromAux() {
 }
 
 namespace {
-    // Veto11_<var> column that returns Veto10_<var> and counts how often it is evaluated.
+    // Column `target` that returns `source` and counts how often it is evaluated.
     // Typed (compiled) Define, so it needs the exact column type.
     template <typename T>
     void defineCountedFallback(Analysis& analysis, const std::string& target, const std::string& source,
-                               std::shared_ptr<std::atomic<ULong64_t>> counter) {
+                               std::shared_ptr<std::atomic<ULong64_t>> counter, const std::string& origin) {
         analysis.Define(target,
             [counter](T value) { counter->fetch_add(1, std::memory_order_relaxed); return value; },
-            {source}, ALL, "Veto compatibility (Veto11 fallback)");
+            {source}, ALL, origin);
     }
 }
 
@@ -651,7 +653,7 @@ namespace {
 //     Every VetoSt<N>_<var> gets an alias Veto<N>_<var>, so the code can always use the new names.
 //  2) Veto11 was not read out in 2022-2023 (no free digitiser channel).
 //    If the input has no Veto11_* branches at all, every Veto11_<var> is defined
-//     as the corresponding Veto10_<var>. Its use is counted, and reportVetoFallbacks() prints a
+//     as the corresponding Veto10_<var>. Its use is counted, and reportColumnFallbacks() prints a
 //     warning at the end of the job for every Veto11 column that was actually used.
 void Analysis::setupVetoCompatibility() {
     // 1) VetoSt<N>_<var> -> Veto<N>_<var>
@@ -676,39 +678,79 @@ void Analysis::setupVetoCompatibility() {
                                        [](const std::string& c) { return c.rfind("Veto11_", 0) == 0; });
     if (hasVeto11) return;
 
+    std::size_t nVeto11 = 0;
     for (const auto& source : columns) {
         if (source.rfind("Veto10_", 0) != 0) continue;
-        const std::string target = "Veto11_" + source.substr(7);
-        const std::string type   = m_node->GetColumnType(source);
-        auto counter = std::make_shared<std::atomic<ULong64_t>>(0);
-
-        if      (type == "Float_t"  || type == "float")  defineCountedFallback<Float_t >(*this, target, source, counter);
-        else if (type == "Double_t" || type == "double") defineCountedFallback<Double_t>(*this, target, source, counter);
-        else if (type == "Int_t"    || type == "int")    defineCountedFallback<Int_t   >(*this, target, source, counter);
-        else if (type == "UInt_t"   || type == "unsigned int") defineCountedFallback<UInt_t>(*this, target, source, counter);
-        else if (type == "Bool_t"   || type == "bool")   defineCountedFallback<Bool_t  >(*this, target, source, counter);
-        else {
-            // Unexpected type: plain copy, use not counted
-            Define(target, source, ALL, "Veto compatibility (Veto11 fallback)");
-            counter = nullptr;
-        }
-        m_columnFallbacks.push_back({target, source, counter});
+        addCountedFallback("Veto11_" + source.substr(7), source,
+                           "Veto compatibility (Veto11 fallback)", "no Veto11 in 2022-2023");
+        ++nVeto11;
     }
 
-    if (!m_columnFallbacks.empty()) {
-        INFO("No Veto11 branches in the input (Veto11 was not read out in 2022-2023): ", m_columnFallbacks.size(),
+    if (nVeto11 > 0) {
+        INFO("No Veto11 branches in the input (Veto11 was not read out in 2022-2023): ", nVeto11,
              " Veto11_* columns will fall back to the Veto10_* values if used. A warning is printed at the end if they are.");
     }
 }
 
+// Define `target` as a counted copy of `source` (see ColumnFallback)
+void Analysis::addCountedFallback(const std::string& target, const std::string& source,
+                                  const std::string& origin, const std::string& reason) {
+    const std::string type = m_node->GetColumnType(source);
+    auto counter = std::make_shared<std::atomic<ULong64_t>>(0);
+
+    if      (type == "Float_t"  || type == "float")  defineCountedFallback<Float_t >(*this, target, source, counter, origin);
+    else if (type == "Double_t" || type == "double") defineCountedFallback<Double_t>(*this, target, source, counter, origin);
+    else if (type == "Int_t"    || type == "int")    defineCountedFallback<Int_t   >(*this, target, source, counter, origin);
+    else if (type == "UInt_t"   || type == "unsigned int") defineCountedFallback<UInt_t>(*this, target, source, counter, origin);
+    else if (type == "Bool_t"   || type == "bool")   defineCountedFallback<Bool_t  >(*this, target, source, counter, origin);
+    else {
+        // Unexpected type: plain copy, use not counted
+        Define(target, source, ALL, origin);
+        counter = nullptr;
+    }
+    m_columnFallbacks.push_back({target, source, reason, counter});
+}
+
+// 2024 dual calorimeter readout: from 2024 the calorimeter PMTs are read out with a low- and a
+// high-gain channel, CaloLo<N>_<var> / CaloHi<N>_<var> (and CaloLo_total_<var> / CaloHi_total_<var>),
+// instead of the single readout Calo<N>_<var> / Calo_total_<var> of earlier data (and of the MC).
+// If the input has CaloLo branches but no single-readout Calo branches, every Calo..._<var> is
+// defined as the corresponding CaloLo..._<var> (the low-gain readout stands in for the single
+// readout). Its use is counted, and a warning is printed at the end of the job for every
+// Calo column that was actually used.
+void Analysis::setupCaloCompatibility() {
+    const auto columns = m_node->GetColumnNames();
+    const std::regex singleReadout(R"(^Calo(\d+|_total)_.+$)");   // Calo0_charge, Calo_total_E_EM (not CaloNu*, CaloLo*, CaloHi*)
+    const std::regex loReadout(R"(^CaloLo(\d+|_total)_(.+)$)");    // CaloLo0_charge, CaloLo_total_E_EM
+
+    const bool hasSingleReadout = std::any_of(columns.begin(), columns.end(),
+                                              [&](const std::string& c) { return std::regex_match(c, singleReadout); });
+    if (hasSingleReadout) return;
+
+    std::vector<std::string> added;
+    for (const auto& source : columns) {
+        std::smatch m;
+        if (!std::regex_match(source, m, loReadout)) continue;
+        const std::string target = "Calo" + m[1].str() + "_" + m[2].str();
+        if (isColumnDefined(target)) continue;
+        addCountedFallback(target, source, "Calo compatibility (2024 CaloLo readout)",
+                           "2024 dual calorimeter readout, CaloLo stands in for Calo");
+        added.push_back(source + " -> " + target);
+    }
+    if (!added.empty()) {
+        INFO("2024 dual calorimeter readout (CaloLo/CaloHi) and no single-readout Calo branches: ", added.size(),
+             " Calo* columns will use the CaloLo values if used (e.g. ", added.front(), "). A warning is printed at the end if they are.");
+    }
+}
+
 // Warn about every fallback column that was actually used in the event loop
-void Analysis::reportVetoFallbacks() const {
+void Analysis::reportColumnFallbacks() const {
     for (const auto& fb : m_columnFallbacks) {
         if (!fb.nUsed) {
-            WARNING("'", fb.target, "' is not in the input NTuple and was defined as '", fb.source,
+            WARNING("'", fb.target, "' is not in the input NTuple (", fb.reason, ") and was defined as '", fb.source,
                     "' (use not counted for this column type).");
         } else if (fb.nUsed->load() > 0) {
-            WARNING("'", fb.target, "' is not in the input NTuple (no Veto11 in 2022-2023): '", fb.source,
+            WARNING("'", fb.target, "' is not in the input NTuple (", fb.reason, "): '", fb.source,
                     "' was used instead for ", fb.nUsed->load(), " events.");
         }
     }
@@ -934,8 +976,8 @@ void Analysis::Run(TString outputFileName) {
         WARNING("Event loop ran multiple times. This is inefficient.");
     }
 
-    // Veto11 -> Veto10 fallback (only reported if used)
-    reportVetoFallbacks();
+    // Veto11 -> Veto10 and Calo -> CaloLo fallbacks (only reported if used)
+    reportColumnFallbacks();
 
     // Sanity check fallbacks and missing aux data
     // These go here, after event loop has run. If we put them before, they would be printed before the event loop runs and thus always show 0 fallbacks, which is misleading.

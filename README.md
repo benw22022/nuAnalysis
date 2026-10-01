@@ -57,10 +57,11 @@ Other options:
 
 The file config can be regenerated with `AnalysisZipFramework/scripts/make_fileconfig.py` (data runs only; MC runs are added by hand).
 
-## Older NTuples (backwards compatibility)
+## NTuple compatibility (older and 2024 NTuples)
 
 - Old NTuples name the veto scintillator branches `VetoSt<N>_<var>`. Each gets an alias `Veto<N>_<var>`, so the code (and configs) can always use the new names, e.g. `Veto10_raw_charge`.
 - Veto11 was not read out in 2022-2023 (and some MC has no Veto11 branches). If the input has no `Veto11_*` branches, every `Veto11_<var>` falls back to `Veto10_<var>`. A warning is printed at the end of the job for each `Veto11_*` column that was actually used, with the number of events. The fallback columns are not included by `save_all_*` in the output config, only by explicit `keep` entries.
+- From 2024 the calorimeter has a dual readout: `CaloLo<N>_<var>` / `CaloHi<N>_<var>` (and `CaloLo_total_<var>` / `CaloHi_total_<var>`) instead of the single readout `Calo<N>_<var>` / `Calo_total_<var>` used in earlier data and in the MC. If the input has `CaloLo` branches but no single-readout `Calo` branches, every `Calo...` column falls back to the corresponding `CaloLo...` (low-gain) column, so the same code and configs work for all years. As for Veto11, a warning is printed at the end of the job for each `Calo` column that was actually used, and these columns are only saved by explicit `keep` entries. MC-only variables such as `Calo_total_*_fudged` have no data equivalent.
 
 ## Choosing the columns saved in `nt`
 

@@ -26,6 +26,7 @@
 #   isCaloNuPeriod, is2024Period                         run periods (data and MC)
 #   BadVetoStatus, GoodVetoNuStatus                      scintillator status flags (data)
 #   Veto<N>_* aliases for old VetoSt<N>_* branches, Veto11_* -> Veto10_* fallback if no Veto11
+#   Calo<N>_*, Calo_total_* -> CaloLo<N>_*, CaloLo_total_* for 2024 data (dual calorimeter readout)
 #   VetoNu0/1_reduced_charge (from aux files), AuxLookupSuccess, TimingOK, GoodVeto2?Hit,
 #   GoodPreshower?Hit, GoodScintillatorStatus, validReducedVetoNu?Charge, fallbackVetoNu?Charge
 #   GoodTimes, ExcludedTimes                             GRL (data)

@@ -152,15 +152,22 @@ class Analysis {
         std::shared_ptr<const GRLUtils::GRLTimes> m_grlTimes;
         void defineGRLTimeColumns();
 
-        // Backwards compatibility with older NTuples (see setupVetoCompatibility in Analyis.cxx)
+        // Compatibility between NTuple versions (see Analyis.cxx):
+        //   setupVetoCompatibility: old VetoSt* naming, missing Veto11 (2022-2023)
+        //   setupCaloCompatibility: 2024 dual calorimeter readout (CaloLo/CaloHi instead of Calo)
         void setupVetoCompatibility();
-        void reportVetoFallbacks() const;
+        void setupCaloCompatibility();
+        void reportColumnFallbacks() const;
         struct ColumnFallback {
             std::string target;   // requested column, e.g. Veto11_charge
             std::string source;   // column used instead, e.g. Veto10_charge
+            std::string reason;   // why target is missing (for the end-of-job warning)
             std::shared_ptr<std::atomic<ULong64_t>> nUsed;  // events for which the fallback was evaluated (nullptr: not counted)
         };
         std::vector<ColumnFallback> m_columnFallbacks;
+        // Define `target` as a copy of `source` that counts how often it is used (reported at the end)
+        void addCountedFallback(const std::string& target, const std::string& source,
+                                const std::string& origin, const std::string& reason);
 
         std::atomic<int> m_NVetoNu0_fallbacks{0};
         std::atomic<int> m_NVetoNu1_fallbacks{0};
