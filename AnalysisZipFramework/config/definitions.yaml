@@ -45,22 +45,55 @@ Definitions:
   # ── MC truth ([0] is the incoming neutrino; SafeAt guards against empty truth vectors) ──
   truth_dec_r:
     expression: "Radius(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0))"
+    data_type: MC
+
+  nu_interaction_type:
+    expression: "getNeutrinoInteractionType(truth_pdg, truth_dec_z, truth_prod_z)"
     data_type: ASIMOV
 
   is_cc:
-    expression: "Contains(abs(truth_pdg), {11, 13, 15})"
+    expression: "nu_interaction_type > 0"
+    data_type: ASIMOV
+
+  is_nc:
+    expression: "nu_interaction_type == 0"
+    data_type: ASIMOV
+
+  is_CC_nue:
+    expression: "nu_interaction_type == 1 || nu_interaction_type == 4"
+    data_type: ASIMOV
+
+  is_CC_num:
+    expression: "nu_interaction_type == 2 || nu_interaction_type == 5"
+    data_type: ASIMOV
+  
+  is_CC_nut:
+    expression: "nu_interaction_type == 3 || nu_interaction_type == 6"
+    data_type: ASIMOV
+
+  is_charmedEvent:
+    expression: "containsCharmedHadron(truth_pdg)"
+    data_type: ASIMOV
+  
+  n_charmMatchedMuonTracks:
+    expression: "countCharmedMuonTracks(t_pdg, t_pdg_parent, t_truthHitRatio)"
+    data_type: ASIMOV
+
+  n_matchedMuonTracks:
+    expression: "countMuonTracks(t_pdg, t_truthHitRatio)"
     data_type: ASIMOV
 
   decay_box:
     expression: "inFaserNuBox(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0), SafeAt(truth_dec_z, 0))"
-    data_type: ASIMOV
+    data_type: Asimov
 
   decay_lead:
     expression: "inLeadBlock(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0), SafeAt(truth_dec_z, 0))"
-    data_type: ASIMOV
+    data_type: Asimov
 
   inCaloNuPMT:    # always cut on in MC (material mismodelling); NaN-safe, also defined for data
     expression: "inCaloNuPMT(SafeAt(truth_dec_z, 0))"
+    data_type: ASIMOV
 
   truth_pz_nu:    # GeV
     expression: "SafeAt(truth_pz, 0) / 1000"
@@ -68,12 +101,24 @@ Definitions:
 
   truth_dec_x_nu:
     expression: "SafeAt(truth_dec_x, 0)"
+    data_type: ASIMOV
 
   truth_dec_y_nu:
     expression: "SafeAt(truth_dec_y, 0)"
+    data_type: ASIMOV
 
   truth_dec_z_nu:
     expression: "SafeAt(truth_dec_z, 0)"
+    data_type: ASIMOV
+
+  # ── Dimuon signal definitions ────────────────────────
+  truth_isCharmDimuon:
+    expression: "is_CC_num && n_charmMatchedMuonTracks >= 1 && is_charmedEvent"
+    data_type: ASIMOV
+  
+  truth_isCharm:
+    expression: "is_charmedEvent && is_CC_num"
+    data_type: ASIMOV
 
   # ── CaloNu period scintillator status cleaning (data) ────────────────────────
   caloNuVeto2StatusBug:
@@ -102,11 +147,21 @@ Definitions:
   # Leading track = highest pz track. LeadTrack_Idx = -1 if the event has no tracks.
   # All LeadTrack_* variables use SafeAt, so events without a track get NaN and fail every
   # lead-track cut instead of reading out of bounds (matters for the eventID_pass flags).
+  # Subleading track = second highest pz track. SubLeadTrack_Idx = -1 if the event has less than two tracks.
+  # All SubLeadTrack_* variables use SafeAt, so events without a subleading track get NaN and fail every
+  # subleading-track cut instead of reading out of bounds (matters for the eventID_pass flags).
+
   hasLeadTrack:
     expression: "Track_pz0.size() > 0"
 
   LeadTrack_Idx:
     expression: "Track_pz0.empty() ? -1 : static_cast<int>(ROOT::VecOps::ArgMax(Track_pz0))"
+  
+  SubLeadTrack_Idx:
+    expression: "Track_pz0.size() < 2 ? -1 : static_cast<int>(ROOT::VecOps::Argsort(Track_pz0)[Track_pz0.size() - 2])"
+
+  LeadSubLeadTrack_chargeProduct:
+    expression: "SafeAt(Track_charge, LeadTrack_Idx) * SafeAt(Track_charge, SubLeadTrack_Idx)"
 
   Track_rVetoNu:
     expression: "Radius(Track_X_atVetoNu, Track_Y_atVetoNu)"
@@ -133,6 +188,9 @@ Definitions:
 
   LeadTrack_pz0:      # GeV
     expression: "SafeAt(Track_pz0, LeadTrack_Idx) / 1000"
+  
+  SubLeadTrack_pz0:   # GeV
+    expression: "SafeAt(Track_pz0, SubLeadTrack_Idx) / 1000"
 
   LeadTrack_Theta:    # mrad
     expression: "SafeAt(Track_Theta, LeadTrack_Idx) * 1000"
@@ -163,3 +221,51 @@ Definitions:
 
   LeadTrack_qop:
     expression: "LeadTrack_charge / SafeAt(Track_pz0, LeadTrack_Idx)"
+
+  LeadTrack_X_atVetoNu:
+    expression: "SafeAt(Track_X_atVetoNu, LeadTrack_Idx)"
+  
+  LeadTrack_Y_atVetoNu:
+    expression: "SafeAt(Track_Y_atVetoNu, LeadTrack_Idx)"
+
+  SubLeadTrack_X_atVetoNu:
+    expression: "SafeAt(Track_X_atVetoNu, SubLeadTrack_Idx)"
+
+  SubLeadTrack_Y_atVetoNu:
+    expression: "SafeAt(Track_Y_atVetoNu, SubLeadTrack_Idx)"
+
+  LeadTrack_ThetaX_atVetoNu:
+    expression: "SafeAt(Track_ThetaX_atVetoNu, LeadTrack_Idx)"
+  
+  LeadTrack_ThetaY_atVetoNu:
+    expression: "SafeAt(Track_ThetaY_atVetoNu, LeadTrack_Idx)"
+
+  SubLeadTrack_ThetaX_atVetoNu:
+    expression: "SafeAt(Track_ThetaX_atVetoNu, SubLeadTrack_Idx)"
+
+  SubLeadTrack_ThetaY_atVetoNu:
+    expression: "SafeAt(Track_ThetaY_atVetoNu, SubLeadTrack_Idx)"
+
+  LeadSubLeadTrack_ca_vars:
+    expression: "getTrackcCAVars(LeadTrack_X_atVetoNu, LeadTrack_Y_atVetoNu, LeadTrack_ThetaX_atVetoNu, LeadTrack_ThetaY_atVetoNu, SubLeadTrack_X_atVetoNu, SubLeadTrack_Y_atVetoNu, SubLeadTrack_ThetaX_atVetoNu, SubLeadTrack_ThetaY_atVetoNu)"
+
+  LeadSubLeadTrack_zca_avg:
+    expression: "LeadSubLeadTrack_ca_vars[0]"
+
+  LeadSubLeadTrack_zca_abs:
+    expression: "LeadSubLeadTrack_ca_vars[1]"
+
+  LeadSubLeadTrack_distance:
+    expression: "LeadSubLeadTrack_ca_vars[2]"
+
+  # HasTwoTruthMatchedMuonTracks:
+  #   # Count the number of truth-matched muon tracks = number of tracks with truth_pdg = 13 or -13. Require at least 2.
+  #   # barcodes of distinct truth particles that are muons matched to a reco track \
+  #   expression: R"(ROOT::RVecI muonBarcodes; for (size_t i = 0; i < t_pdg.size(); ++i) {
+  #     if (std::abs(t_pdg[i]) != 13 || t_truthHitRatio[i] < 0.5) continue;
+  #     if (std::find(muonBarcodes.begin(), muonBarcodes.end(), t_barcode[i]) == muonBarcodes.end())
+  #       muonBarcodes.push_back(t_barcode[i]);
+  #   } return muonBarcodes.size() >= 2; )"
+  #   data_type: ASIMOV
+
+  

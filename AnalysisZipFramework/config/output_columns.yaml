@@ -481,6 +481,64 @@ nt:
     - truth_dec_x_nu
     - truth_dec_y_nu
     - truth_dec_z_nu
+    - Calo0_nMIP
+    - Calo0_E_dep
+    - Calo0_E_EM
+    - Calo1_nMIP
+    - Calo1_E_dep
+    - Calo1_E_EM
+    - Calo2_nMIP
+    - Calo2_E_dep
+    - Calo2_E_EM
+    - Calo3_nMIP
+    - Calo3_E_dep
+    - Calo3_E_EM
+    - Calo_total_nMIP
+    - Calo_total_E_dep
+    - Calo_total_E_EM
+    - Calo_total_fit_E_EM_fudged
+    - Calo_total_raw_E_EM_fudged
+    - Calo_total_E_EM_fudged
+    - CaloHi0_nMIP
+    - CaloHi0_E_dep
+    - CaloHi0_E_EM
+    - CaloHi1_nMIP
+    - CaloHi1_E_dep
+    - CaloHi1_E_EM
+    - CaloHi2_nMIP
+    - CaloHi2_E_dep
+    - CaloHi2_E_EM
+    - CaloHi3_nMIP
+    - CaloHi3_E_dep
+    - CaloHi3_E_EM
+    - CaloHi_total_nMIP
+    - CaloHi_total_E_dep
+    - CaloHi_total_E_EM
+    - CaloHi_total_fit_E_EM_fudged
+    - CaloHi_total_raw_E_EM_fudged
+    - CaloHi_total_E_EM_fudged
+    - CaloLo0_nMIP
+    - CaloLo0_E_dep
+    - CaloLo0_E_EM
+    - CaloLo1_nMIP
+    - CaloLo1_E_dep
+    - CaloLo1_E_EM
+    - CaloLo2_nMIP
+    - CaloLo2_E_dep
+    - CaloLo2_E_EM
+    - CaloLo3_nMIP
+    - CaloLo3_E_dep
+    - CaloLo3_E_EM
+    - CaloLo_total_nMIP
+    - CaloLo_total_E_dep
+    - CaloLo_total_E_EM
+    - CaloLo_total_fit_E_EM_fudged
+    - CaloLo_total_raw_E_EM_fudged
+    - CaloLo_total_E_EM_fudged
+    - Preshower0_nMIP
+    - Preshower1_nMIP
+    - Preshower_total_nMIP
+
 
   keep_mc:
     # Columns only present in MC (truth information).

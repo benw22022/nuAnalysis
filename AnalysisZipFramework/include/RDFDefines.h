@@ -213,6 +213,27 @@ RVec<T> inLeadBlock(RVec<T> x, RVec<T> y, RVec<T> z) {
 }
 
 template<typename T>
+RVec<T> CountIf(RVec<T> vec, std::function<bool(T)> func) {
+  RVec<bool> res(vec.size(), false);
+  for (int i(0); i < vec.size(); i++) {
+    if (func(vec[i])) {
+      res[i] = true;
+    }
+  }
+  return res;
+}
+
+bool CountIf(RVec<int> vec, std::function<bool(int)> func) {
+  int count = 0;
+  for (int i(0); i < vec.size(); i++) {
+    if (func(vec[i])) {
+      count++;
+    }
+  }
+  return count;
+}
+
+template<typename T>
 RVec<T> inCaloNuPMT(RVec<T> z) {
   RVec<bool> res(z.size(), false);
   for (int i(0); i < z.size(); i++) {
@@ -326,6 +347,193 @@ inline double Calo3_shift_2023_new(double x) {
   }
   return result;
 }
+
+
+template<typename T>
+int getNeutrinoInteractionType(RVec<int> truth_pdg, RVec<T> truth_dec_z, RVec<T> truth_prod_z) {
+  // interaction type: 0=NC, 1=CCnue, 2=CCnumu, 3=CCnutau, 4=CCnuebar, 5=CCnumubar, 6=CCnutaubar, -1=unknown
+  int interaction_type = -1;
+  int nu_pdg = truth_pdg[0];
+  double nu_dec_z = truth_dec_z[0];
+
+  // Check if the neutrino is a charged current interaction by looking for a charged lepton in the decay products that matches the neutrino flavor
+  for (size_t i = 1; i < truth_pdg.size(); ++i) {
+    
+    if (truth_prod_z[i] == nu_dec_z && abs(truth_pdg[i]) == abs(nu_pdg) - 1) {
+    // if (abs(truth_pdg[i]) == abs(nu_pdg) - 1) {
+
+      switch (nu_pdg) {
+        case 12:  // nue
+          interaction_type = 1;
+          break;
+        case 14:  // numu
+          interaction_type = 2;
+          break;
+        case 16:  // nutau
+          interaction_type = 3;
+          break;
+        case -12: // nuebar
+          interaction_type = 4;
+          break;
+        case -14: // numubar
+          interaction_type = 5;
+          break;
+        case -16: // nutaubar
+          interaction_type = 6;
+          break;
+        return interaction_type;
+      }
+    // If no charged lepton is found, check if it's a neutral current interaction by checking if the decay products include a neutrino of the same flavor
+    }
+    else if (truth_prod_z[i] == nu_dec_z && truth_pdg[i] == nu_pdg) {
+      interaction_type = 0; // NC interaction
+      break;
+    }
+  }
+  return interaction_type;
+}
+
+bool isCharmHadron(int pdg) {
+  // Charmed mesons have PDG codes in the range 400-499, and charmed baryons have PDG codes in the range 4000-4999. Exclude eta_c and J/psi from list (they are ccbar so not considered charmed).
+  return ((pdg >= 400 && pdg < 500) || (pdg >= 4000 && pdg < 5000)) && (pdg != 441) && (pdg != 443);
+}
+
+
+// template<typename T>
+bool containsCharmedHadron(RVec<int> truth_pdg) {
+  bool isCharmEvent = false;
+  for (size_t i = 0; i < truth_pdg.size(); ++i) {
+    int pdg = abs(truth_pdg[i]);
+    // Charmed mesons have PDG codes in the range 400-499, and charmed baryons have PDG codes in the range 4000-4999. Exclude eta_c and J/psi from list (they are ccbar so not considered charmed).
+    if (isCharmHadron(pdg)) {
+      isCharmEvent = true;
+      break;
+    }
+  }
+  return isCharmEvent;
+}
+
+template<typename T>
+int countCharmedMuonTracks(RVec<int> t_pdg, RVec<int> t_pdg_parent, RVec<T> t_truthHitRatio) {
+  int nCharmMatchedMuons = 0;
+  for (size_t i = 0; i < t_pdg.size(); ++i) {
+    if (abs(t_pdg[i]) == 13 && isCharmHadron(abs(t_pdg_parent[i])) && t_truthHitRatio[i] > 0.5) {
+      nCharmMatchedMuons++;
+    }
+  }
+  return nCharmMatchedMuons;
+}
+
+template<typename T>
+int countMuonTracks(RVec<int> t_pdg, RVec<T> t_truthHitRatio) {
+  int nMatchedMuons = 0;
+  for (size_t i = 0; i < t_pdg.size(); ++i) {
+    if (abs(t_pdg[i]) == 13 && t_truthHitRatio[i] > 0.5) {
+      nMatchedMuons++;
+    }
+  }
+  return nMatchedMuons;
+}
+
+double getTrackClosestApproach(RVec<double> X_atVetoNu, RVec<double> Y_atVetoNu, RVec<double> ThetaX_atVetoNu, RVec<double> ThetaY_atVetoNu) {
+
+  if (X_atVetoNu.size() < 2 || Y_atVetoNu.size() < 2 || ThetaX_atVetoNu.size() < 2 || ThetaY_atVetoNu.size() < 2) {
+    // Not enough tracks to calculate closest approach
+    return std::nan("Not enough tracks");
+  }
+
+  double t1_thetax = ThetaX_atVetoNu[0];
+  double t1_thetay = ThetaY_atVetoNu[0];
+  double t1_z = 0.0;
+  double t1_x = X_atVetoNu[0];
+  double t1_y = Y_atVetoNu[0];
+  
+  double t2_thetax = ThetaX_atVetoNu[1];
+  double t2_thetay = ThetaY_atVetoNu[1];
+  double t2_z = 0.0;
+  double t2_x = X_atVetoNu[1];
+  double t2_y = Y_atVetoNu[1];
+
+  // Calculate the closest approach in z between the two tracks
+  double t1_cross_t2_i = tan(t1_thetay) - tan(t2_thetay);
+  double t1_cross_t2_j = tan(t2_thetax) - tan(t1_thetax);
+  double t1_cross_t2_k = tan(t1_thetax) * tan(t2_thetay) - tan(t2_thetax) * tan(t1_thetay);
+
+  double t1_cross_t2_mag = pow(t1_cross_t2_i * t1_cross_t2_i + t1_cross_t2_j * t1_cross_t2_j + t1_cross_t2_k * t1_cross_t2_k, 0.5);
+  if (t1_cross_t2_mag == 0) {
+    // The tracks are parallel, return the average z position
+    return std::nan("Tracks are parallel");
+  }
+
+  double t1_dot_t1 = 1 + tan(t1_thetax) * tan(t1_thetax) + tan(t1_thetay) * tan(t1_thetay);
+  double t2_dot_t2 = 1 + tan(t2_thetax) * tan(t2_thetax) + tan(t2_thetay) * tan(t2_thetay);
+  double t1_dot_t2 = 1 + tan(t1_thetax) * tan(t2_thetax) + tan(t1_thetay) * tan(t2_thetay);
+
+  double dx = t2_x - t1_x;
+  double dy = t2_y - t1_y;
+  double dz = t2_z - t1_z;
+
+  // double t1_dot_d = dx * tan(t1_thetax) + dy * tan(t1_thetay) + dz;
+  // double t2_dot_d = dx * tan(t2_thetax) + dy * tan(t2_thetay) + dz;
+
+  double d = abs(t1_cross_t2_i * dx + t1_cross_t2_j * dy + t1_cross_t2_k * dz) / abs(t1_cross_t2_mag);
+
+  return d;
+}
+
+RVec<double> getTrackcCAVars(double X_atVetoNu1, double Y_atVetoNu1, double ThetaX_atVetoNu1, double ThetaY_atVetoNu1,
+                            double X_atVetoNu2, double Y_atVetoNu2, double ThetaX_atVetoNu2, double ThetaY_atVetoNu2) {
+
+  double t1_thetax = ThetaX_atVetoNu1;
+  double t1_thetay = ThetaY_atVetoNu1;
+  double t1_z = 0.0;
+  double t1_x = X_atVetoNu1;
+  double t1_y = Y_atVetoNu1;
+  
+  double t2_thetax = ThetaX_atVetoNu2;
+  double t2_thetay = ThetaY_atVetoNu2;
+  double t2_z = 0.0;
+  double t2_x = X_atVetoNu2;
+  double t2_y = Y_atVetoNu2;
+
+  double wx = t1_x - t2_x;
+  double wy = t1_y - t2_y;
+  double wz = t1_z - t2_z;
+
+  double a = 1 + tan(t1_thetax) * tan(t1_thetax) + tan(t1_thetay) * tan(t1_thetay);
+  double c = 1 + tan(t2_thetax) * tan(t2_thetax) + tan(t2_thetay) * tan(t2_thetay);
+  double b = 1 + tan(t1_thetax) * tan(t2_thetax) + tan(t1_thetay) * tan(t2_thetay);
+  double e = wx * tan(t1_thetax) + wy * tan(t1_thetay) + wz;
+  double f = wx * tan(t2_thetax) + wy * tan(t2_thetay) + wz;
+
+  double den = a*c - b*b;
+  if (fabs(den) < 1e-12) return RVec<double>{NAN, NAN, NAN};
+  
+  double s = (b*f - c*e) / (a*c - b*b);
+  double t = (a*f - b*e) / (a*c - b*b);
+  
+  double c0_x = t1_x + s * tan(t1_thetax);
+  double c0_y = t1_y + s * tan(t1_thetay);
+  double c0_z = t1_z + s;
+
+  double c1_x = t2_x + t * tan(t2_thetax);
+  double c1_y = t2_y + t * tan(t2_thetay);
+  double c1_z = t2_z + t;
+
+  double average_z = (c0_z + c1_z) / 2;
+  double abs_z = abs(c0_z - c1_z);
+  double distance = sqrt(pow(c0_x - c1_x, 2) + pow(c0_y - c1_y, 2) + pow(c0_z - c1_z, 2));
+
+  RVec<double> result;
+  
+  result.push_back(average_z);
+  result.push_back(abs_z);
+  result.push_back(distance);
+
+  return result;
+}
+
+
 
 #endif
 

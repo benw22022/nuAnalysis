@@ -1,0 +1,193 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nuAnalysis selection config: cuts and histograms
+#
+# Histograms:            histograms booked on all events, before the first cut
+#   - <histogram>
+#
+# Cuts:                  applied in the order of this file
+#   <cut name>:          name in the cutflow; the eventID_pass flag is 'passed_<cut name>'
+#     expression:        RDataFrame filter expression (required)
+#     data_type:         ALL (default), DATA, MC or ASIMOV (optional, see below)
+#     requires:          [conditions] (optional, see below)
+#     histograms:        [<histogram>, ...] booked after this cut (optional)
+#
+# <histogram>:
+#   name:       unique name of the histogram in the output file (required)
+#   title:      optional, defaults to the name
+#   data_type:  ALL (default), DATA, MC or ASIMOV (optional)
+#   requires:   [conditions] (optional)
+#   x:          {variable: <column>, bins: <n>, min: <low>, max: <high>}   fixed binning
+#           or  {variable: <column>, edges: [e0, e1, ..., eN]}            variable binning
+#   y:          same as x; if present the histogram is 2D (y vs x)
+#
+# data_type (for cuts and histograms):
+#   ALL     every sample
+#   DATA    data only
+#   MC      MC only, NOT in --isAsimov mode (use for the truth selection)
+#   ASIMOV  all MC, including --isAsimov mode
+#
+# requires (for cuts and histograms): skipped (with an INFO / debug message) unless ALL are met
+#   reduced_charge          VetoNu reduced charge available (from aux files or the input NTuple)
+#   aux_reduced_charge      reduced charge taken from aux (waveform) files
+#   native_reduced_charge   reduced charge taken from branches in the input NTuple
+#   no_reduced_charge       reduced charge disabled (--no-reduced-charge)
+#
+# Histograms attached to a cut are booked at that point of the selection even if the cut
+# itself is not applied to the current sample: they only follow their own data_type/requires.
+# A histogram whose variable does not exist in the dataframe gives a WARNING and is not booked.
+#
+# YAML tips: quote expressions (e.g. "!ExcludedTimes": an unquoted value starting with '!'
+# means something else in YAML); cut names can contain spaces and symbols but not ': '.
+#
+# Select a different config with: ./analysis --cuts-config <path>
+# ─────────────────────────────────────────────────────────────────────────────
+
+Histograms: []    # booked before the first cut
+
+Cuts:
+
+  # ── Data quality (data only) ──────────────────────────────────────────────
+  Colliding:
+    expression: "distanceToCollidingBCID == 0"
+    data_type: DATA
+
+  Trigger:
+    expression: "(inputBits & 0x8) == 0x8 || (inputBits & 0x10) == 0x10 || (inputBits & 0x20) == 0x20 || (inputBits & 0x40) == 0x40"
+    data_type: DATA
+
+  Good times:
+    expression: "GoodTimes"
+    data_type: DATA
+
+  Excluded times:
+    expression: "!ExcludedTimes"
+    data_type: DATA
+
+  # Crossing angle selections (not used at the moment):
+  # Crossing angle = 150 in 2024 period:
+  #   expression: "(!is2024Period) || (crossingAngle == 150.0)"
+  # Crossing angle > 150 in 2024 period:
+  #   expression: "(!is2024Period) || (crossingAngle > 150.0)"
+
+  # ── MC truth selection ────────────────────────────────────────────────────
+  Remove CaloNu PMT region (truth):
+    expression: "(!isCaloNuPeriod) || (isCaloNuPeriod && !inCaloNuPMT)"
+    data_type: ASIMOV    # always applied to MC (material mismodelling), also in Asimov mode
+
+  # CC events only:
+  #   expression: "is_cc"
+  #   data_type: MC
+
+  # nu_mu only:
+  #   expression: "abs(SafeAt(truth_pdg, 0)) == 14"
+  #   data_type: MC
+    
+  In Faser Nu Box or Lead Block:
+    expression: "decay_box || decay_lead"
+    data_type: Asimov
+    
+  Truth dec r < 100 mm:
+    expression: "truth_dec_r < 100"
+    data_type: MC
+    
+  # Truth pz > 100 GeV:
+  #   expression: "truth_pz_nu > 100"
+  #   data_type: MC
+
+  # isDimuonn:
+  #   expression: "isTwoTrackDimuon"
+  #   data_type: ASIMOV
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # ── Reconstruction selection ──────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────
+
+
+# ── Track Cuts ───────────────────────────────────────────────────────────
+  At least two long tracks:
+    expression: "longTracks >= 2"
+  
+  Lead Track pz > 50 GeV:
+    expression: "LeadTrack_pz0 > 50"
+
+  Subleading Track pz > 30 GeV:
+    expression: "SubLeadTrack_pz0 > 30"
+
+  Leading track has at >= 7 layers:
+    expression: "LeadTrack_nLayers >= 7"
+
+  Track nDoF >= 9:
+    expression: "LeadTrack_nDoF >= 9"
+
+  Leading track has chi2/ndof < 15:
+    expression: "LeadTrack_Chi2_NDF < 15"
+
+  Track Pair z closest approach < -2283 mm:
+    expression: "(LeadSubLeadTrack_zca_avg - 3100) < -2283"
+
+  Opposite-sign tracks:
+    expression: "LeadSubLeadTrack_chargeProduct < 0"
+
+  No more than 3 tracks:
+    expression: "longTracks <= 3"
+
+  Track R at max radius < 100 mm:
+    expression: "LeadTrack_r_atMaxRadius < 100"
+
+  # Track R at IFT < 95 mm:
+  #   expression: "LeadTrack_rIFT < 95"
+
+  # Track rVetoNu < 120 mm:
+  #   expression: "LeadTrack_rVetoNu < 120"
+
+  # Leading track theta < 25 mrad:
+  #   expression: "LeadTrack_Theta < 25"
+  # ── Scint/Calo Cuts ───────────────────────────────────────────────────────────
+
+  CaloNu status cleaning:
+    expression: "caloNuStatusCleaning"
+    data_type: DATA
+
+  Veto20 and Veto21 charge > 40 pC:
+    expression: "Veto20_charge > 40 && Veto21_charge > 40"
+    
+  Timing Station Charge > 20 pC:
+    expression: "hitsTiming"    # timing station hit consistent with the lead track y (see BuildDataFrame)
+
+  Preshower Charge > 2.5 pC:
+    expression: "Preshower0_charge > 2.5 && Preshower1_charge > 2.5"
+
+  Calo_total_E_EM < 11 GeV:
+    expression: "Calo_total_E_EM < 11e3" 
+    
+  # ── VetoNu veto ───────────────────────────────────────────────────────────
+  # With the reduced charge: reduced charge < 30 pC (+ raw-charge fallback when the aux value
+  # is not valid). With --no-reduced-charge: raw charge < 40 pC.
+  Sanity cut to remove events with missing aux data:
+    expression: "AuxLookupSuccess"
+    requires: [aux_reduced_charge]
+    
+  VetoNu0 reduced charge < 30 pC:
+    expression: "VetoNu0_reduced_charge < 30"
+    requires: [reduced_charge]
+
+  VetoNu1 reduced charge < 30 pC:
+    expression: "VetoNu1_reduced_charge < 30"
+    requires: [reduced_charge]
+
+  VetoNu0 raw charge < 40 pC (fallback to raw charge if reduced charge invalid):
+    expression: "fallbackVetoNu0Charge < 40"
+    requires: [aux_reduced_charge]
+
+  VetoNu1 raw charge < 40 pC (fallback to raw charge if reduced charge invalid):
+    expression: "fallbackVetoNu1Charge < 40"
+    requires: [aux_reduced_charge]
+
+  VetoNu0 raw charge < 40 pC:
+    expression: "VetoNu0_raw_charge < 40"
+    requires: [no_reduced_charge]
+
+  VetoNu1 raw charge < 40 pC:
+    expression: "VetoNu1_raw_charge < 40"
+    requires: [no_reduced_charge]
+

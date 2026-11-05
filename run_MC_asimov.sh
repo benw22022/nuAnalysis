@@ -1,6 +1,6 @@
 #!/bin/bash
-
 cd build
+cmake ../AnalysisZipFramework
 make
 
 # 2022-23
@@ -21,6 +21,16 @@ make
 ./analysis -r 200171 -o 200171.bck.root --isAsimov &
 wait
 
+./analysis -r 200080 -o 200080.bck.root --isAsimov &
+./analysis -r 200084 -o 200084.bck.root --isAsimov &
+./analysis -r 200086 -o 200086.bck.root --isAsimov &
+./analysis -r 200081 -o 200081.bck.root --isAsimov &
+./analysis -r 200085 -o 200085.bck.root --isAsimov &
+./analysis -r 200087 -o 200087.bck.root --isAsimov &
+./analysis -r 200088 -o 200088.bck.root --isAsimov &
+./analysis -r 200090 -o 200090.bck.root --isAsimov &
+wait
+
 # 2024 CaloNu
 ./analysis -r 200139 -o 200139.bck.root --isAsimov &
 ./analysis -r 200140 -o 200140.bck.root --isAsimov &
@@ -37,6 +47,27 @@ wait
 ./analysis -r 200181 -o 200181.bck.root --isAsimov &
 ./analysis -r 200182 -o 200182.bck.root --isAsimov &
 ./analysis -r 200183 -o 200183.bck.root --isAsimov &
+wait
+
+./analysis -r 200091 -o 200091.bck.root --isAsimov &
+./analysis -r 200095 -o 200095.bck.root --isAsimov &
+./analysis -r 200097 -o 200097.bck.root --isAsimov &
+./analysis -r 200092 -o 200092.bck.root --isAsimov &
+./analysis -r 200096 -o 200096.bck.root --isAsimov &
+./analysis -r 200098 -o 200098.bck.root --isAsimov &
+./analysis -r 200099 -o 200099.bck.root --isAsimov &
+./analysis -r 200100 -o 200100.bck.root --isAsimov &
+./analysis -r 200101 -o 200101.bck.root --isAsimov &
+wait
+
+./analysis -r 200137 -o 200137.bck.root --isAsimov &
+./analysis -r 200141 -o 200141.bck.root --isAsimov &
+./analysis -r 200143 -o 200143.bck.root --isAsimov &
+./analysis -r 200138 -o 200138.bck.root --isAsimov &
+./analysis -r 200142 -o 200142.bck.root --isAsimov &
+./analysis -r 200144 -o 200144.bck.root --isAsimov &
+./analysis -r 200145 -o 200145.bck.root --isAsimov &
+./analysis -r 200147 -o 200147.bck.root --isAsimov &
 wait
 
 # 2024 No CaloNu
@@ -57,24 +88,37 @@ wait
 ./analysis -r 200115 -o 200115.bck.root --isAsimov &
 wait
 
-hadd -f 2024_noCaloNu.bck.root                     200093.bck.root 200094.bck.root 200100.bck.root &
-hadd -f 2024_noCaloNu_FTF_BIC.bck.root             200160.bck.root 200161.bck.root 200162.bck.root &
-hadd -f 2024_noCaloNu_FTFP_INCLXX.bck.root         200163.bck.root 200164.bck.root 200165.bck.root &
-hadd -f 2024_noCaloNu_FTFP_BERT_HP_JEFF33.bck.root 200166.bck.root 200167.bck.root 200168.bck.root &
-hadd -f 2024_noCaloNu_FTFP_BERT_HP_ENDFB8.bck.root 200169.bck.root 200170.bck.root 200171.bck.root &
+./analysis -r 200137 -o 200137.bck.root --isAsimov &
+./analysis -r 200141 -o 200141.bck.root --isAsimov &
+./analysis -r 200143 -o 200143.bck.root --isAsimov &
+./analysis -r 200138 -o 200138.bck.root --isAsimov &
+./analysis -r 200142 -o 200142.bck.root --isAsimov &
+./analysis -r 200144 -o 200144.bck.root --isAsimov &
+./analysis -r 200145 -o 200145.bck.root --isAsimov &
+./analysis -r 200146 -o 200146.bck.root --isAsimov &
+./analysis -r 200147 -o 200147.bck.root --isAsimov &
 wait
+
+hadd -f 2024_noCaloNu.bck.root                     200093.bck.root 200094.bck.root 200100.bck.root &
+# hadd -f 2024_noCaloNu_FTF_BIC.bck.root             200160.bck.root 200161.bck.root 200162.bck.root &
+# hadd -f 2024_noCaloNu_FTFP_INCLXX.bck.root         200163.bck.root 200164.bck.root 200165.bck.root &
+# hadd -f 2024_noCaloNu_FTFP_BERT_HP_JEFF33.bck.root 200166.bck.root 200167.bck.root 200168.bck.root &
+# hadd -f 2024_noCaloNu_FTFP_BERT_HP_ENDFB8.bck.root 200169.bck.root 200170.bck.root 200171.bck.root &
+# wait
 
 hadd -f 2024_CaloNu.bck.root                     200139.bck.root 200140.bck.root 200146.bck.root &
-hadd -f 2024_CaloNu_FTF_BIC.bck.root             200172.bck.root 200173.bck.root 200174.bck.root &
-hadd -f 2024_CaloNu_FTFP_INCLXX.bck.root         200175.bck.root 200176.bck.root 200177.bck.root &
-hadd -f 2024_CaloNu_FTFP_BERT_HP_JEFF33.bck.root 200178.bck.root 200179.bck.root 200180.bck.root &
-hadd -f 2024_CaloNu_FTFP_BERT_HP_ENDFB8.bck.root 200181.bck.root 200182.bck.root 200183.bck.root &
-wait
+# hadd -f 2024_CaloNu_FTF_BIC.bck.root             200172.bck.root 200173.bck.root 200174.bck.root &
+# hadd -f 2024_CaloNu_FTFP_INCLXX.bck.root         200175.bck.root 200176.bck.root 200177.bck.root &
+# hadd -f 2024_CaloNu_FTFP_BERT_HP_JEFF33.bck.root 200178.bck.root 200179.bck.root 200180.bck.root &
+# hadd -f 2024_CaloNu_FTFP_BERT_HP_ENDFB8.bck.root 200181.bck.root 200182.bck.root 200183.bck.root &
+# wait
 
 hadd -f 2022_2023.bck.root                     200082.bck.root 200083.bck.root 200089.bck.root &
-hadd -f 2022_2023_FTF_BIC.bck.root             200104.bck.root 200105.bck.root 200106.bck.root &
-hadd -f 2022_2023_FTFP_INCLXX.bck.root         200107.bck.root 200108.bck.root 200109.bck.root &
-hadd -f 2022_2023_FTFP_BERT_HP_JEFF33.bck.root 200110.bck.root 200111.bck.root 200112.bck.root &
-hadd -f 2022_2023_FTFP_BERT_HP_ENDFB8.bck.root 200113.bck.root 200114.bck.root 200115.bck.root &
+# hadd -f 2022_2023_FTF_BIC.bck.root             200104.bck.root 200105.bck.root 200106.bck.root &
+# hadd -f 2022_2023_FTFP_INCLXX.bck.root         200107.bck.root 200108.bck.root 200109.bck.root &
+# hadd -f 2022_2023_FTFP_BERT_HP_JEFF33.bck.root 200110.bck.root 200111.bck.root 200112.bck.root &
+# hadd -f 2022_2023_FTFP_BERT_HP_ENDFB8.bck.root 200113.bck.root 200114.bck.root 200115.bck.root &
+ 
+hadd -f merged_all.root 200080.bck.root 200082.bck.root 200084.bck.root 200086.bck.root 200081.bck.root 200083.bck.root 200085.bck.root 200087.bck.root 200088.bck.root 200089.bck.root 200090.bck.root 200091.bck.root 200093.bck.root 200095.bck.root 200097.bck.root 200092.bck.root 200094.bck.root 200096.bck.root 200098.bck.root 200099.bck.root 200100.bck.root 200101.bck.root 200137.bck.root 200139.bck.root 200141.bck.root 200143.bck.root 200138.bck.root 200140.bck.root 200142.bck.root 200144.bck.root 200145.bck.root 200146.bck.root 200147.bck.root
 
 wait

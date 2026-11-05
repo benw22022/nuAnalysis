@@ -468,6 +468,17 @@ void Analysis::BuildDataFrame() {
     INFO("Added ", m_definitionLog.size(), " columns: ", summary, ".");
     for (const auto& r : m_definitionLog) DEBUG("  ", r.kind, " ", r.name, " = ", r.expression, "  [", r.dataType, ", ", r.origin, "]");
 
+    m_node = m_node->Define("isTwoTrackDimuon", R"(
+    // barcodes of distinct truth particles that are muons matched to a reco track
+    ROOT::RVecI muonBarcodes;
+    for (size_t i = 0; i < t_pdg.size(); ++i) {
+      if (std::abs(t_pdg[i]) != 13 || t_truthHitRatio[i] < 0.5) continue;
+      if (std::find(muonBarcodes.begin(), muonBarcodes.end(), t_barcode[i]) == muonBarcodes.end())
+        muonBarcodes.push_back(t_barcode[i]);
+    }
+    return muonBarcodes.size() >= 2;
+  )");
+
 
     // This needs to go at the end of all the definitions, otherwise the aux columns won't be available for cuts
     m_eventIDNode = m_node;
@@ -857,6 +868,11 @@ void Analysis::Run(TString outputFileName) {
         const std::string eventIDTmpFile = std::string(outputFileName.Data()) + ".eventID_pass.tmp.root";
         m_passedCutColNames.push_back("run");
         m_passedCutColNames.push_back("eventID");
+        m_passedCutColNames.push_back("truth_isCharm");
+        m_passedCutColNames.push_back("truth_isCharmDimuon");
+        m_passedCutColNames.push_back("nu_interaction_type");
+        m_passedCutColNames.push_back("n_matchedMuonTracks");
+        m_passedCutColNames.push_back("n_charmMatchedMuonTracks");
         auto eventIDSnapshot = m_eventIDNode->Snapshot("eventID_pass", eventIDTmpFile, m_passedCutColNames, opts);
 
         // ── THE event loop ──────────────────────────────────────────────────
