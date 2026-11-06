@@ -10,6 +10,7 @@
 #     data_type:         ALL (default), DATA, MC or ASIMOV (optional, see below)
 #     requires:          [conditions] (optional, see below)
 #     histograms:        [<histogram>, ...] booked after this cut (optional)
+#     n_minus_1:         [<histogram>, ...] N-1 histograms (optional, see below)
 #
 # <histogram>:
 #   name:       unique name of the histogram in the output file (required)
@@ -35,6 +36,17 @@
 # Histograms attached to a cut are booked at that point of the selection even if the cut
 # itself is not applied to the current sample: they only follow their own data_type/requires.
 # A histogram whose variable does not exist in the dataframe gives a WARNING and is not booked.
+#
+# N-1 histograms (n_minus_1): filled with the events that pass every OTHER cut applied to the
+# sample (before and after this one), i.e. only this cut is removed. Same options as <histogram>,
+# names unique together with all other histograms. Written to histograms/n_minus_1/ in the output.
+# Skipped if the cut itself is not applied to the sample. They do not change the cutflow.
+# Example:
+#   Track R at IFT < 95 mm:
+#     expression: "LeadTrack_rIFT < 95"
+#     n_minus_1:
+#       - name: LeadTrack_rIFT_Nminus1
+#         x: {variable: LeadTrack_rIFT, bins: 100, min: 0, max: 200}
 #
 # YAML tips: quote expressions (e.g. "!ExcludedTimes": an unquoted value starting with '!'
 # means something else in YAML); cut names can contain spaces and symbols but not ': '.

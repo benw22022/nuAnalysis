@@ -7,9 +7,11 @@
 #include "MessageService.hpp"
 #include "GRLUtils.h"
 #include "ConfigUtils.h"
+#include "InputUtils.h"
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 int main(int argc, char* argv[]) {
 
@@ -28,6 +30,9 @@ int main(int argc, char* argv[]) {
     std::string outputConfigPath = "config/output_columns.yaml";
     std::string cutsConfigPath   = "config/cuts.yaml";
     std::string definitionsConfigPath = "config/definitions.yaml";
+    // Alternative to --run: take all .root files in these directories (file config not used)
+    std::vector<std::string> inputDirs;
+    std::vector<std::string> auxDirs;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -50,6 +55,20 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             outputFile = argv[++i];
+
+        } else if (arg == "--input-dir") {
+            if (i + 1 >= argc) {
+                ERROR("Error: --input-dir requires an argument.");
+                return 1;
+            }
+            inputDirs.push_back(argv[++i]);
+
+        } else if (arg == "--aux-dir") {
+            if (i + 1 >= argc) {
+                ERROR("Error: --aux-dir requires an argument.");
+                return 1;
+            }
+            auxDirs.push_back(argv[++i]);
 
         } else if (arg == "--file-config") {
             if (i + 1 >= argc) {
@@ -126,18 +145,32 @@ int main(int argc, char* argv[]) {
 
         } else {
             ERROR("Unknown argument: ", arg);
-            ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
+            ERROR("Usage: ", argv[0], " (--run <run_number> | --input-dir <dir> [--aux-dir <dir>]) [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
             return 1;
         }
     }
 
-    if (runNumber == -1) {
-        ERROR("Error: --run <number> is required.");
-        ERROR("Usage: ", argv[0], " --run <run_number> [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
+    const bool useInputDirs = !inputDirs.empty();
+    if (useInputDirs && runNumber != -1) {
+        ERROR("Error: give either --run or --input-dir, not both.");
+        return 1;
+    }
+    if (!auxDirs.empty() && !useInputDirs) {
+        ERROR("Error: --aux-dir can only be used with --input-dir (with --run the aux files come from the file config).");
+        return 1;
+    }
+    if (runNumber == -1 && !useInputDirs) {
+        ERROR("Error: --run <number> or --input-dir <dir> is required.");
+        ERROR("Usage: ", argv[0], " (--run <run_number> | --input-dir <dir> [--aux-dir <dir>]) [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
         return 1;
     }
 
-    INFO("Run number:  ", runNumber);
+    if (useInputDirs) {
+        for (const auto& d : inputDirs) INFO("Input directory: ", d);
+        for (const auto& d : auxDirs)   INFO("Aux directory:   ", d);
+    } else {
+        INFO("Run number:  ", runNumber);
+    }
     INFO("Output file: ", (outputFile.empty() ? "(none)" : outputFile));
 
     if (useMT) {
@@ -150,7 +183,8 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    INFO("File config: ", fileConfigPath);
+    if (useInputDirs) INFO("File config: not used (--input-dir)");
+    else              INFO("File config: ", fileConfigPath);
     INFO("GRL config:  ", grlConfigPath);
     INFO("Output config: ", outputConfigPath);
     INFO("Definitions config: ", definitionsConfigPath);
@@ -165,20 +199,57 @@ int main(int argc, char* argv[]) {
         definitions  = ConfigUtils::readDefinitionsConfig(definitionsConfigPath);
         selection    = ConfigUtils::readSelectionConfig(cutsConfigPath);
         grlConfig    = ConfigUtils::readGRLConfig(grlConfigPath);
-        fileConfig   = ConfigUtils::readFileConfig(fileConfigPath);
+        if (!useInputDirs) fileConfig = ConfigUtils::readFileConfig(fileConfigPath);
         outputConfig = ConfigUtils::readOutputColumnsConfig(outputConfigPath);
     } catch (const std::exception& e) {
         ERROR("Failed to read config: ", e.what());
         return 1;
     }
 
-    if (fileConfig.count(runNumber) == 0) {
-        ERROR("No file configuration found for run ", runNumber, " in ", fileConfigPath);
-        return 1;
+    // ── Input files: from the file config (--run) or from directories (--input-dir) ──
+    std::vector<TString> mainFiles, auxFiles;
+    std::vector<int> runNumbers;
+    if (useInputDirs) {
+        try {
+            std::vector<std::string> files, aux;
+            for (const auto& d : inputDirs) {
+                const auto f = InputUtils::listRootFiles(d);
+                files.insert(files.end(), f.begin(), f.end());
+            }
+            for (const auto& d : auxDirs) {
+                const auto f = InputUtils::listRootFiles(d);
+                aux.insert(aux.end(), f.begin(), f.end());
+            }
+            runNumbers = InputUtils::runNumbersInFiles(files, "nt");
+            mainFiles = GRLUtils::toTStringVector(files);
+            auxFiles  = GRLUtils::toTStringVector(aux);
+        } catch (const std::exception& e) {
+            ERROR("Failed to set up the input files: ", e.what());
+            return 1;
+        }
+        if (runNumbers.empty()) {
+            ERROR("Could not determine any run number: all input files are empty.");
+            return 1;
+        }
+        std::string runList;
+        for (int r : runNumbers) runList += (runList.empty() ? "" : ", ") + std::to_string(r);
+        INFO("Found ", mainFiles.size(), " input files (runs: ", runList, ") and ", auxFiles.size(), " aux files.");
+        if (!auxFiles.empty() && runNumbers.size() > 1) {
+            // The aux lookup is keyed on eventID only, so event IDs from different runs would clash
+            ERROR("Error: --aux-dir needs input files from a single run, but found runs ", runList,
+                  ". Use one --input-dir per run (separate jobs).");
+            return 1;
+        }
+    } else {
+        if (fileConfig.count(runNumber) == 0) {
+            ERROR("No file configuration found for run ", runNumber, " in ", fileConfigPath);
+            return 1;
+        }
+        mainFiles  = GRLUtils::toTStringVector(fileConfig[runNumber].dataPaths);
+        auxFiles   = GRLUtils::toTStringVector(fileConfig[runNumber].waveformPaths);
+        runNumbers = {runNumber};
+        INFO("Found ", mainFiles.size(), " main files and ", auxFiles.size(), " aux files for run ", runNumber);
     }
-    const std::vector<TString> mainFiles = GRLUtils::toTStringVector(fileConfig[runNumber].dataPaths);
-    const std::vector<TString> auxFiles  = GRLUtils::toTStringVector(fileConfig[runNumber].waveformPaths);
-    INFO("Found ", mainFiles.size(), " main files and ", auxFiles.size(), " aux files for run ", runNumber);
 
     Analysis analysis("nt", mainFiles);
     if (!auxFiles.empty() && useReducedCharge)
@@ -189,7 +260,7 @@ int main(int argc, char* argv[]) {
     analysis.isMC = isMC;
     analysis.isAsimov = isAsimov;
     analysis.useReducedCharge = useReducedCharge;
-    analysis.setRunNumbers({runNumber});
+    analysis.setRunNumbers(runNumbers);
     analysis.setOutputColumns(outputConfig);
     analysis.setDefinitions(definitions);
     analysis.setSelection(selection);

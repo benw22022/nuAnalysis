@@ -180,6 +180,8 @@ class Analysis {
         }
 
         void applyCut(std::string cutExpression, std::string cutName, DataType dataType = ALL);
+        // Applied cuts in order: (cut name, eventID_pass flag column), used for the N-1 histograms
+        std::vector<std::pair<std::string, std::string>> m_appliedCutFlags;
 
         // Bookkeeping for Define / Redefine / Alias
         std::vector<DefinitionRecord> m_definitionLog;
@@ -196,7 +198,14 @@ class Analysis {
         // Cuts and histograms from the selection config (config/cuts.yaml)
         std::optional<ConfigUtils::SelectionConfig> m_selection;
         void applySelection();
+        // Book at the current point of the selection (m_node), stored in m_histResults
         void bookHistogram(const ConfigUtils::HistogramConfig& cfg);
+        // Book on any node, stored in `results`
+        void bookHistogram(const ConfigUtils::HistogramConfig& cfg, ROOT::RDF::RNode node,
+                           std::vector<ROOT::RDF::RResultPtr<TH1>>& results);
+        // N-1 histograms: for each cut, filled with all OTHER applied cuts (via the eventID_pass flags)
+        void bookNMinus1Histograms();
+        std::vector<ROOT::RDF::RResultPtr<TH1>> m_nMinus1Results;
         std::size_t m_nHistSkipped{0};
 
         // Does something with this data_type apply to the current sample (data / MC / Asimov)?

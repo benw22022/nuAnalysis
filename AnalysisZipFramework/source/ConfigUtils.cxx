@@ -227,7 +227,7 @@ namespace ConfigUtils {
                 if (!cutNames.insert(cut.name).second) throw std::runtime_error(ctx + lineOf(kv.first) + " is defined more than once");
                 const YAML::Node& c = kv.second;
                 if (!c.IsMap()) throw std::runtime_error(ctx + ": expected a map with at least 'expression'" + lineOf(c));
-                warnUnknownKeys(c, {"expression", "data_type", "requires", "histograms"}, ctx);
+                warnUnknownKeys(c, {"expression", "data_type", "requires", "histograms", "n_minus_1"}, ctx);
                 cut.expression = getRequired<std::string>(c, "expression", ctx);
                 if (cut.expression.find_first_not_of(" \t") == std::string::npos) {
                     throw std::runtime_error(ctx + ": expression is empty" + lineOf(c["expression"]));
@@ -235,6 +235,7 @@ namespace ConfigUtils {
                 cut.dataType   = readDataType(c, ctx);
                 cut.requirements   = readRequires(c, ctx);
                 cut.histograms = readHistograms(c["histograms"], ctx, histNames);
+                cut.nMinus1    = readHistograms(c["n_minus_1"], ctx + " (n_minus_1)", histNames);
                 config.cuts.push_back(cut);
             }
         }
