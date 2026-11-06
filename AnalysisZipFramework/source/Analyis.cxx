@@ -286,6 +286,11 @@ bool Analysis::requirementsMet(const std::vector<std::string>& requirements, std
 
 // Book a 1D or 2D histogram at the current point of the selection
 void Analysis::bookHistogram(const ConfigUtils::HistogramConfig& cfg) {
+    bookHistogram(cfg, *m_node, m_histResults);
+}
+
+void Analysis::bookHistogram(const ConfigUtils::HistogramConfig& cfg, ROOT::RDF::RNode node,
+                             std::vector<ROOT::RDF::RResultPtr<TH1>>& results) {
     if (!appliesTo(parseDataType(cfg.dataType))) {
         DEBUG("Skipping histogram ", cfg.name, " (data_type ", cfg.dataType, ")");
         ++m_nHistSkipped;
@@ -311,7 +316,7 @@ void Analysis::bookHistogram(const ConfigUtils::HistogramConfig& cfg) {
         const auto model = x.hasEdges()
             ? ROOT::RDF::TH1DModel(cfg.name.c_str(), cfg.title.c_str(), static_cast<int>(x.edges.size()) - 1, x.edges.data())
             : ROOT::RDF::TH1DModel(cfg.name.c_str(), cfg.title.c_str(), x.nBins, x.min, x.max);
-        m_histResults.push_back(m_node->Histo1D(model, x.variable));
+        results.push_back(node.Histo1D(model, x.variable));
         return;
     }
 
@@ -325,7 +330,7 @@ void Analysis::bookHistogram(const ConfigUtils::HistogramConfig& cfg) {
     else if ( x.hasEdges() && !y.hasEdges()) model = ROOT::RDF::TH2DModel(n, ti, nxe, x.edges.data(), y.nBins, y.min, y.max);
     else if (!x.hasEdges() &&  y.hasEdges()) model = ROOT::RDF::TH2DModel(n, ti, x.nBins, x.min, x.max, nye, y.edges.data());
     else                                     model = ROOT::RDF::TH2DModel(n, ti, nxe, x.edges.data(), nye, y.edges.data());
-    m_histResults.push_back(m_node->Histo2D(model, x.variable, y.variable));
+    results.push_back(node.Histo2D(model, x.variable, y.variable));
 }
 
 // Define the columns of the definitions config, in file order
@@ -385,7 +390,39 @@ void Analysis::applySelection() {
         for (const auto& h : cut.histograms) bookHistogram(h);
     }
 
-    INFO("Booked ", m_histResults.size(), " histograms (", m_nHistSkipped, " skipped for this sample / reduced charge source; use -v for details).");
+    bookNMinus1Histograms();
+
+    INFO("Booked ", m_histResults.size(), " histograms and ", m_nMinus1Results.size(), " N-1 histograms (",
+         m_nHistSkipped, " skipped for this sample / reduced charge source; use -v for details).");
+}
+
+// N-1 histograms: for each cut with an n_minus_1 list, fill the histograms with every OTHER
+// applied cut. The selection is built from the eventID_pass flags (passed_<cut>), which are
+// already evaluated for every event, so the cut expressions are not compiled again and the
+// histograms are filled in the same single event loop. The filters are unnamed, so they do not
+// appear in the cutflow.
+void Analysis::bookNMinus1Histograms() {
+    for (const auto& cut : m_selection->cuts) {
+        if (cut.nMinus1.empty()) continue;
+
+        const auto self = std::find_if(m_appliedCutFlags.begin(), m_appliedCutFlags.end(),
+                                       [&](const auto& c) { return c.first == cut.name; });
+        if (self == m_appliedCutFlags.end()) {
+            DEBUG("Skipping ", cut.nMinus1.size(), " N-1 histograms of cut '", cut.name, "' (cut not applied to this sample)");
+            m_nHistSkipped += cut.nMinus1.size();
+            continue;
+        }
+
+        std::string others;
+        for (const auto& [name, flag] : m_appliedCutFlags) {
+            if (name == cut.name) continue;
+            others += (others.empty() ? "" : " && ") + flag;
+        }
+        DEBUG("N-1 selection for '", cut.name, "': ", (others.empty() ? "(no other cuts)" : others));
+
+        ROOT::RDF::RNode node = others.empty() ? *m_eventIDNode : m_eventIDNode->Filter(others);
+        for (const auto& h : cut.nMinus1) bookHistogram(h, node, m_nMinus1Results);
+    }
 }
 
 // Main setup function that builds the dataframe and sets up the aux chain if present
@@ -810,6 +847,7 @@ void Analysis::applyCut(std::string cutExpression, std::string cutName, DataType
                                  "', which is already used by another cut. Please rename one of the cuts.");
     }
     m_passedCutColNames.push_back(pass_cut_name);
+    m_appliedCutFlags.emplace_back(cutName, pass_cut_name);
     m_eventIDNode = m_eventIDNode->Define(pass_cut_name, cutExpression);
     
     m_node = m_node->Filter(cutExpression, cutName);
@@ -934,7 +972,7 @@ void Analysis::Run(TString outputFileName) {
         INFO("Wrote cutflow tree");
 
         // ── Histograms ────────────────────────────
-        if (!m_histResults.empty()) {
+        if (!m_histResults.empty() || !m_nMinus1Results.empty()) {
             INFO("Writing histograms to file...");
             // make TDirectory for histograms
             TFile *histFile = TFile::Open(outputFileName, "UPDATE");
@@ -943,8 +981,16 @@ void Analysis::Run(TString outputFileName) {
             for (auto&& hist : m_histResults) {
                 hist->Write();
             }
+            // N-1 histograms in their own subdirectory
+            if (!m_nMinus1Results.empty()) {
+                histFile->mkdir("histograms/n_minus_1");
+                histFile->cd("histograms/n_minus_1");
+                for (auto&& hist : m_nMinus1Results) {
+                    hist->Write();
+                }
+            }
             histFile->Close();
-            INFO("Wrote ", m_histResults.size(), " histograms to file.");
+            INFO("Wrote ", m_histResults.size(), " histograms and ", m_nMinus1Results.size(), " N-1 histograms to file.");
         }
 
         // ── Event ID pass tree: copy from the temporary file into the output ─

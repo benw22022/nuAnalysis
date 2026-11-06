@@ -90,6 +90,7 @@ namespace ConfigUtils {
         std::string dataType{"ALL"};
         std::vector<std::string> requirements;
         std::vector<HistogramConfig> histograms;  // booked after this cut
+        std::vector<HistogramConfig> nMinus1;     // N-1 histograms: all other applied cuts, not this one
     };
 
     struct SelectionConfig {

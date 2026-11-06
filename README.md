@@ -97,6 +97,7 @@ The output file contains the following trees:
 - `meta`: Contains run number and luminosity
 - `cutflow`: Contains the cutflow
 - `eventID_passed`: Contains run number, eventIDs and boolean flags for each cut defined in the analysis
+- `histograms/`: Histograms booked in the cuts config, with the N-1 histograms in `histograms/n_minus_1/`
 
 ## Batch submission 
 
@@ -122,9 +123,14 @@ Cuts:
         data_type: ALL            # optional
         x: {variable: LeadTrack_pz0, bins: 100, min: 0, max: 5000}
         y: {variable: LeadTrack_Theta, edges: [0, 5, 10, 25, 50]}   # optional: makes it 2D
+    n_minus_1:                    # optional: N-1 histograms (all other applied cuts, not this one)
+      - name: LeadTrack_pz0_Nminus1
+        x: {variable: LeadTrack_pz0, bins: 100, min: 0, max: 5000}
 ```
 
-Each histogram axis has either `bins`/`min`/`max` or `edges`. Histogram names must be unique. Histograms attached to a cut are booked at that point of the selection even if the cut itself is not applied to the current sample; they follow their own `data_type`/`requires`. Quote expressions, especially ones starting with `!` (YAML reads an unquoted leading `!` as a tag). The header of `config/cuts.yaml` documents all options.
+Each histogram axis has either `bins`/`min`/`max` or `edges`. Histogram names must be unique (across `Histograms`, `histograms` and `n_minus_1`).
+
+`n_minus_1` histograms are N-1 plots: they are filled with every event that passes all the *other* cuts applied to the sample (anywhere in the list, before or after this cut), with only this cut removed. They take the same options as other histograms and are written to `histograms/n_minus_1/` in the output file. They are filled in the same event loop as everything else and do not change the cutflow. If the cut itself is not applied to the sample (`data_type`/`requires`), its N-1 histograms are skipped. Histograms attached to a cut are booked at that point of the selection even if the cut itself is not applied to the current sample; they follow their own `data_type`/`requires`. Quote expressions, especially ones starting with `!` (YAML reads an unquoted leading `!` as a tag). The header of `config/cuts.yaml` documents all options.
 
 ## Definitions
 
