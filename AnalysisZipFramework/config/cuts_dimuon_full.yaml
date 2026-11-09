@@ -156,6 +156,10 @@ Cuts:
     n_minus_1:
       - name: "LeadTrack_Chi2_NDF_n_minus_1"
         x: {variable: LeadTrack_Chi2_NDF, bins: 30, min: 0, max: 30}
+    
+    histograms:
+      - name: "LeadSubLeadTrack_zca_avg_pre_cut"
+        x: {variable: LeadSubLeadTrack_zca_avg, bins: 500, min: -4000, max: 4000}
 
   Track Pair z closest approach < -2283 mm:
     expression: "LeadSubLeadTrack_zca_avg < -2283"
@@ -164,7 +168,7 @@ Cuts:
       - name: "LeadSubLeadTrack_zca_avg_n_minus_1"
         x: {variable: LeadSubLeadTrack_zca_avg, bins: 500, min: -4000, max: 4000}
 
-  Opposite-sign tracks:
+  Opposite sign tracks:
     expression: "LeadSubLeadTrack_chargeProduct < 0"
     n_minus_1:
       - name: "LeadSubLeadTrack_chargeProduct_n_minus_1"

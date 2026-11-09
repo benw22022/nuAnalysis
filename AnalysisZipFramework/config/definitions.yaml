@@ -228,6 +228,12 @@ Definitions:
   LeadTrack_Y_atVetoNu:
     expression: "SafeAt(Track_Y_atVetoNu, LeadTrack_Idx)"
 
+  LeadTrack_X_atVetoStation2:
+    expression: "SafeAt(Track_X_atVetoStation2, LeadTrack_Idx)"
+  
+  LeadTrack_Y_atVetoStation2:
+    expression: "SafeAt(Track_Y_atVetoStation2, LeadTrack_Idx)"
+
   SubLeadTrack_X_atVetoNu:
     expression: "SafeAt(Track_X_atVetoNu, SubLeadTrack_Idx)"
 
@@ -257,6 +263,12 @@ Definitions:
 
   LeadSubLeadTrack_distance:
     expression: "LeadSubLeadTrack_ca_vars[2]"
+
+  # Reco fit inputs
+  reco_pseudorapidity:
+    expression: "getRecoPseudorapidity(LeadTrack_X_atVetoStation2, LeadTrack_Y_atVetoStation2, LeadTrack_X_atVetoNu, LeadTrack_Y_atVetoNu, crossingAngle)"
+
+
 
   # HasTwoTruthMatchedMuonTracks:
   #   # Count the number of truth-matched muon tracks = number of tracks with truth_pdg = 13 or -13. Require at least 2.

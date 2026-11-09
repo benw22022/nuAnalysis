@@ -444,13 +444,13 @@ double getTrackClosestApproach(RVec<double> X_atVetoNu, RVec<double> Y_atVetoNu,
 
   double t1_thetax = ThetaX_atVetoNu[0];
   double t1_thetay = ThetaY_atVetoNu[0];
-  double t1_z = 0.0;
+  double t1_z = -3112.0;
   double t1_x = X_atVetoNu[0];
   double t1_y = Y_atVetoNu[0];
   
   double t2_thetax = ThetaX_atVetoNu[1];
   double t2_thetay = ThetaY_atVetoNu[1];
-  double t2_z = 0.0;
+  double t2_z = -3112.0;
   double t2_x = X_atVetoNu[1];
   double t2_y = Y_atVetoNu[1];
 
@@ -486,13 +486,13 @@ RVec<double> getTrackcCAVars(double X_atVetoNu1, double Y_atVetoNu1, double Thet
 
   double t1_thetax = ThetaX_atVetoNu1;
   double t1_thetay = ThetaY_atVetoNu1;
-  double t1_z = 0.0;
+  double t1_z = -3112.0;
   double t1_x = X_atVetoNu1;
   double t1_y = Y_atVetoNu1;
   
   double t2_thetax = ThetaX_atVetoNu2;
   double t2_thetay = ThetaY_atVetoNu2;
-  double t2_z = 0.0;
+  double t2_z = -3112.0;
   double t2_x = X_atVetoNu2;
   double t2_y = Y_atVetoNu2;
 
@@ -533,6 +533,22 @@ RVec<double> getTrackcCAVars(double X_atVetoNu1, double Y_atVetoNu1, double Thet
   return result;
 }
 
+/* Compute reconstructed pseudorapidity (η) from track positions and crossing angle. */
+double getRecoPseudorapidity(double Track_X_atVetoStation2, double Track_Y_atVetoStation2, double Track_X_atVetoNu, double Track_Y_atVetoNu, double crossingAngle) {
+  
+  double avgX = (Track_X_atVetoStation2 + Track_X_atVetoNu) / 2.0;
+  double avgY = (Track_Y_atVetoStation2 + Track_Y_atVetoNu) / 2.0;
+
+  double z_distance_mm = 480e3; // distance from IP1 to FASER in mm
+  
+  double los_offset = crossingAngle * 1e-6 * z_distance_mm; // Convert microradians to radians and multiply by distance in mm
+
+  double arg = pow((pow(avgX, 2) + pow(avgY - los_offset - 12.3, 2)), 0.5) / z_distance_mm;
+
+  if (abs(arg) > 1) return std::nan("Invalid pseudorapidity");
+
+  return -log(tan(arg / 2.0));
+}
 
 
 #endif
