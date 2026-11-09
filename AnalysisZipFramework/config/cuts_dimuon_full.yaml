@@ -10,6 +10,7 @@
 #     data_type:         ALL (default), DATA, MC or ASIMOV (optional, see below)
 #     requires:          [conditions] (optional, see below)
 #     histograms:        [<histogram>, ...] booked after this cut (optional)
+#     n_minus_1:         [<histogram>, ...] N-1 histograms (optional, see below)
 #
 # <histogram>:
 #   name:       unique name of the histogram in the output file (required)
@@ -35,6 +36,17 @@
 # Histograms attached to a cut are booked at that point of the selection even if the cut
 # itself is not applied to the current sample: they only follow their own data_type/requires.
 # A histogram whose variable does not exist in the dataframe gives a WARNING and is not booked.
+#
+# N-1 histograms (n_minus_1): filled with the events that pass every OTHER cut applied to the
+# sample (before and after this one), i.e. only this cut is removed. Same options as <histogram>,
+# names unique together with all other histograms. Written to histograms/n_minus_1/ in the output.
+# Skipped if the cut itself is not applied to the sample. They do not change the cutflow.
+# Example:
+#   Track R at IFT < 95 mm:
+#     expression: "LeadTrack_rIFT < 95"
+#     n_minus_1:
+#       - name: LeadTrack_rIFT_Nminus1
+#         x: {variable: LeadTrack_rIFT, bins: 100, min: 0, max: 200}
 #
 # YAML tips: quote expressions (e.g. "!ExcludedTimes": an unquoted value starting with '!'
 # means something else in YAML); cut names can contain spaces and symbols but not ': '.
@@ -74,6 +86,10 @@ Cuts:
     expression: "(!isCaloNuPeriod) || (isCaloNuPeriod && !inCaloNuPMT)"
     data_type: ASIMOV    # always applied to MC (material mismodelling), also in Asimov mode
 
+  isCharmDimuon:
+    expression: "truth_isCharmDimuon"
+    data_type: MC
+
   # CC events only:
   #   expression: "is_cc"
   #   data_type: MC
@@ -86,9 +102,9 @@ Cuts:
     expression: "decay_box || decay_lead"
     data_type: Asimov
     
-  Truth dec r < 100 mm:
-    expression: "truth_dec_r < 100"
-    data_type: MC
+  # Truth dec r < 100 mm:
+  #   expression: "truth_dec_r < 100"
+  #   data_type: MC
     
   # Truth pz > 100 GeV:
   #   expression: "truth_pz_nu > 100"
@@ -106,33 +122,62 @@ Cuts:
 # ── Track Cuts ───────────────────────────────────────────────────────────
   At least two long tracks:
     expression: "longTracks >= 2"
+    n_minus_1:
+       - name: "longTracks_n_minus_1"
+         x: {variable: longTracks, bins: 5, min: 0, max: 5}
   
   Lead Track pz > 50 GeV:
     expression: "LeadTrack_pz0 > 50"
+    n_minus_1:
+       - name: "LeadTrack_pz0_n_minus_1"
+         x: {variable: LeadTrack_pz0, bins: 100, min: 0, max: 200}
 
   Subleading Track pz > 30 GeV:
     expression: "SubLeadTrack_pz0 > 30"
+    n_minus_1:
+      - name: "SubLeadTrack_pz0_n_minus_1"
+        x: {variable: SubLeadTrack_pz0, bins: 100, min: 0, max: 200}
 
   Leading track has at >= 7 layers:
     expression: "LeadTrack_nLayers >= 7"
+    n_minus_1:
+      - name: "LeadTrack_nLayers_n_minus_1"
+        x: {variable: LeadTrack_nLayers, bins: 12, min: 0, max: 12}
 
   Track nDoF >= 9:
     expression: "LeadTrack_nDoF >= 9"
+    n_minus_1:
+      - name: "LeadTrack_nDoF_n_minus_1"
+        x: {variable: LeadTrack_nDoF, bins: 20, min: 0, max: 20}
 
   Leading track has chi2/ndof < 15:
     expression: "LeadTrack_Chi2_NDF < 15"
+    name: "LeadTrack_Chi2_NDF_n_minus_1"
+    n_minus_1:
+      - name: "LeadTrack_Chi2_NDF_n_minus_1"
+        x: {variable: LeadTrack_Chi2_NDF, bins: 30, min: 0, max: 30}
 
   Track Pair z closest approach < -2283 mm:
-    expression: "(LeadSubLeadTrack_zca_avg - 3100) < -2283"
+    expression: "LeadSubLeadTrack_zca_avg < -2283"
+    name: "LeadSubLeadTrack_zca_avg_n_minus_1"
+    n_minus_1:
+      - name: "LeadSubLeadTrack_zca_avg_n_minus_1"
+        x: {variable: LeadSubLeadTrack_zca_avg, bins: 500, min: -4000, max: 4000}
 
   Opposite-sign tracks:
     expression: "LeadSubLeadTrack_chargeProduct < 0"
+    n_minus_1:
+      - name: "LeadSubLeadTrack_chargeProduct_n_minus_1"
+        x: {variable: LeadSubLeadTrack_chargeProduct, bins: 3, min: -1, max: 1}
 
   No more than 3 tracks:
     expression: "longTracks <= 3"
 
   Track R at max radius < 100 mm:
     expression: "LeadTrack_r_atMaxRadius < 100"
+    n_minus_1:
+      - name: "LeadTrack_r_atMaxRadius_n_minus_1"
+        x: {variable: LeadTrack_r_atMaxRadius, bins: 100, min: 0, max: 200}
 
   # Track R at IFT < 95 mm:
   #   expression: "LeadTrack_rIFT < 95"
@@ -150,16 +195,25 @@ Cuts:
 
   Veto20 and Veto21 charge > 40 pC:
     expression: "Veto20_charge > 40 && Veto21_charge > 40"
+    n_minus_1:
+      - name: "Veto20_Veto21_charge_n_minus_1"
+        x: {variable: Veto20_charge, bins: 100, min: 0, max: 100}
     
   Timing Station Charge > 20 pC:
     expression: "hitsTiming"    # timing station hit consistent with the lead track y (see BuildDataFrame)
 
   Preshower Charge > 2.5 pC:
     expression: "Preshower0_charge > 2.5 && Preshower1_charge > 2.5"
+    n_minus_1:
+      - name: "Preshower_charge_n_minus_1"
+        x: {variable: Preshower0_charge, bins: 100, min: 0, max: 10}
 
   Calo_total_E_EM < 11 GeV:
     expression: "Calo_total_E_EM < 11e3" 
-    
+    n_minus_1:
+      - name: "Calo_total_E_EM_n_minus_1"
+        x: {variable: Calo_total_E_EM, bins: 100, min: 0, max: 50e3}
+
   # ── VetoNu veto ───────────────────────────────────────────────────────────
   # With the reduced charge: reduced charge < 30 pC (+ raw-charge fallback when the aux value
   # is not valid). With --no-reduced-charge: raw charge < 40 pC.
@@ -170,10 +224,16 @@ Cuts:
   VetoNu0 reduced charge < 30 pC:
     expression: "VetoNu0_reduced_charge < 30"
     requires: [reduced_charge]
+    n_minus_1:
+      - name: "VetoNu0_reduced_charge_n_minus_1"
+        x: {variable: VetoNu0_reduced_charge, bins: 100, min: 0, max: 50}
 
   VetoNu1 reduced charge < 30 pC:
     expression: "VetoNu1_reduced_charge < 30"
     requires: [reduced_charge]
+    n_minus_1:
+      - name: "VetoNu1_reduced_charge_n_minus_1"
+        x: {variable: VetoNu1_reduced_charge, bins: 100, min: 0, max: 50}
 
   VetoNu0 raw charge < 40 pC (fallback to raw charge if reduced charge invalid):
     expression: "fallbackVetoNu0Charge < 40"
