@@ -78,10 +78,11 @@ namespace ConfigUtils {
     struct HistogramConfig {
         std::string name;                   // unique in the whole config (used as the object name in the output file)
         std::string title;                  // defaults to name
-        std::string dataType{"ALL"};        // ALL, DATA, MC or ASIMOV (see cuts.yaml)
+        std::string dataType{"ALL"};        // ALL, DATA, MC or an MC category data type (see cuts.yaml)
         std::vector<std::string> requirements;  // e.g. reduced_charge (see knownRequirements())
         AxisConfig x;
         std::optional<AxisConfig> y;        // 2D if set
+        bool split{true};                   // on MC: also book one copy per MC category (categories.yaml)
     };
 
     struct CutConfig {
@@ -99,7 +100,32 @@ namespace ConfigUtils {
         std::string sourcePath;
     };
 
-    SelectionConfig readSelectionConfig(const std::string& configPath);
+    // categoryDataTypes: data_type values allowed in addition to ALL/DATA/MC
+    // (from categoryDataTypes(CategoriesConfig); empty if no MC categories are defined)
+    SelectionConfig readSelectionConfig(const std::string& configPath,
+                                        const std::vector<std::string>& categoryDataTypes = {});
+
+    // ── MC categories config (config/categories.yaml) ───────────────────────
+    // Event-level MC categories (e.g. signal / background components). On MC, histograms are
+    // also booked once per category, and a cutflow is written per category.
+    struct CategoryConfig {
+        std::string name;        // valid C++ identifier: flag column category_<name>, output directory name
+        std::string expression;  // RDataFrame expression, true if the event is in this category
+        std::string type;        // "signal" or "background"
+        std::string latex;       // label for plots (defaults to the name)
+        std::string colour;      // colour for plots (free text, may be empty)
+    };
+
+    struct CategoriesConfig {
+        std::vector<CategoryConfig> categories;  // in file order
+        std::string sourcePath;
+    };
+
+    CategoriesConfig readCategoriesConfig(const std::string& configPath);
+
+    // data_type values that select MC categories on cuts and histograms: "signal", "background",
+    // "other" and the category names (empty if there are no categories)
+    std::vector<std::string> categoryDataTypes(const CategoriesConfig& config);
 
     // ── Definitions config (config/definitions.yaml): new columns ───────────
     struct DefinitionConfig {

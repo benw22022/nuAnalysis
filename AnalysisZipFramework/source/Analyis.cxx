@@ -225,7 +225,6 @@ std::string Analysis::dataTypeName(DataType dataType) {
         case ALL:    return "ALL";
         case DATA:   return "DATA";
         case MC:     return "MC";
-        case ASIMOV: return "ASIMOV";
     }
     return "?";
 }
@@ -240,14 +239,12 @@ bool Analysis::isColumnDefined(const std::string& columnName) {
 // data_type semantics (see config/cuts.yaml):
 //   ALL:    every sample
 //   DATA:   data only
-//   MC:     MC, but not in Asimov mode (truth selection)
-//   ASIMOV: all MC, including Asimov mode
+//   MC:     MC only (the MC truth selection is done with the MC categories, config/categories.yaml)
 bool Analysis::appliesTo(DataType dataType) const {
     switch (dataType) {
         case ALL:    return true;
         case DATA:   return !isMC;
-        case MC:     return isMC && !isAsimov;
-        case ASIMOV: return isMC;
+        case MC:     return isMC;
     }
     return true;
 }
@@ -256,7 +253,6 @@ DataType Analysis::parseDataType(const std::string& dataType) {
     if (dataType == "ALL")    return ALL;
     if (dataType == "DATA")   return DATA;
     if (dataType == "MC")     return MC;
-    if (dataType == "ASIMOV") return ASIMOV;
     throw std::runtime_error("Unknown data_type '" + dataType + "'");
 }
 
@@ -290,12 +286,29 @@ void Analysis::bookHistogram(const ConfigUtils::HistogramConfig& cfg) {
 }
 
 void Analysis::bookHistogram(const ConfigUtils::HistogramConfig& cfg, ROOT::RDF::RNode node,
-                             std::vector<ROOT::RDF::RResultPtr<TH1>>& results) {
-    if (!appliesTo(parseDataType(cfg.dataType))) {
-        DEBUG("Skipping histogram ", cfg.name, " (data_type ", cfg.dataType, ")");
-        ++m_nHistSkipped;
-        return;
+                             std::vector<BookedHistogram>& results) {
+    // Categories to split into (indices in m_cats) and the node the histograms are filled from
+    std::vector<std::size_t> categories;
+    ROOT::RDF::RNode fillNode = node;
+    if (const auto selected = categoryDataType(cfg.dataType)) {
+        // data_type signal / background / other / <category>: only events of those categories
+        if (selected->empty()) {
+            DEBUG("Skipping histogram ", cfg.name, " (data_type ", cfg.dataType, ": no such MC category for this sample)");
+            ++m_nHistSkipped;
+            return;
+        }
+        categories = *selected;
+        fillNode = node.Filter(categoryFlagsOr(categories));
+    } else {
+        if (!appliesTo(parseDataType(cfg.dataType))) {
+            DEBUG("Skipping histogram ", cfg.name, " (data_type ", cfg.dataType, ")");
+            ++m_nHistSkipped;
+            return;
+        }
+        for (std::size_t i = 0; i < m_cats.size(); ++i) categories.push_back(i);
     }
+    if (!cfg.split) categories.clear();
+
     std::string why;
     if (!requirementsMet(cfg.requirements, why)) {
         DEBUG("Skipping histogram ", cfg.name, " (", why, ")");
@@ -311,26 +324,36 @@ void Analysis::bookHistogram(const ConfigUtils::HistogramConfig& cfg, ROOT::RDF:
     }
 
     const auto& x = cfg.x;
-    if (!cfg.y) {
-        DEBUG("Booking 1D histogram ", cfg.name, " of ", x.variable);
-        const auto model = x.hasEdges()
-            ? ROOT::RDF::TH1DModel(cfg.name.c_str(), cfg.title.c_str(), static_cast<int>(x.edges.size()) - 1, x.edges.data())
-            : ROOT::RDF::TH1DModel(cfg.name.c_str(), cfg.title.c_str(), x.nBins, x.min, x.max);
-        results.push_back(node.Histo1D(model, x.variable));
-        return;
-    }
+    if (cfg.y) DEBUG("Booking 2D histogram ", cfg.name, " of ", cfg.y->variable, " vs ", x.variable);
+    else       DEBUG("Booking 1D histogram ", cfg.name, " of ", x.variable);
+    if (!categories.empty()) DEBUG("  ... and one copy for each of ", categories.size(), " MC categories");
 
-    const auto& y = *cfg.y;
-    DEBUG("Booking 2D histogram ", cfg.name, " of ", y.variable, " vs ", x.variable);
-    const char* n = cfg.name.c_str();
-    const char* ti = cfg.title.c_str();
-    const int nxe = static_cast<int>(x.edges.size()) - 1, nye = static_cast<int>(y.edges.size()) - 1;
-    ROOT::RDF::TH2DModel model;
-    if      (!x.hasEdges() && !y.hasEdges()) model = ROOT::RDF::TH2DModel(n, ti, x.nBins, x.min, x.max, y.nBins, y.min, y.max);
-    else if ( x.hasEdges() && !y.hasEdges()) model = ROOT::RDF::TH2DModel(n, ti, nxe, x.edges.data(), y.nBins, y.min, y.max);
-    else if (!x.hasEdges() &&  y.hasEdges()) model = ROOT::RDF::TH2DModel(n, ti, x.nBins, x.min, x.max, nye, y.edges.data());
-    else                                     model = ROOT::RDF::TH2DModel(n, ti, nxe, x.edges.data(), nye, y.edges.data());
-    results.push_back(node.Histo2D(model, x.variable, y.variable));
+    auto book = [&](ROOT::RDF::RNode n) -> ROOT::RDF::RResultPtr<TH1> {
+        if (!cfg.y) {
+            const auto model = x.hasEdges()
+                ? ROOT::RDF::TH1DModel(cfg.name.c_str(), cfg.title.c_str(), static_cast<int>(x.edges.size()) - 1, x.edges.data())
+                : ROOT::RDF::TH1DModel(cfg.name.c_str(), cfg.title.c_str(), x.nBins, x.min, x.max);
+            return n.Histo1D(model, x.variable);
+        }
+        const auto& y = *cfg.y;
+        const char* nm = cfg.name.c_str();
+        const char* ti = cfg.title.c_str();
+        const int nxe = static_cast<int>(x.edges.size()) - 1, nye = static_cast<int>(y.edges.size()) - 1;
+        ROOT::RDF::TH2DModel model;
+        if      (!x.hasEdges() && !y.hasEdges()) model = ROOT::RDF::TH2DModel(nm, ti, x.nBins, x.min, x.max, y.nBins, y.min, y.max);
+        else if ( x.hasEdges() && !y.hasEdges()) model = ROOT::RDF::TH2DModel(nm, ti, nxe, x.edges.data(), y.nBins, y.min, y.max);
+        else if (!x.hasEdges() &&  y.hasEdges()) model = ROOT::RDF::TH2DModel(nm, ti, x.nBins, x.min, x.max, nye, y.edges.data());
+        else                                     model = ROOT::RDF::TH2DModel(nm, ti, nxe, x.edges.data(), nye, y.edges.data());
+        return n.Histo2D(model, x.variable, y.variable);
+    };
+
+    BookedHistogram booked;
+    booked.total = book(fillNode);
+    for (std::size_t i : categories) {
+        // category_<name> columns are bool (see defineCategories): compiled filter, no JIT
+        booked.parts.emplace_back(i, book(fillNode.Filter([](bool inCategory) { return inCategory; }, {m_cats[i].flag})));
+    }
+    results.push_back(std::move(booked));
 }
 
 // Define the columns of the definitions config, in file order
@@ -376,12 +399,36 @@ void Analysis::applySelection() {
     }
     INFO("Applying selection from ", m_selection->sourcePath, "...");
 
+    // Category names are used as directories next to the histograms in the output file
+    if (m_categories && !m_categories->categories.empty()) {
+        std::set<std::string> dirNames{"signal", "background", "other"};
+        for (const auto& c : m_categories->categories) dirNames.insert(c.name);
+        auto check = [&](const std::vector<ConfigUtils::HistogramConfig>& hists) {
+            for (const auto& h : hists) {
+                if (dirNames.count(h.name)) {
+                    throw std::runtime_error(m_selection->sourcePath + ": histogram name '" + h.name + "' is also the name of an MC category "
+                                             "directory in the output (signal, background, other or a category from " + m_categories->sourcePath + "). Please rename it.");
+                }
+            }
+        };
+        check(m_selection->histograms);
+        for (const auto& cut : m_selection->cuts) { check(cut.histograms); check(cut.nMinus1); }
+    }
+
     for (const auto& h : m_selection->histograms) bookHistogram(h);  // before any cut
 
     for (const auto& cut : m_selection->cuts) {
         std::string why;
         if (!requirementsMet(cut.requirements, why)) {
             INFO("Skipping cut: ", cut.name, " (", why, ")");
+        } else if (const auto selected = categoryDataType(cut.dataType)) {
+            // data_type signal / background / other / <category>: the cut only applies to events of
+            // those categories, events of all other categories pass it
+            if (selected->empty()) {
+                INFO("Skipping cut (data_type ", cut.dataType, ": no such MC category for this sample): ", cut.name);
+            } else {
+                applyCut("!(" + categoryFlagsOr(*selected) + ") || (" + cut.expression + ")", cut.name, ALL);
+            }
         } else {
             applyCut(cut.expression, cut.name, parseDataType(cut.dataType));
         }
@@ -394,6 +441,11 @@ void Analysis::applySelection() {
 
     INFO("Booked ", m_histResults.size(), " histograms and ", m_nMinus1Results.size(), " N-1 histograms (",
          m_nHistSkipped, " skipped for this sample / reduced charge source; use -v for details).");
+    if (useCategories()) {
+        std::size_t nParts = 0;
+        for (const auto* v : {&m_histResults, &m_nMinus1Results}) for (const auto& h : *v) nParts += h.parts.size();
+        INFO("Booked ", nParts, " extra histograms for the ", m_cats.size(), " MC categories (incl. 'other'); use split: false on a histogram to book only the total.");
+    }
 }
 
 // N-1 histograms: for each cut with an n_minus_1 list, fill the histograms with every OTHER
@@ -425,6 +477,179 @@ void Analysis::bookNMinus1Histograms() {
     }
 }
 
+// ── MC categories ───────────────────────────────────────────────────────────
+
+// One bool column per category (category_<name>), 'other' for events in no category, a bitmask of
+// all categories (mc_category_mask, bit i = category i) and the category index (mc_category:
+// index in the categories config if the event is in exactly one category, -1 for 'other',
+// -2 if it is in more than one). MC only: categories are defined from truth.
+void Analysis::defineCategories() {
+    m_cats.clear();
+    if (!m_categories || m_categories->categories.empty()) return;
+    const std::string& src = m_categories->sourcePath;
+    if (!isMC) {
+        INFO("MC categories from ", src, " are not used for data.");
+        return;
+    }
+    const auto& cfgs = m_categories->categories;
+    std::string mask;
+    for (std::size_t i = 0; i < cfgs.size(); ++i) {
+        const auto& c = cfgs[i];
+        Category cat{c.name, c.type, c.latex, c.colour, c.expression, "category_" + c.name};
+        // static_cast<bool>: the flag is always bool, so it can be used in compiled filters
+        Define(cat.flag, "static_cast<bool>(" + c.expression + ")", MC, src);
+        mask += (mask.empty() ? "" : " | ") + std::string("(static_cast<ULong64_t>(") + cat.flag + ") << " + std::to_string(i) + ")";
+        m_cats.push_back(cat);
+    }
+    Define("mc_category_mask", mask, MC, src);
+    Define("category_other", [](ULong64_t m) { return m == 0; }, {"mc_category_mask"}, MC, src);
+    Define("mc_category", [](ULong64_t m) -> Int_t {
+        if (m == 0) return -1;            // no category: 'other'
+        if (m & (m - 1)) return -2;       // more than one category
+        return __builtin_ctzll(m);        // index of the only bit set
+    }, {"mc_category_mask"}, MC, src);
+    // Events in no category are treated as background (background = everything that is not signal)
+    m_cats.push_back({"other", "background", "other", "", "events in no other category", "category_other"});
+
+    std::string list;
+    for (const auto& c : m_cats) list += (list.empty() ? "" : ", ") + c.name + " (" + c.type + ")";
+    INFO("MC categories from ", src, ": ", list, ".");
+}
+
+std::optional<std::vector<std::size_t>> Analysis::categoryDataType(const std::string& dataType) const {
+    const auto& basic = ConfigUtils::knownDataTypes();
+    if (std::find(basic.begin(), basic.end(), dataType) != basic.end()) return std::nullopt;
+    std::vector<std::size_t> selected;
+    for (std::size_t i = 0; i < m_cats.size(); ++i) {
+        const bool match = (dataType == "signal" || dataType == "background") ? m_cats[i].type == dataType
+                                                                              : m_cats[i].name == dataType;
+        if (match) selected.push_back(i);
+    }
+    return selected;
+}
+
+std::string Analysis::categoryFlagsOr(const std::vector<std::size_t>& indices) const {
+    std::string out;
+    for (std::size_t i : indices) out += (out.empty() ? "" : " || ") + m_cats[i].flag;
+    return out;
+}
+
+// Cutflow per category from the eventID_pass flags of the applied cuts (same order as the cutflow)
+void Analysis::bookCategoryCutflows() {
+    m_categoryCounts.clear();
+    for (const auto& cat : m_cats) {
+        std::vector<ROOT::RDF::RResultPtr<ULong64_t>> counts;
+        ROOT::RDF::RNode n = m_eventIDNode->Filter([](bool inCategory) { return inCategory; }, {cat.flag});
+        counts.push_back(n.Count());
+        for (const auto& [cutName, flag] : m_appliedCutFlags) {
+            if (n.GetColumnType(flag) == "bool") n = n.Filter([](bool passed) { return passed; }, {flag});
+            else                                 n = n.Filter(flag);
+            counts.push_back(n.Count());
+        }
+        m_categoryCounts.push_back(std::move(counts));
+    }
+}
+
+std::size_t Analysis::writeHistograms(TFile& file, const std::string& dir, std::vector<BookedHistogram>& hists) {
+    std::size_t nWritten = 0;
+    auto cdTo = [&](const std::string& path) {
+        file.mkdir(path.c_str(), "", true);  // returns the existing directory if there is one
+        file.cd(path.c_str());
+    };
+    cdTo(dir);
+    for (auto& h : hists) { h.total->Write(); ++nWritten; }
+    if (!useCategories()) return nWritten;
+
+    for (std::size_t i = 0; i < m_cats.size(); ++i) {
+        bool any = false;
+        for (auto& h : hists) {
+            for (auto& [idx, part] : h.parts) {
+                if (idx != i) continue;
+                if (!any) { cdTo(dir + "/" + m_cats[i].name); any = true; }
+                part->Write();
+                ++nWritten;
+            }
+        }
+    }
+    // Sums of the signal and of the background categories (incl. 'other')
+    for (const std::string type : {"signal", "background"}) {
+        bool any = false;
+        for (auto& h : hists) {
+            std::unique_ptr<TH1> sum;
+            for (auto& [idx, part] : h.parts) {
+                if (m_cats[idx].type != type) continue;
+                if (!sum) {
+                    sum.reset(static_cast<TH1*>(part->Clone()));
+                    sum->SetDirectory(nullptr);
+                } else {
+                    sum->Add(part.GetPtr());
+                }
+            }
+            if (!sum) continue;
+            if (!any) { cdTo(dir + "/" + type); any = true; }
+            sum->Write();
+            ++nWritten;
+        }
+    }
+    return nWritten;
+}
+
+// 'categories' tree (names, types, labels, colours, expressions) and one cutflow per category
+// (plus the signal and background sums) in cutflow_by_category/
+void Analysis::writeCategoryOutputs(TFile& file) {
+    file.cd();
+    TTree tree("categories", "MC categories");
+    Int_t index;
+    std::string name, type, latex, colour, expression;
+    tree.Branch("index", &index);   // value of mc_category (-1 for 'other')
+    tree.Branch("name", &name);
+    tree.Branch("type", &type);
+    tree.Branch("latex", &latex);
+    tree.Branch("colour", &colour);
+    tree.Branch("expression", &expression);
+    for (std::size_t i = 0; i < m_cats.size(); ++i) {
+        const auto& c = m_cats[i];
+        index = (c.name == "other" && i + 1 == m_cats.size()) ? -1 : static_cast<Int_t>(i);
+        name = c.name; type = c.type; latex = c.latex; colour = c.colour; expression = c.expression;
+        tree.Fill();
+    }
+    tree.Write();
+
+    file.mkdir("cutflow_by_category", "", true);
+    file.cd("cutflow_by_category");
+    auto writeCutflow = [&](const std::string& treeName, const std::vector<ULong64_t>& counts) {
+        TTree t(treeName.c_str(), ("Cutflow for MC category " + treeName).c_str());
+        std::string cutName;
+        ULong64_t all, passed;
+        double efficiency;
+        t.Branch("cut_name", &cutName);
+        t.Branch("all", &all);
+        t.Branch("passed", &passed);
+        t.Branch("efficiency", &efficiency);   // in %, as in the cutflow tree
+        for (std::size_t k = 0; k < m_appliedCutFlags.size(); ++k) {
+            cutName = m_appliedCutFlags[k].first;
+            all = counts[k];
+            passed = counts[k + 1];
+            efficiency = all > 0 ? 100. * passed / all : 0.;
+            t.Fill();
+        }
+        t.Write();
+    };
+    const std::size_t nSteps = m_appliedCutFlags.size() + 1;
+    std::map<std::string, std::vector<ULong64_t>> sums{{"signal", std::vector<ULong64_t>(nSteps, 0)},
+                                                       {"background", std::vector<ULong64_t>(nSteps, 0)}};
+    for (std::size_t i = 0; i < m_cats.size(); ++i) {
+        std::vector<ULong64_t> counts;
+        for (auto& c : m_categoryCounts[i]) counts.push_back(*c);
+        for (std::size_t k = 0; k < nSteps; ++k) sums[m_cats[i].type][k] += counts[k];
+        writeCutflow(m_cats[i].name, counts);
+        INFO("MC category ", m_cats[i].name, " (", m_cats[i].type, "): ", counts.front(), " events in the input, ",
+             counts.back(), " pass all cuts.");
+    }
+    for (const auto& [t, counts] : sums) writeCutflow(t, counts);
+    file.cd();
+}
+
 // Main setup function that builds the dataframe and sets up the aux chain if present
 void Analysis::BuildDataFrame() {
 
@@ -454,9 +679,9 @@ void Analysis::BuildDataFrame() {
     // All other definitions are in config/definitions.yaml (applied at the end of this function).
     // Run periods
     Define("isCaloNuPeriod", "15821 <= run  && run <= 16924", DATA);
-    Define("isCaloNuPeriod", "(200137 <= run && run <= 200147) || (200172 <= run && run <= 200183)", ASIMOV);  // all MC
+    Define("isCaloNuPeriod", "(200137 <= run && run <= 200147) || (200172 <= run && run <= 200183)", MC);
     Define("is2024Period", "run >= 1.2e4", DATA);
-    Define("is2024Period", "(200091 < run && run < 200101) || (200160 <= run && run <= 200171) || (200137 <= run && run <= 200147) || (200172 <= run && run <= 200183)", ASIMOV);  // all MC
+    Define("is2024Period", "(200091 < run && run < 200101) || (200160 <= run && run <= 200171) || (200137 <= run && run <= 200147) || (200172 <= run && run <= 200183)", MC);
 
     // Scintillator status flags (data only; used by the built-in GoodScintillatorStatus)
     if (!isMC) {
@@ -496,6 +721,9 @@ void Analysis::BuildDataFrame() {
     // ── Definitions from config/definitions.yaml ────────────────────────────
     // After all built-in columns, so they can use them (period flags, reduced charge, GoodTimes, ...)
     applyDefinitions();
+
+    // ── MC categories from config/categories.yaml (MC only; may use the definitions) ──
+    defineCategories();
 
     // Summary of all added columns (full list with -v)
     std::map<std::string, int> perOrigin;
@@ -801,10 +1029,16 @@ std::vector<std::string> Analysis::selectOutputColumns() {
         return allColumns;
     }
     // Fallback columns (e.g. Veto11 -> Veto10) are compatibility shims, not real branches or framework
-    // variables: they are never included by the save_all_* switches, only if a keep entry asks for them
+    // variables: they are never included by the save_all_* switches, only if a keep entry asks for them.
+    // The same for the MC category flags.
     std::vector<std::string> fallbackColumns;
     for (const auto& fb : m_columnFallbacks) fallbackColumns.push_back(fb.target);
-    const auto columns = ConfigUtils::selectOutputColumns(allColumns, m_node->GetDefinedColumnNames(), *m_outputColumnsConfig, isMC, fallbackColumns);
+    // Category flags and mask: mc_category (always saved, below) has the same information
+    for (const auto& c : m_cats) fallbackColumns.push_back(c.flag);
+    if (useCategories()) fallbackColumns.push_back("mc_category_mask");
+    auto columns = ConfigUtils::selectOutputColumns(allColumns, m_node->GetDefinedColumnNames(), *m_outputColumnsConfig, isMC, fallbackColumns);
+    // The MC category of each event is always saved (to split distributions offline)
+    if (useCategories() && std::find(columns.begin(), columns.end(), "mc_category") == columns.end()) columns.push_back("mc_category");
     INFO("Saving ", columns.size(), " of ", allColumns.size(), " columns to ", m_mainFileTreeName,
          " (config: ", m_outputColumnsConfig->sourcePath, "). Use -v to list them.");
     for (const auto& c : columns) DEBUG("  saving column: ", c);
@@ -823,7 +1057,7 @@ void replaceAll(std::string& str, const std::string& from, const std::string& to
 void Analysis::applyCut(std::string cutExpression, std::string cutName, DataType dataType) {
 
     if (!appliesTo(dataType)) {
-        INFO("Skipping cut for ", (isAsimov ? "Asimov" : (isMC ? "MC" : "data")), ": ", cutName);
+        INFO("Skipping cut for ", (isMC ? "MC" : "data"), ": ", cutName);
         return;
     }
 
@@ -877,6 +1111,15 @@ void Analysis::Run(TString outputFileName) {
     // Booked here so it is filled in the same event loop as everything else.
     auto inputRunMin = m_df->Min<int>("run");
     auto inputRunMax = m_df->Max<int>("run");
+    // MC categories: cutflow per category, and the events that are in more than one category
+    std::optional<ROOT::RDF::RResultPtr<std::vector<ULong64_t>>> overlapMasks;
+    std::optional<ROOT::RDF::RResultPtr<ULong64_t>> nOther;
+    if (useCategories()) {
+        bookCategoryCutflows();
+        overlapMasks = m_eventIDNode->Filter([](ULong64_t m) { return (m & (m - 1)) != 0; }, {"mc_category_mask"})
+                                     .Take<ULong64_t>("mc_category_mask");
+        nOther = m_eventIDNode->Filter([](bool other) { return other; }, {"category_other"}).Count();
+    }
 
     if (outputFileName != "") {
         INFO("Saving snapshot to ", outputFileName, "...");
@@ -895,6 +1138,7 @@ void Analysis::Run(TString outputFileName) {
         const std::string eventIDTmpFile = std::string(outputFileName.Data()) + ".eventID_pass.tmp.root";
         m_passedCutColNames.push_back("run");
         m_passedCutColNames.push_back("eventID");
+        if (useCategories()) m_passedCutColNames.push_back("mc_category");
         auto eventIDSnapshot = m_eventIDNode->Snapshot("eventID_pass", eventIDTmpFile, m_passedCutColNames, opts);
 
         // ── THE event loop ──────────────────────────────────────────────────
@@ -968,29 +1212,26 @@ void Analysis::Run(TString outputFileName) {
             cutflow_tree->Fill();
         }
         cutflow_tree->Write();
-        file->Close();
         INFO("Wrote cutflow tree");
+        if (useCategories()) {
+            writeCategoryOutputs(*file);
+            INFO("Wrote categories tree and ", m_cats.size() + 2, " cutflows to cutflow_by_category/ (categories, signal, background).");
+        }
+        file->Close();
 
         // ── Histograms ────────────────────────────
         if (!m_histResults.empty() || !m_nMinus1Results.empty()) {
             INFO("Writing histograms to file...");
             // make TDirectory for histograms
             TFile *histFile = TFile::Open(outputFileName, "UPDATE");
-            histFile->mkdir("histograms");
-            histFile->cd("histograms");
-            for (auto&& hist : m_histResults) {
-                hist->Write();
-            }
-            // N-1 histograms in their own subdirectory
-            if (!m_nMinus1Results.empty()) {
-                histFile->mkdir("histograms/n_minus_1");
-                histFile->cd("histograms/n_minus_1");
-                for (auto&& hist : m_nMinus1Results) {
-                    hist->Write();
-                }
-            }
+            // Totals in histograms/, MC categories in histograms/<category>/ and the signal and
+            // background sums in histograms/signal/ and histograms/background/
+            std::size_t nWritten = writeHistograms(*histFile, "histograms", m_histResults);
+            // N-1 histograms in their own subdirectory (same structure)
+            if (!m_nMinus1Results.empty()) nWritten += writeHistograms(*histFile, "histograms/n_minus_1", m_nMinus1Results);
             histFile->Close();
-            INFO("Wrote ", m_histResults.size(), " histograms and ", m_nMinus1Results.size(), " N-1 histograms to file.");
+            INFO("Wrote ", m_histResults.size(), " histograms and ", m_nMinus1Results.size(), " N-1 histograms to file",
+                 (useCategories() ? " (" + std::to_string(nWritten) + " incl. MC categories and signal / background sums)" : std::string()), ".");
         }
 
         // ── Event ID pass tree: copy from the temporary file into the output ─
@@ -1024,6 +1265,25 @@ void Analysis::Run(TString outputFileName) {
 
     // Veto11 -> Veto10 and Calo -> CaloLo fallbacks (only reported if used)
     reportColumnFallbacks();
+
+    // MC categories should not overlap, otherwise the categories do not add up to the total
+    if (overlapMasks) {
+        if (**nOther > 0) INFO(**nOther, " events are in none of the MC categories (category 'other').");
+        if (!(*overlapMasks)->empty()) {
+            std::map<ULong64_t, ULong64_t> perCombination;
+            for (ULong64_t m : **overlapMasks) ++perCombination[m];
+            WARNING((*overlapMasks)->size(), " events are in more than one MC category (", m_categories->sourcePath,
+                    "). They are filled into each of their categories, so the categories do not add up to the total"
+                    " (mc_category = -2 for these events):");
+            for (const auto& [m, n] : perCombination) {
+                std::string names;
+                for (std::size_t i = 0; i + 1 < m_cats.size(); ++i) {
+                    if (m & (1ULL << i)) names += (names.empty() ? "" : " & ") + m_cats[i].name;
+                }
+                WARNING("    ", names, ": ", n, " events");
+            }
+        }
+    }
 
     // Sanity check fallbacks and missing aux data
     // These go here, after event loop has run. If we put them before, they would be printed before the event loop runs and thus always show 0 fallbacks, which is misleading.

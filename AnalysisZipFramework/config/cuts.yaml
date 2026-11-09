@@ -7,7 +7,7 @@
 # Cuts:                  applied in the order of this file
 #   <cut name>:          name in the cutflow; the eventID_pass flag is 'passed_<cut name>'
 #     expression:        RDataFrame filter expression (required)
-#     data_type:         ALL (default), DATA, MC or ASIMOV (optional, see below)
+#     data_type:         ALL (default), DATA, MC or an MC category type (optional, see below)
 #     requires:          [conditions] (optional, see below)
 #     histograms:        [<histogram>, ...] booked after this cut (optional)
 #     n_minus_1:         [<histogram>, ...] N-1 histograms (optional, see below)
@@ -15,8 +15,9 @@
 # <histogram>:
 #   name:       unique name of the histogram in the output file (required)
 #   title:      optional, defaults to the name
-#   data_type:  ALL (default), DATA, MC or ASIMOV (optional)
+#   data_type:  ALL (default), DATA, MC or an MC category type (optional)
 #   requires:   [conditions] (optional)
+#   split:      true (default) / false: on MC, also book one copy per MC category (categories.yaml)
 #   x:          {variable: <column>, bins: <n>, min: <low>, max: <high>}   fixed binning
 #           or  {variable: <column>, edges: [e0, e1, ..., eN]}            variable binning
 #   y:          same as x; if present the histogram is 2D (y vs x)
@@ -24,8 +25,14 @@
 # data_type (for cuts and histograms):
 #   ALL     every sample
 #   DATA    data only
-#   MC      MC only, NOT in --isAsimov mode (use for the truth selection)
-#   ASIMOV  all MC, including --isAsimov mode
+#   MC      MC only
+# MC category types (only with MC categories in config/categories.yaml; event level, never on data):
+#   signal, background   events of the signal / background categories (background includes 'other')
+#   The MC truth selection (e.g. CC nu_mu in the fiducial volume) is done with the categories, not with cuts.
+#   other                events in no category
+#   <category name>      events of that category, e.g. NC_nu
+#   On a cut: the cut only applies to events of those categories, all other events pass it.
+#   On a histogram: filled only with events of those categories (and split into them).
 #
 # requires (for cuts and histograms): skipped (with an INFO / debug message) unless ALL are met
 #   reduced_charge          VetoNu reduced charge available (from aux files or the input NTuple)
@@ -41,6 +48,9 @@
 # sample (before and after this one), i.e. only this cut is removed. Same options as <histogram>,
 # names unique together with all other histograms. Written to histograms/n_minus_1/ in the output.
 # Skipped if the cut itself is not applied to the sample. They do not change the cutflow.
+# On MC with categories, all histograms (incl. N-1) are also written per category, see
+# config/categories.yaml for the output structure. Use split: false for large histograms that
+# are not needed per category (each copy costs memory, more with -j).
 # Example:
 #   Track R at IFT < 95 mm:
 #     expression: "LeadTrack_rIFT < 95"
@@ -85,122 +95,57 @@ Cuts:
   # Crossing angle > 150 in 2024 period:
   #   expression: "(!is2024Period) || (crossingAngle > 150.0)"
 
-  # ── MC truth selection ────────────────────────────────────────────────────
+  # ── MC (the truth selection is done with the MC categories, config/categories.yaml) ──
   Remove CaloNu PMT region (truth):
     expression: "(!isCaloNuPeriod) || (isCaloNuPeriod && !inCaloNuPMT)"
-    data_type: ASIMOV    # always applied to MC (material mismodelling), also in Asimov mode
-
-  CC events only:
-    expression: "is_cc"
-    data_type: MC
-
-  nu_mu only:
-    expression: "abs(SafeAt(truth_pdg, 0)) == 14"
-    data_type: MC
+    data_type: MC    # always applied to MC (material mismodelling)
+    # Truth-level histograms: the MC truth selection (CC nu_mu, fiducial volume, truth pz) is done with
+    # the MC categories (config/categories.yaml), so these are also written per category.
     histograms:
-      - name: truth_dec_z_nu_preFiducialCuts_vs_longTracks_preFiducialCuts
+      - name: truth_dec_z_nu_vs_longTracks
         title: Truth decay z vs NlongTracks
-        data_type: ASIMOV
+        data_type: MC
         x: {variable: truth_dec_z_nu, bins: 200, min: -4000, max: -1500}
         y: {variable: longTracks, bins: 5, min: 0, max: 5}
-      - name: truth_dec_x_nu_preFiducialCuts
-        title: Truth decay x
-        data_type: ASIMOV
-        x: {variable: truth_dec_x_nu, bins: 200, min: -300, max: 300}
-      - name: truth_dec_y_nu_preFiducialCuts
-        title: Truth decay y
-        data_type: ASIMOV
-        x: {variable: truth_dec_y_nu, bins: 200, min: -300, max: 300}
-      - name: truth_dec_z_nu_preFiducialCuts
-        title: Truth decay z
-        data_type: ASIMOV
-        x: {variable: truth_dec_z_nu, bins: 200, min: -3000, max: -1500}
-      - name: truth_dec_z_nu_preFiducialCuts_ext
-        title: Truth decay z
-        data_type: ASIMOV
-        x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: 4000}
-      - name: truth_dec_x_nu_preFiducialCuts_vs_truth_dec_y_nu_preFiducialCuts
-        title: Truth decay x vs Truth decay y
-        data_type: ASIMOV
-        x: {variable: truth_dec_x_nu, bins: 200, min: -300, max: 300}
-        y: {variable: truth_dec_y_nu, bins: 200, min: -300, max: 300}
-      - name: truth_dec_z_nu_preFiducialCuts_vs_truth_dec_x_nu_preFiducialCuts
-        title: Truth decay z vs Truth decay x
-        data_type: ASIMOV
-        x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: 4000}
-        y: {variable: truth_dec_x_nu, bins: 200, min: -300, max: 300}
-      - name: truth_dec_z_nu_preFiducialCuts_vs_truth_dec_y_nu_preFiducialCuts
-        title: Truth decay z vs Truth decay y
-        data_type: ASIMOV
-        x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: 4000}
-        y: {variable: truth_dec_y_nu, bins: 200, min: -300, max: 300}
-      - name: truth_dec_r_preFiducialCuts
-        title: Truth decay r
-        data_type: ASIMOV
-        x: {variable: truth_dec_r, bins: 200, min: 0, max: 300}
-
-  In Faser Nu Box or Lead Block:
-    expression: "decay_box || decay_lead"
-    data_type: MC
-    histograms:
-      - name: truth_dec_r
-        title: Truth decay r
-        data_type: ASIMOV
-        x: {variable: truth_dec_r, bins: 200, min: 0, max: 300}
       - name: truth_dec_x_nu
         title: Truth decay x
-        data_type: ASIMOV
+        data_type: MC
         x: {variable: truth_dec_x_nu, bins: 200, min: -300, max: 300}
       - name: truth_dec_y_nu
         title: Truth decay y
-        data_type: ASIMOV
+        data_type: MC
         x: {variable: truth_dec_y_nu, bins: 200, min: -300, max: 300}
       - name: truth_dec_z_nu
         title: Truth decay z
-        data_type: ASIMOV
+        data_type: MC
         x: {variable: truth_dec_z_nu, bins: 200, min: -3000, max: -1500}
       - name: truth_dec_z_nu_ext
         title: Truth decay z
-        data_type: ASIMOV
+        data_type: MC
         x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: 4000}
       - name: truth_dec_x_nu_vs_truth_dec_y_nu
         title: Truth decay x vs Truth decay y
-        data_type: ASIMOV
+        data_type: MC
         x: {variable: truth_dec_x_nu, bins: 200, min: -300, max: 300}
         y: {variable: truth_dec_y_nu, bins: 200, min: -300, max: 300}
       - name: truth_dec_z_nu_vs_truth_dec_x_nu
         title: Truth decay z vs Truth decay x
-        data_type: ASIMOV
+        data_type: MC
         x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: 4000}
         y: {variable: truth_dec_x_nu, bins: 200, min: -300, max: 300}
       - name: truth_dec_z_nu_vs_truth_dec_y_nu
         title: Truth decay z vs Truth decay y
-        data_type: ASIMOV
+        data_type: MC
         x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: 4000}
         y: {variable: truth_dec_y_nu, bins: 200, min: -300, max: 300}
-
-  Truth dec r < 100 mm:
-    expression: "truth_dec_r < 100"
-    data_type: MC
-    histograms:
-      - name: truth_dec_r_postRCut
+      - name: truth_dec_r
         title: Truth decay r
-        data_type: ASIMOV
+        data_type: MC
         x: {variable: truth_dec_r, bins: 200, min: 0, max: 300}
-      - name: truth_dec_z_nu_vs_longTracks
-        title: Truth decay z vs NlongTracks
-        data_type: ASIMOV
-        x: {variable: truth_dec_z_nu, bins: 200, min: -4000, max: -1500}
-        y: {variable: longTracks, bins: 5, min: 0, max: 5}
       - name: truth_pz_nu
         title: Truth pz
-        data_type: ASIMOV
+        data_type: MC
         x: {variable: truth_pz_nu, bins: 200, min: 0, max: 10000}
-
-  Truth pz > 100 GeV:
-    expression: "truth_pz_nu > 100"
-    data_type: MC
-    histograms:
       - name: longTracks
         title: NlongTracks
         x: {variable: longTracks, bins: 5, min: 0, max: 5}
@@ -318,13 +263,13 @@ Cuts:
         y: {variable: VetoNu1_reduced_charge, bins: 2501, min: -1, max: 2500}
       - name: truth_dec_z_nu_vs_VetoNu0_reduced_charge
         title: Truth decay z vs VetoNu0 reduced charge
-        data_type: ASIMOV
+        data_type: MC
         requires: [reduced_charge]
         x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: -1500}
         y: {variable: VetoNu0_reduced_charge, bins: 2501, min: -1, max: 2500}
       - name: truth_dec_z_nu_vs_VetoNu1_reduced_charge
         title: Truth decay z vs VetoNu1 reduced charge
-        data_type: ASIMOV
+        data_type: MC
         requires: [reduced_charge]
         x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: -1500}
         y: {variable: VetoNu1_reduced_charge, bins: 2501, min: -1, max: 2500}

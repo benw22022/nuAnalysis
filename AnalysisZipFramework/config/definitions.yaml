@@ -4,7 +4,7 @@
 # Definitions:
 #   <column name>:       name of the new column (letters, digits and '_' only)
 #     expression:        RDataFrame Define expression (required), e.g. "LeadTrack_pz0 / 1000"
-#     data_type:         ALL (default), DATA, MC or ASIMOV (optional)
+#     data_type:         ALL (default), DATA or MC (optional)
 #     requires:          [conditions] (optional)
 #
 # Definitions are created in the order of this file, so each one can use the input branches,
@@ -13,8 +13,7 @@
 # data_type (same meaning as in cuts.yaml):
 #   ALL     every sample
 #   DATA    data only
-#   MC      MC only, NOT in --isAsimov mode
-#   ASIMOV  all MC, including --isAsimov mode (use this for truth variables)
+#   MC      MC only (use this for truth variables)
 #
 # requires: skipped unless ALL are met
 #   reduced_charge          VetoNu reduced charge available (from aux files or the input NTuple)
@@ -45,26 +44,43 @@ Definitions:
   # ── MC truth ([0] is the incoming neutrino; SafeAt guards against empty truth vectors) ──
   truth_dec_r:
     expression: "Radius(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0))"
-    data_type: ASIMOV
+    data_type: MC
 
   is_cc:
     expression: "Contains(abs(truth_pdg), {11, 13, 15})"
-    data_type: ASIMOV
+    data_type: MC
+
+  # Interaction type and neutrino flavour (used by config/categories.yaml)
+  is_CC_num:
+    expression: "is_cc && abs(SafeAt(truth_pdg, 0)) == 14"
+    data_type: MC
+
+  is_CC_nue:
+    expression: "is_cc && abs(SafeAt(truth_pdg, 0)) == 12"
+    data_type: MC
+
+  is_CC_nut:
+    expression: "is_cc && abs(SafeAt(truth_pdg, 0)) == 16"
+    data_type: MC
+
+  is_nc:
+    expression: "!is_cc"
+    data_type: MC
 
   decay_box:
     expression: "inFaserNuBox(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0), SafeAt(truth_dec_z, 0))"
-    data_type: ASIMOV
+    data_type: MC
 
   decay_lead:
     expression: "inLeadBlock(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0), SafeAt(truth_dec_z, 0))"
-    data_type: ASIMOV
+    data_type: MC
 
   inCaloNuPMT:    # always cut on in MC (material mismodelling); NaN-safe, also defined for data
     expression: "inCaloNuPMT(SafeAt(truth_dec_z, 0))"
 
   truth_pz_nu:    # GeV
     expression: "SafeAt(truth_pz, 0) / 1000"
-    data_type: ASIMOV
+    data_type: MC
 
   truth_dec_x_nu:
     expression: "SafeAt(truth_dec_x, 0)"
