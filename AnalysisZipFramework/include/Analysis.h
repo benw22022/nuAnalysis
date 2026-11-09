@@ -15,7 +15,7 @@
 #include <memory>
 #include <stdexcept>
 
-enum DataType { MC, DATA, ALL, ASIMOV };
+enum DataType { MC, DATA, ALL };
 
 class Analysis {
     public:
@@ -41,8 +41,6 @@ class Analysis {
 
         bool isMC{false};
 
-        bool isAsimov{false};
-
         // If false, the reduced VetoNu charge is not used at all: no aux files are loaded
         // and the VetoNu veto is applied on the raw charge instead (see Run()).
         bool useReducedCharge{true};
@@ -61,11 +59,14 @@ class Analysis {
         // Cuts and histograms to apply (see config/cuts.yaml). Required before Run().
         void setSelection(const ConfigUtils::SelectionConfig& selection) { m_selection = selection; }
 
+        // MC categories (see config/categories.yaml). Optional: without categories (or on data)
+        // histograms and the cutflow are not split.
+        void setCategories(const ConfigUtils::CategoriesConfig& categories) { m_categories = categories; }
+
         // ── Adding columns ───────────────────────────────────────────────────
         // All new columns (built-in C++ and config/definitions.yaml) go through these methods, so
         // they all get the same data_type handling, name checks, logging and bookkeeping.
-        //   dataType: same meaning as in the YAML configs (ALL, DATA, MC = MC but not Asimov,
-        //             ASIMOV = all MC)
+        //   dataType: same meaning as in the YAML configs (ALL, DATA or MC)
         //   origin:   where the definition comes from (e.g. "built-in", a config file path),
         //             used in error messages and in the definition log
         // Define returns false (and does nothing) if dataType does not apply to this sample.
@@ -198,22 +199,49 @@ class Analysis {
         // Cuts and histograms from the selection config (config/cuts.yaml)
         std::optional<ConfigUtils::SelectionConfig> m_selection;
         void applySelection();
+        // A booked histogram: the total and, on MC with categories, one copy per category
+        struct BookedHistogram {
+            ROOT::RDF::RResultPtr<TH1> total;
+            std::vector<std::pair<std::size_t, ROOT::RDF::RResultPtr<TH1>>> parts;  // (index in m_cats, histogram)
+        };
         // Book at the current point of the selection (m_node), stored in m_histResults
         void bookHistogram(const ConfigUtils::HistogramConfig& cfg);
         // Book on any node, stored in `results`
         void bookHistogram(const ConfigUtils::HistogramConfig& cfg, ROOT::RDF::RNode node,
-                           std::vector<ROOT::RDF::RResultPtr<TH1>>& results);
+                           std::vector<BookedHistogram>& results);
         // N-1 histograms: for each cut, filled with all OTHER applied cuts (via the eventID_pass flags)
         void bookNMinus1Histograms();
-        std::vector<ROOT::RDF::RResultPtr<TH1>> m_nMinus1Results;
+        std::vector<BookedHistogram> m_nMinus1Results;
         std::size_t m_nHistSkipped{0};
+        // Write totals to `dir`, categories to `dir/<category>`, sums to `dir/signal` and `dir/background`.
+        // Returns the number of histograms written.
+        std::size_t writeHistograms(TFile& file, const std::string& dir, std::vector<BookedHistogram>& hists);
 
-        // Does something with this data_type apply to the current sample (data / MC / Asimov)?
+        // ── MC categories (config/categories.yaml) ──────────────────────────
+        std::optional<ConfigUtils::CategoriesConfig> m_categories;
+        struct Category {
+            std::string name, type, latex, colour, expression;
+            std::string flag;    // bool column: event is in this category (category_<name>)
+        };
+        std::vector<Category> m_cats;          // the configured categories + 'other' (last); empty if not used
+        bool useCategories() const { return !m_cats.empty(); }
+        // Define category_<name>, category_other, mc_category_mask and mc_category (MC only)
+        void defineCategories();
+        // For a category data_type (signal, background, other or a category name): the selected
+        // indices in m_cats (empty on data / without categories). nullopt for ALL, DATA, MC.
+        std::optional<std::vector<std::size_t>> categoryDataType(const std::string& dataType) const;
+        std::string categoryFlagsOr(const std::vector<std::size_t>& indices) const;  // "category_a || category_b"
+        // Cutflow per category: counts[0] = category events in the input, counts[k] = after the k-th applied cut
+        std::vector<std::vector<ROOT::RDF::RResultPtr<ULong64_t>>> m_categoryCounts;  // [category][step]
+        void bookCategoryCutflows();
+        void writeCategoryOutputs(TFile& file);   // categories tree and cutflow_by_category/
+
+        // Does something with this data_type apply to the current sample (data / MC)?
         bool appliesTo(DataType dataType) const;
         static DataType parseDataType(const std::string& dataType);
         // Are all 'requires' conditions met? If not, `why` explains which one is not.
         bool requirementsMet(const std::vector<std::string>& requirements, std::string& why) const;
 
-        std::vector<ROOT::RDF::RResultPtr<TH1>> m_histResults;
+        std::vector<BookedHistogram> m_histResults;
 
 };

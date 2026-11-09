@@ -18,7 +18,11 @@ namespace ConfigUtils {
             return YAML::LoadFile(path);
         } catch (const YAML::Exception& e) {
             // e.what() includes the line and column of the problem
-            throw std::runtime_error("Could not parse YAML config " + path + ": " + e.what());
+            std::string hint;
+            if (std::string(e.what()).find("unknown escape character") != std::string::npos) {
+                hint = " (in double quotes YAML reads a backslash as an escape, e.g. in LaTeX \\mu or \\nu: put such values in single quotes)";
+            }
+            throw std::runtime_error("Could not parse YAML config " + path + ": " + e.what() + hint);
         }
     }
 
@@ -123,7 +127,7 @@ namespace ConfigUtils {
 
     // ── Selection config: cuts and histograms ─────────────────────────────
     const std::vector<std::string>& knownDataTypes() {
-        static const std::vector<std::string> v{"ALL", "DATA", "MC", "ASIMOV"};
+        static const std::vector<std::string> v{"ALL", "DATA", "MC"};
         return v;
     }
 
@@ -135,14 +139,33 @@ namespace ConfigUtils {
     namespace {
         std::string lineOf(const YAML::Node& n) { return " (line " + std::to_string(n.Mark().line + 1) + ")"; }
 
-        std::string readDataType(const YAML::Node& node, const std::string& context) {
-            std::string dt = getOptional<std::string>(node, "data_type", "ALL", context);
-            std::transform(dt.begin(), dt.end(), dt.begin(), ::toupper);
+        std::string toUpper(std::string s) { std::transform(s.begin(), s.end(), s.begin(), ::toupper); return s; }
+        std::string toLower(std::string s) { std::transform(s.begin(), s.end(), s.begin(), ::tolower); return s; }
+
+        // ALL, DATA, MC (any case, returned upper case) or, if allowed, an MC category
+        // data type: signal / background / other (any case, returned lower case) or a category name (exact)
+        std::string readDataType(const YAML::Node& node, const std::string& context,
+                                 const std::vector<std::string>& categoryTypes = {}) {
+            const std::string raw = getOptional<std::string>(node, "data_type", "ALL", context);
             const auto& ok = knownDataTypes();
-            if (std::find(ok.begin(), ok.end(), dt) == ok.end()) {
-                throw std::runtime_error(context + ": data_type '" + dt + "'" + lineOf(node["data_type"]) + " must be one of ALL, DATA, MC, ASIMOV");
+            if (std::find(ok.begin(), ok.end(), toUpper(raw)) != ok.end()) return toUpper(raw);
+            if (toUpper(raw) == "ASIMOV") {
+                throw std::runtime_error(context + ": data_type ASIMOV" + lineOf(node["data_type"]) + " was removed: use data_type: MC, which now "
+                                         "applies to all MC (the MC truth selection is done with the MC categories in config/categories.yaml)");
             }
-            return dt;
+            const std::string low = toLower(raw);
+            const bool generic = low == "signal" || low == "background" || low == "other";
+            if (generic && std::find(categoryTypes.begin(), categoryTypes.end(), low) != categoryTypes.end()) return low;
+            if (std::find(categoryTypes.begin(), categoryTypes.end(), raw) != categoryTypes.end()) return raw;
+            std::string allowed = "ALL, DATA, MC";
+            if (!categoryTypes.empty()) {
+                allowed += " or an MC category data type (";
+                for (std::size_t i = 0; i < categoryTypes.size(); ++i) allowed += (i ? ", " : "") + categoryTypes[i];
+                allowed += ")";
+            } else if (generic) {
+                allowed += " (signal, background, other and category names are only allowed on cuts and histograms, with MC categories in the categories config)";
+            }
+            throw std::runtime_error(context + ": data_type '" + raw + "'" + lineOf(node["data_type"]) + " must be one of " + allowed);
         }
 
         std::vector<std::string> readRequires(const YAML::Node& node, const std::string& context) {
@@ -183,7 +206,8 @@ namespace ConfigUtils {
             return axis;
         }
 
-        std::vector<HistogramConfig> readHistograms(const YAML::Node& list, const std::string& context, std::set<std::string>& usedNames) {
+        std::vector<HistogramConfig> readHistograms(const YAML::Node& list, const std::string& context, std::set<std::string>& usedNames,
+                                                    const std::vector<std::string>& categoryTypes) {
             std::vector<HistogramConfig> out;
             if (!list || list.IsNull()) return out;
             if (!list.IsSequence()) throw std::runtime_error(context + ": 'histograms' must be a list" + lineOf(list));
@@ -192,11 +216,12 @@ namespace ConfigUtils {
                 HistogramConfig h;
                 h.name = getRequired<std::string>(node, "name", context + ": histogram" + lineOf(node));
                 const std::string hctx = context + ": histogram '" + h.name + "'";
-                warnUnknownKeys(node, {"name", "title", "data_type", "requires", "x", "y"}, hctx);
+                warnUnknownKeys(node, {"name", "title", "data_type", "requires", "x", "y", "split"}, hctx);
                 if (!usedNames.insert(h.name).second) throw std::runtime_error(hctx + lineOf(node) + " is defined more than once (histogram names must be unique)");
                 h.title    = getOptional<std::string>(node, "title", h.name, hctx);
-                h.dataType = readDataType(node, hctx);
+                h.dataType = readDataType(node, hctx, categoryTypes);
                 h.requirements = readRequires(node, hctx);
+                h.split    = getOptional<bool>(node, "split", true, hctx);
                 if (!node["x"]) throw std::runtime_error(hctx + ": missing required key 'x'" + lineOf(node));
                 h.x = readAxis(node["x"], hctx + ": x");
                 if (node["y"]) h.y = readAxis(node["y"], hctx + ": y");
@@ -206,7 +231,7 @@ namespace ConfigUtils {
         }
     }
 
-    SelectionConfig readSelectionConfig(const std::string& configPath) {
+    SelectionConfig readSelectionConfig(const std::string& configPath, const std::vector<std::string>& categoryTypes) {
         INFO("Reading selection (cuts and histograms) config from ", configPath, "...");
         const YAML::Node root = loadYAML(configPath);
         warnUnknownKeys(root, {"Cuts", "Histograms"}, configPath);
@@ -214,7 +239,7 @@ namespace ConfigUtils {
         SelectionConfig config;
         config.sourcePath = configPath;
         std::set<std::string> histNames;
-        config.histograms = readHistograms(root["Histograms"], configPath + ": Histograms", histNames);
+        config.histograms = readHistograms(root["Histograms"], configPath + ": Histograms", histNames, categoryTypes);
 
         const YAML::Node cuts = root["Cuts"];
         if (cuts && !cuts.IsNull()) {
@@ -232,10 +257,10 @@ namespace ConfigUtils {
                 if (cut.expression.find_first_not_of(" \t") == std::string::npos) {
                     throw std::runtime_error(ctx + ": expression is empty" + lineOf(c["expression"]));
                 }
-                cut.dataType   = readDataType(c, ctx);
+                cut.dataType   = readDataType(c, ctx, categoryTypes);
                 cut.requirements   = readRequires(c, ctx);
-                cut.histograms = readHistograms(c["histograms"], ctx, histNames);
-                cut.nMinus1    = readHistograms(c["n_minus_1"], ctx + " (n_minus_1)", histNames);
+                cut.histograms = readHistograms(c["histograms"], ctx, histNames, categoryTypes);
+                cut.nMinus1    = readHistograms(c["n_minus_1"], ctx + " (n_minus_1)", histNames, categoryTypes);
                 config.cuts.push_back(cut);
             }
         }
@@ -283,6 +308,73 @@ namespace ConfigUtils {
         }
         INFO("Read definitions config: ", config.definitions.size(), " definitions.");
         return config;
+    }
+
+    // ── MC categories config ────────────────────────────────────────────────
+    CategoriesConfig readCategoriesConfig(const std::string& configPath) {
+        INFO("Reading MC categories config from ", configPath, "...");
+        const YAML::Node root = loadYAML(configPath);
+        warnUnknownKeys(root, {"Categories"}, configPath);
+
+        CategoriesConfig config;
+        config.sourcePath = configPath;
+        const YAML::Node cats = root["Categories"];
+        if (!cats || cats.IsNull()) {
+            INFO(configPath, ": no 'Categories': histograms and cutflows will not be split by MC category.");
+            return config;
+        }
+        if (!cats.IsMap()) throw std::runtime_error(configPath + ": 'Categories' must be a map of <category name>: {expression, type, ...}" + lineOf(cats));
+
+        static const std::regex identifier("^[A-Za-z_][A-Za-z0-9_]*$");
+        // Data type keywords and output directory names
+        static const std::vector<std::string> reserved{"ALL", "DATA", "MC", "SIGNAL", "BACKGROUND", "OTHER", "N_MINUS_1"};
+        std::set<std::string> names;
+        std::size_t nSignal = 0;
+        for (const auto& kv : cats) {   // yaml-cpp keeps the order of the file
+            CategoryConfig c;
+            c.name = kv.first.as<std::string>();
+            const std::string ctx = configPath + ": category '" + c.name + "'";
+            if (!std::regex_match(c.name, identifier)) {
+                throw std::runtime_error(ctx + lineOf(kv.first) + ": the name must be a valid C++ identifier (letters, digits, '_'; not starting with a digit), "
+                                         "it is used for the flag column category_<name> and as a directory name in the output");
+            }
+            if (std::find(reserved.begin(), reserved.end(), toUpper(c.name)) != reserved.end()) {
+                throw std::runtime_error(ctx + lineOf(kv.first) + ": '" + c.name + "' is a reserved name (ALL, DATA, MC, signal, background, other, n_minus_1)");
+            }
+            if (!names.insert(c.name).second) throw std::runtime_error(ctx + lineOf(kv.first) + " is defined more than once");
+            const YAML::Node& v = kv.second;
+            if (!v.IsMap()) throw std::runtime_error(ctx + ": expected a map with at least 'expression' and 'type'" + lineOf(v));
+            warnUnknownKeys(v, {"expression", "type", "latex", "colour"}, ctx);
+            c.expression = getRequired<std::string>(v, "expression", ctx);
+            if (c.expression.find_first_not_of(" \t\n") == std::string::npos) {
+                throw std::runtime_error(ctx + ": expression is empty" + lineOf(v["expression"]));
+            }
+            c.type = toLower(getRequired<std::string>(v, "type", ctx));
+            if (c.type != "signal" && c.type != "background") {
+                throw std::runtime_error(ctx + ": type '" + c.type + "'" + lineOf(v["type"]) + " must be signal or background");
+            }
+            if (c.type == "signal") ++nSignal;
+            c.latex  = getOptional<std::string>(v, "latex", c.name, ctx);
+            c.colour = getOptional<std::string>(v, "colour", "", ctx);
+            // In double quotes YAML reads \t, \n, \b, ... as escapes, e.g. "$\nu_\tau$" -> newline + "u_" + tab + "au"
+            if (std::any_of(c.latex.begin(), c.latex.end(), [](char ch) { return static_cast<unsigned char>(ch) < 0x20; })) {
+                throw std::runtime_error(ctx + ": latex" + lineOf(v["latex"]) + " contains a tab or newline. In double quotes YAML reads \\t, \\n, \\b, ... "
+                                         "as escape sequences (e.g. \\tau, \\nu, \\bar). Use single quotes: latex: 'CC $\\nu_\\tau$'");
+            }
+            config.categories.push_back(c);
+        }
+        // Categories are combined into a 64-bit mask (bit i = category i) to check that they do not overlap
+        if (config.categories.size() > 63) throw std::runtime_error(configPath + ": at most 63 categories are supported");
+        INFO("Read MC categories config: ", config.categories.size(), " categories (", nSignal, " signal, ",
+             config.categories.size() - nSignal, " background).");
+        return config;
+    }
+
+    std::vector<std::string> categoryDataTypes(const CategoriesConfig& config) {
+        if (config.categories.empty()) return {};
+        std::vector<std::string> types{"signal", "background", "other"};
+        for (const auto& c : config.categories) types.push_back(c.name);
+        return types;
     }
 
     const std::vector<std::string>& mandatoryOutputColumns() {

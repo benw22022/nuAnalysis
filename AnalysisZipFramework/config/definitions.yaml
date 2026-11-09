@@ -4,7 +4,7 @@
 # Definitions:
 #   <column name>:       name of the new column (letters, digits and '_' only)
 #     expression:        RDataFrame Define expression (required), e.g. "LeadTrack_pz0 / 1000"
-#     data_type:         ALL (default), DATA, MC or ASIMOV (optional)
+#     data_type:         ALL (default), DATA or MC (optional)
 #     requires:          [conditions] (optional)
 #
 # Definitions are created in the order of this file, so each one can use the input branches,
@@ -13,8 +13,7 @@
 # data_type (same meaning as in cuts.yaml):
 #   ALL     every sample
 #   DATA    data only
-#   MC      MC only, NOT in --isAsimov mode
-#   ASIMOV  all MC, including --isAsimov mode (use this for truth variables)
+#   MC      MC only (use this for truth variables)
 #
 # requires: skipped unless ALL are met
 #   reduced_charge          VetoNu reduced charge available (from aux files or the input NTuple)
@@ -97,7 +96,7 @@ Definitions:
 
   truth_pz_nu:    # GeV
     expression: "SafeAt(truth_pz, 0) / 1000"
-    data_type: ASIMOV
+    data_type: MC
 
   truth_dec_x_nu:
     expression: "SafeAt(truth_dec_x, 0)"

@@ -1,9 +1,13 @@
 #!/bin/bash
+# Run the analysis on all MC samples (--isMC), then merge the outputs per sample.
+# Replaces run_MC_truth.sh and run_MC_asimov.sh: the MC truth selection (signal / background)
+# is now done with the MC categories (config/categories.yaml), so one MC mode covers both.
 
 cd build
 make
 
-# 2022-23
+# Each run appears once (two parallel jobs writing the same output file would corrupt it)
+
 ./analysis -r 200093 -o 200093.bck.root --isMC &
 ./analysis -r 200094 -o 200094.bck.root --isMC &
 ./analysis -r 200100 -o 200100.bck.root --isMC &
@@ -19,6 +23,16 @@ make
 ./analysis -r 200169 -o 200169.bck.root --isMC &
 ./analysis -r 200170 -o 200170.bck.root --isMC &
 ./analysis -r 200171 -o 200171.bck.root --isMC &
+wait
+
+./analysis -r 200080 -o 200080.bck.root --isMC &
+./analysis -r 200084 -o 200084.bck.root --isMC &
+./analysis -r 200086 -o 200086.bck.root --isMC &
+./analysis -r 200081 -o 200081.bck.root --isMC &
+./analysis -r 200085 -o 200085.bck.root --isMC &
+./analysis -r 200087 -o 200087.bck.root --isMC &
+./analysis -r 200088 -o 200088.bck.root --isMC &
+./analysis -r 200090 -o 200090.bck.root --isMC &
 wait
 
 # 2024 CaloNu
@@ -39,7 +53,17 @@ wait
 ./analysis -r 200183 -o 200183.bck.root --isMC &
 wait
 
-# 2024 No CaloNu
+./analysis -r 200091 -o 200091.bck.root --isMC &
+./analysis -r 200095 -o 200095.bck.root --isMC &
+./analysis -r 200097 -o 200097.bck.root --isMC &
+./analysis -r 200092 -o 200092.bck.root --isMC &
+./analysis -r 200096 -o 200096.bck.root --isMC &
+./analysis -r 200098 -o 200098.bck.root --isMC &
+./analysis -r 200099 -o 200099.bck.root --isMC &
+./analysis -r 200101 -o 200101.bck.root --isMC &
+wait
+
+# 2022-23 / 2024 no CaloNu
 ./analysis -r 200082 -o 200082.bck.root --isMC &
 ./analysis -r 200083 -o 200083.bck.root --isMC &
 ./analysis -r 200089 -o 200089.bck.root --isMC &
@@ -57,7 +81,17 @@ wait
 ./analysis -r 200115 -o 200115.bck.root --isMC &
 wait
 
+./analysis -r 200137 -o 200137.bck.root --isMC &
+./analysis -r 200141 -o 200141.bck.root --isMC &
+./analysis -r 200143 -o 200143.bck.root --isMC &
+./analysis -r 200138 -o 200138.bck.root --isMC &
+./analysis -r 200142 -o 200142.bck.root --isMC &
+./analysis -r 200144 -o 200144.bck.root --isMC &
+./analysis -r 200145 -o 200145.bck.root --isMC &
+./analysis -r 200147 -o 200147.bck.root --isMC &
+wait
 
+# ── Merge per sample (from run_MC_truth.sh) ──────────────────────────────────
 hadd -f 2024_noCaloNu.bck.root                     200093.bck.root 200094.bck.root 200100.bck.root &
 hadd -f 2024_noCaloNu_FTF_BIC.bck.root             200160.bck.root 200161.bck.root 200162.bck.root &
 hadd -f 2024_noCaloNu_FTFP_INCLXX.bck.root         200163.bck.root 200164.bck.root 200165.bck.root &
@@ -77,4 +111,8 @@ hadd -f 2022_2023_FTF_BIC.bck.root             200104.bck.root 200105.bck.root 2
 hadd -f 2022_2023_FTFP_INCLXX.bck.root         200107.bck.root 200108.bck.root 200109.bck.root &
 hadd -f 2022_2023_FTFP_BERT_HP_JEFF33.bck.root 200110.bck.root 200111.bck.root 200112.bck.root &
 hadd -f 2022_2023_FTFP_BERT_HP_ENDFB8.bck.root 200113.bck.root 200114.bck.root 200115.bck.root &
+wait
+
+# ── Merge of the nominal samples (from run_MC_asimov.sh) ─────────────────────
+hadd -f merged_all.root 200080.bck.root 200082.bck.root 200084.bck.root 200086.bck.root 200081.bck.root 200083.bck.root 200085.bck.root 200087.bck.root 200088.bck.root 200089.bck.root 200090.bck.root 200091.bck.root 200093.bck.root 200095.bck.root 200097.bck.root 200092.bck.root 200094.bck.root 200096.bck.root 200098.bck.root 200099.bck.root 200100.bck.root 200101.bck.root 200137.bck.root 200139.bck.root 200141.bck.root 200143.bck.root 200138.bck.root 200140.bck.root 200142.bck.root 200144.bck.root 200145.bck.root 200146.bck.root 200147.bck.root
 wait

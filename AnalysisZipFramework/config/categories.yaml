@@ -1,0 +1,74 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nuAnalysis MC categories config: signal and background components of the MC
+#
+# Categories:
+#   <category name>:     letters, digits and '_' only; used for the flag column category_<name>
+#                        and as the directory name in the output file
+#     expression:        RDataFrame expression, true if the event is in this category (required)
+#     type:              signal or background (required)
+#     latex:             label for plots (optional, defaults to the name)
+#     colour:            colour for plots (optional, free text, e.g. a ROOT or matplotlib colour name)
+#
+# Categories are MC only; on data this file is ignored. They replace the MC truth selection cuts. On MC:
+#   - every histogram (incl. N-1) is also booked once per category, plus 'other' (events in no
+#     category), and the sums of the signal and of the background categories (background includes
+#     'other'). Add split: false to a histogram in cuts.yaml to book only the total.
+#     Output: histograms/<name> (total), histograms/<category>/<name>, histograms/signal/<name>,
+#             histograms/background/<name>, and the same structure under histograms/n_minus_1/
+#   - a cutflow per category (and for signal / background) is written to cutflow_by_category/
+#   - the 'categories' tree stores the name, type, latex, colour and expression of each category
+#   - mc_category (index in this file, -1 = 'other', -2 = more than one category) is always saved
+#     in nt and eventID_pass
+#   - cuts and histograms in cuts.yaml can use data_type: signal, background, other or a category
+#     name (see cuts.yaml)
+#
+# Categories should not overlap: events in more than one category are reported with a WARNING at
+# the end of the job (they are filled into each of their categories, so the stack would not add
+# up to the total).
+#
+# Expressions are evaluated after config/definitions.yaml, so they can use its columns.
+# Columns defined from this file (can be used in cuts and histograms, not in definitions):
+#   category_<name>, category_other   bool: event is in this category
+#   mc_category_mask                  bit i set if the event is in category i
+#   mc_category                       see above
+#
+# YAML tips: write LaTeX labels in SINGLE quotes. In double quotes YAML reads backslash escapes:
+# "\nu" becomes a newline + "u", "\tau" a tab + "au", and "\mu" is an error.
+#
+# Select a different config with: ./analysis --categories-config <path>
+# (a file with no categories, e.g. just "Categories:", switches the splitting off)
+# ─────────────────────────────────────────────────────────────────────────────
+
+Categories:
+
+  # Signal: CC nu_mu in the fiducial volume with truth neutrino pz > 100 GeV
+  CC_nu_mu_fiducial:
+    expression: "is_CC_num && (decay_box || decay_lead) && truth_dec_r < 100 && truth_pz_nu > 100"
+    type: signal
+    latex: 'CC $\nu_\mu$ fid.'
+    colour: red
+
+  # All other CC nu_mu: outside the fiducial volume, or truth pz <= 100 GeV
+  CC_nu_mu_non_fiducial:
+    expression: "is_CC_num && !((decay_box || decay_lead) && truth_dec_r < 100 && truth_pz_nu > 100)"
+    type: background
+    latex: 'CC $\nu_\mu$ non-fid.'
+    colour: brown
+
+  CC_nu_e:
+    expression: "is_CC_nue"
+    type: background
+    latex: 'CC $\nu_e$'
+    colour: blue
+
+  CC_nu_tau:
+    expression: "is_CC_nut"
+    type: background
+    latex: 'CC $\nu_\tau$'
+    colour: purple
+
+  NC_nu:
+    expression: "is_nc"
+    type: background
+    latex: 'NC $\nu$'
+    colour: green

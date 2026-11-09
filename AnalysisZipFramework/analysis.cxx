@@ -18,7 +18,6 @@ int main(int argc, char* argv[]) {
     int         runNumber  = -1;
     std::string outputFile = "";
     bool        isMC       = false;
-    bool        isAsimov   = false;
     bool        useReducedCharge = true;
     bool        verbose    = false;
     bool        useMT      = false;
@@ -30,6 +29,7 @@ int main(int argc, char* argv[]) {
     std::string outputConfigPath = "config/output_columns.yaml";
     std::string cutsConfigPath   = "config/cuts.yaml";
     std::string definitionsConfigPath = "config/definitions.yaml";
+    std::string categoriesConfigPath  = "config/categories.yaml";
     // Alternative to --run: take all .root files in these directories (file config not used)
     std::vector<std::string> inputDirs;
     std::vector<std::string> auxDirs;
@@ -105,13 +105,19 @@ int main(int argc, char* argv[]) {
             }
             definitionsConfigPath = argv[++i];
 
+        } else if (arg == "--categories-config") {
+            if (i + 1 >= argc) {
+                ERROR("Error: --categories-config requires an argument.");
+                return 1;
+            }
+            categoriesConfigPath = argv[++i];
+
         } else if (arg == "--isMC") {
             isMC = true;
             INFO("Running in MC mode: GRL, BCID and trigger cuts will be skipped.");
         } else if (arg == "--isAsimov") {
-            isAsimov = true;
-            isMC = true; // Asimov mode implies MC
-            INFO("Running in Asimov mode: GRL, BCID cuts will be skipped, no truth cuts will be applied to MC.");
+            ERROR("Error: --isAsimov was removed. Use --isMC: the MC truth selection (signal / background) is now done with the MC categories (config/categories.yaml).");
+            return 1;
 
         } else if (arg == "--no-reduced-charge") {
             useReducedCharge = false;
@@ -145,7 +151,7 @@ int main(int argc, char* argv[]) {
 
         } else {
             ERROR("Unknown argument: ", arg);
-            ERROR("Usage: ", argv[0], " (--run <run_number> | --input-dir <dir> [--aux-dir <dir>]) [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
+            ERROR("Usage: ", argv[0], " (--run <run_number> | --input-dir <dir> [--aux-dir <dir>]) [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--categories-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--no-reduced-charge] [-v]");
             return 1;
         }
     }
@@ -161,7 +167,7 @@ int main(int argc, char* argv[]) {
     }
     if (runNumber == -1 && !useInputDirs) {
         ERROR("Error: --run <number> or --input-dir <dir> is required.");
-        ERROR("Usage: ", argv[0], " (--run <run_number> | --input-dir <dir> [--aux-dir <dir>]) [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--isAsimov] [--no-reduced-charge] [-v]");
+        ERROR("Usage: ", argv[0], " (--run <run_number> | --input-dir <dir> [--aux-dir <dir>]) [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--categories-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--no-reduced-charge] [-v]");
         return 1;
     }
 
@@ -188,6 +194,7 @@ int main(int argc, char* argv[]) {
     INFO("GRL config:  ", grlConfigPath);
     INFO("Output config: ", outputConfigPath);
     INFO("Definitions config: ", definitionsConfigPath);
+    INFO("Categories config: ", categoriesConfigPath);
     INFO("Cuts config:   ", cutsConfigPath);
 
     ConfigUtils::GRLConfig  grlConfig;
@@ -195,9 +202,12 @@ int main(int argc, char* argv[]) {
     ConfigUtils::OutputColumnsConfig outputConfig;
     ConfigUtils::SelectionConfig selection;
     ConfigUtils::DefinitionsConfig definitions;
+    ConfigUtils::CategoriesConfig categories;
     try {
         definitions  = ConfigUtils::readDefinitionsConfig(definitionsConfigPath);
-        selection    = ConfigUtils::readSelectionConfig(cutsConfigPath);
+        categories   = ConfigUtils::readCategoriesConfig(categoriesConfigPath);
+        // Before the cuts config: cuts and histograms can use the categories as data_type
+        selection    = ConfigUtils::readSelectionConfig(cutsConfigPath, ConfigUtils::categoryDataTypes(categories));
         grlConfig    = ConfigUtils::readGRLConfig(grlConfigPath);
         if (!useInputDirs) fileConfig = ConfigUtils::readFileConfig(fileConfigPath);
         outputConfig = ConfigUtils::readOutputColumnsConfig(outputConfigPath);
@@ -258,12 +268,12 @@ int main(int argc, char* argv[]) {
     }
 
     analysis.isMC = isMC;
-    analysis.isAsimov = isAsimov;
     analysis.useReducedCharge = useReducedCharge;
     analysis.setRunNumbers(runNumbers);
     analysis.setOutputColumns(outputConfig);
     analysis.setDefinitions(definitions);
     analysis.setSelection(selection);
+    analysis.setCategories(categories);
     // Catch exceptions so that buffered log messages are flushed and the job exits with a
     // non-zero code (an uncaught exception aborts before std::cout is flushed)
     try {

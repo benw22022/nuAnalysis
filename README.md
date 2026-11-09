@@ -57,9 +57,9 @@ Other options:
 | `--grl-config <yaml>` | GRL config to use (default `config/grl_config.yaml`) |
 | `--output-config <yaml>` | Which columns to save in the output `nt` tree (default `config/output_columns.yaml`) |
 | `--definitions-config <yaml>` | New column definitions (default `config/definitions.yaml`) |
+| `--categories-config <yaml>` | MC categories (signal / background components) used to split histograms and cutflows on MC (default `config/categories.yaml`) |
 | `--cuts-config <yaml>` | Cuts and histograms (default `config/cuts.yaml`) |
-| `--isMC` | MC mode: GRL, BCID and trigger cuts are skipped |
-| `--isAsimov` | Asimov mode: MC without the truth selection cuts |
+| `--isMC` | MC mode: GRL, BCID and trigger cuts are skipped; the MC truth selection is done with the MC categories (see below) |
 | `--no-reduced-charge` | Do not use the VetoNu reduced charge; veto on the raw VetoNu charge instead |
 | `-j [n]` | Enable multithreading (all cores, or `n` threads) |
 | `-v` | Verbose output |
@@ -99,6 +99,13 @@ The output file contains the following trees:
 - `eventID_passed`: Contains run number, eventIDs and boolean flags for each cut defined in the analysis
 - `histograms/`: Histograms booked in the cuts config, with the N-1 histograms in `histograms/n_minus_1/`
 
+On MC with categories (see below) there is also:
+
+- `histograms/<category>/`, `histograms/signal/`, `histograms/background/` (and the same under `histograms/n_minus_1/`): each histogram per MC category and summed over the signal / background categories
+- `cutflow_by_category/`: one cutflow tree per category, and for `signal` and `background`
+- `categories`: name, type, LaTeX label, colour and expression of each category
+- `mc_category` in `nt` and `eventID_pass`: index of the event's category (-1: none, -2: more than one)
+
 ## Batch submission 
 
 An example condor submission script can be found here `AnalysisZipFramework/submission/run_submission.sh`. This file, and `AnalysisZipFramework/submission/run_analysis.sh` need to be modified so that file paths align with your own.
@@ -115,7 +122,7 @@ Histograms:                       # booked on all events, before the first cut
 Cuts:
   Track pz > 100 GeV:             # name in the cutflow (eventID_pass flag: passed_<name>)
     expression: "LeadTrack_pz0 > 100"
-    data_type: ALL                # optional: ALL, DATA, MC (not in Asimov mode) or ASIMOV (all MC)
+    data_type: ALL                # optional: ALL, DATA or MC
     requires: [reduced_charge]    # optional: reduced_charge, aux_reduced_charge, native_reduced_charge, no_reduced_charge
     histograms:                   # optional, booked after this cut
       - name: theta_vs_pz
@@ -132,6 +139,26 @@ Each histogram axis has either `bins`/`min`/`max` or `edges`. Histogram names mu
 
 `n_minus_1` histograms are N-1 plots: they are filled with every event that passes all the *other* cuts applied to the sample (anywhere in the list, before or after this cut), with only this cut removed. They take the same options as other histograms and are written to `histograms/n_minus_1/` in the output file. They are filled in the same event loop as everything else and do not change the cutflow. If the cut itself is not applied to the sample (`data_type`/`requires`), its N-1 histograms are skipped. Histograms attached to a cut are booked at that point of the selection even if the cut itself is not applied to the current sample; they follow their own `data_type`/`requires`. Quote expressions, especially ones starting with `!` (YAML reads an unquoted leading `!` as a tag). The header of `config/cuts.yaml` documents all options.
 
+## MC categories (signal and background)
+
+MC events are sorted into categories defined in `config/categories.yaml` (select another file with `--categories-config`):
+
+```yaml
+Categories:
+  CC_nu_mu_fiducial:
+    expression: "is_CC_num && (decay_box || decay_lead) && truth_dec_r < 100 && truth_pz_nu > 100"
+    type: signal                  # signal or background
+    latex: 'CC $\nu_\mu$ fid.'    # optional label for plots: use SINGLE quotes for LaTeX
+    colour: red                   # optional colour for plots
+  NC_nu:
+    expression: "is_nc"
+    type: background
+```
+
+The categories replace the MC truth selection cuts (and the old `--isAsimov` mode): all MC events go through the reconstruction selection and are sorted into signal and background. On MC every histogram, including the N-1 histograms, is also filled once per category, plus `other` for events in no category, and summed over the signal and over the background categories (`other` counts as background). The cutflow is also written per category. Categories should not overlap; events in more than one category are reported with a warning at the end of the job. Add `split: false` to a histogram to book only the total (each copy costs memory, more with `-j`). Cuts and histograms can also use `data_type: signal`, `background`, `other` or a category name: a cut then only applies to events of those categories, and a histogram is only filled with them. On data the categories are not used. A categories file with no categories (`Categories:`) switches the splitting off.
+
+Write LaTeX labels in single quotes: in double quotes YAML reads backslashes as escapes (`"\nu"` becomes a newline followed by `u`, and `"\mu"` is a parse error).
+
 ## Definitions
 
 New columns are defined in `config/definitions.yaml` (select another file with `--definitions-config`), in the order of the file:
@@ -142,7 +169,7 @@ Definitions:
     expression: "SafeAt(Track_pz0, LeadTrack_Idx) / 1000"
   truth_pz_nu:
     expression: "SafeAt(truth_pz, 0) / 1000"
-    data_type: ASIMOV                # optional: ALL, DATA, MC or ASIMOV (as in cuts.yaml)
+    data_type: MC                    # optional: ALL, DATA or MC (as in cuts.yaml)
   VetoNu_total_reduced_charge:
     expression: "VetoNu0_reduced_charge + VetoNu1_reduced_charge"
     requires: [reduced_charge]       # optional (as in cuts.yaml)
