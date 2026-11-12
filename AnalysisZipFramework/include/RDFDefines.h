@@ -360,7 +360,6 @@ int getNeutrinoInteractionType(RVec<int> truth_pdg, RVec<T> truth_dec_z, RVec<T>
   for (size_t i = 1; i < truth_pdg.size(); ++i) {
     
     if (truth_prod_z[i] == nu_dec_z && abs(truth_pdg[i]) == abs(nu_pdg) - 1) {
-    // if (abs(truth_pdg[i]) == abs(nu_pdg) - 1) {
 
       switch (nu_pdg) {
         case 12:  // nue

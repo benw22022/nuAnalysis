@@ -84,11 +84,11 @@ Cuts:
   # ── MC truth selection ────────────────────────────────────────────────────
   Remove CaloNu PMT region (truth):
     expression: "(!isCaloNuPeriod) || (isCaloNuPeriod && !inCaloNuPMT)"
-    data_type: ASIMOV    # always applied to MC (material mismodelling), also in Asimov mode
+    data_type: MC    # always applied to MC (material mismodelling), also in Asimov mode
 
-  isCharmDimuon:
-    expression: "truth_isCharmDimuon"
-    data_type: MC
+  # isCharmDimuon:
+  #   expression: "truth_isCharmDimuon"
+  #   data_type: MC
 
   # CC events only:
   #   expression: "is_cc"
@@ -98,9 +98,9 @@ Cuts:
   #   expression: "abs(SafeAt(truth_pdg, 0)) == 14"
   #   data_type: MC
     
-  In Faser Nu Box or Lead Block:
-    expression: "decay_box || decay_lead"
-    data_type: Asimov
+  # In Faser Nu Box or Lead Block:
+  #   expression: "decay_box || decay_lead"
+  #   data_type: MC
     
   # Truth dec r < 100 mm:
   #   expression: "truth_dec_r < 100"

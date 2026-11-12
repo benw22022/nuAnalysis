@@ -97,7 +97,7 @@ hadd -f 2024_noCaloNu_FTF_BIC.bck.root             200160.bck.root 200161.bck.ro
 hadd -f 2024_noCaloNu_FTFP_INCLXX.bck.root         200163.bck.root 200164.bck.root 200165.bck.root &
 hadd -f 2024_noCaloNu_FTFP_BERT_HP_JEFF33.bck.root 200166.bck.root 200167.bck.root 200168.bck.root &
 hadd -f 2024_noCaloNu_FTFP_BERT_HP_ENDFB8.bck.root 200169.bck.root 200170.bck.root 200171.bck.root &
-wait
+wait 
 
 hadd -f 2024_CaloNu.bck.root                     200139.bck.root 200140.bck.root 200146.bck.root &
 hadd -f 2024_CaloNu_FTF_BIC.bck.root             200172.bck.root 200173.bck.root 200174.bck.root &

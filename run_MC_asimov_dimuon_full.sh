@@ -4,99 +4,99 @@ cmake ../AnalysisZipFramework
 make
 
 # 2022-23
-./analysis -r 200093 -o 200093.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200094 -o 200094.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200100 -o 200100.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200160 -o 200160.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200161 -o 200161.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200162 -o 200162.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200163 -o 200163.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200164 -o 200164.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200165 -o 200165.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200166 -o 200166.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200167 -o 200167.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200168 -o 200168.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200169 -o 200169.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200170 -o 200170.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200171 -o 200171.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200093 -o 200093.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200094 -o 200094.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200100 -o 200100.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200160 -o 200160.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200161 -o 200161.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200162 -o 200162.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200163 -o 200163.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200164 -o 200164.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200165 -o 200165.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200166 -o 200166.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200167 -o 200167.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200168 -o 200168.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200169 -o 200169.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200170 -o 200170.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200171 -o 200171.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
 wait
 
-./analysis -r 200080 -o 200080.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200084 -o 200084.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200086 -o 200086.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200081 -o 200081.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200085 -o 200085.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200087 -o 200087.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200088 -o 200088.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200090 -o 200090.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200080 -o 200080.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200084 -o 200084.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200086 -o 200086.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200081 -o 200081.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200085 -o 200085.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200087 -o 200087.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200088 -o 200088.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200090 -o 200090.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
 wait
 
 # 2024 CaloNu
-./analysis -r 200139 -o 200139.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200140 -o 200140.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200146 -o 200146.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200172 -o 200172.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200173 -o 200173.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200174 -o 200174.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200175 -o 200175.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200176 -o 200176.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200177 -o 200177.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200178 -o 200178.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200179 -o 200179.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200180 -o 200180.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200181 -o 200181.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200182 -o 200182.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200183 -o 200183.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200139 -o 200139.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200140 -o 200140.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200146 -o 200146.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200172 -o 200172.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200173 -o 200173.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200174 -o 200174.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200175 -o 200175.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200176 -o 200176.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200177 -o 200177.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200178 -o 200178.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200179 -o 200179.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200180 -o 200180.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200181 -o 200181.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200182 -o 200182.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200183 -o 200183.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
 wait
 
-./analysis -r 200091 -o 200091.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200095 -o 200095.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200097 -o 200097.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200092 -o 200092.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200096 -o 200096.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200098 -o 200098.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200099 -o 200099.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200100 -o 200100.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200101 -o 200101.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200091 -o 200091.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200095 -o 200095.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200097 -o 200097.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200092 -o 200092.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200096 -o 200096.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200098 -o 200098.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200099 -o 200099.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200100 -o 200100.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200101 -o 200101.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
 wait
 
-./analysis -r 200137 -o 200137.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200141 -o 200141.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200143 -o 200143.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200138 -o 200138.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200142 -o 200142.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200144 -o 200144.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200145 -o 200145.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200147 -o 200147.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200137 -o 200137.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200141 -o 200141.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200143 -o 200143.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200138 -o 200138.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200142 -o 200142.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200144 -o 200144.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200145 -o 200145.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200147 -o 200147.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
 wait
 
 # 2024 No CaloNu
-./analysis -r 200082 -o 200082.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200083 -o 200083.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200089 -o 200089.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200104 -o 200104.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200105 -o 200105.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200106 -o 200106.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200107 -o 200107.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200108 -o 200108.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200109 -o 200109.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200110 -o 200110.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200111 -o 200111.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200112 -o 200112.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200113 -o 200113.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200114 -o 200114.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200115 -o 200115.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200082 -o 200082.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200083 -o 200083.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200089 -o 200089.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200104 -o 200104.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200105 -o 200105.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200106 -o 200106.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200107 -o 200107.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200108 -o 200108.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200109 -o 200109.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200110 -o 200110.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200111 -o 200111.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200112 -o 200112.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200113 -o 200113.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200114 -o 200114.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200115 -o 200115.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
 wait
 
-./analysis -r 200137 -o 200137.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200141 -o 200141.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200143 -o 200143.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200138 -o 200138.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200142 -o 200142.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200144 -o 200144.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200145 -o 200145.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200146 -o 200146.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
-./analysis -r 200147 -o 200147.bck.root --isAsimov --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200137 -o 200137.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200141 -o 200141.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200143 -o 200143.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200138 -o 200138.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200142 -o 200142.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200144 -o 200144.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200145 -o 200145.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200146 -o 200146.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
+./analysis -r 200147 -o 200147.bck.root --isMC --cuts-config config/cuts_dimuon_full.yaml &
 wait
 
 hadd -f 2024_noCaloNu.bck.root                     200093.bck.root 200094.bck.root 200100.bck.root &

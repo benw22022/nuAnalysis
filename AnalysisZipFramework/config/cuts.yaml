@@ -95,85 +95,13 @@ Cuts:
   Remove CaloNu PMT region (truth):
     expression: "(!isCaloNuPeriod) || (isCaloNuPeriod && !inCaloNuPMT)"
     data_type: MC    # always applied to MC (material mismodelling)
-    # Truth-level histograms: the MC truth selection (CC nu_mu, fiducial volume, truth pz) is done with
-    # the MC categories (config/categories.yaml), so these are also written per category.
-    histograms:
-      - name: truth_dec_z_nu_vs_longTracks
-        title: Truth decay z vs NlongTracks
-        data_type: MC
-        x: {variable: truth_dec_z_nu, bins: 200, min: -4000, max: -1500}
-        y: {variable: longTracks, bins: 5, min: 0, max: 5}
-      - name: truth_dec_x_nu
-        title: Truth decay x
-        data_type: MC
-        x: {variable: truth_dec_x_nu, bins: 200, min: -300, max: 300}
-      - name: truth_dec_y_nu
-        title: Truth decay y
-        data_type: MC
-        x: {variable: truth_dec_y_nu, bins: 200, min: -300, max: 300}
-      - name: truth_dec_z_nu
-        title: Truth decay z
-        data_type: MC
-        x: {variable: truth_dec_z_nu, bins: 200, min: -3000, max: -1500}
-      - name: truth_dec_z_nu_ext
-        title: Truth decay z
-        data_type: MC
-        x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: 4000}
-      - name: truth_dec_x_nu_vs_truth_dec_y_nu
-        title: Truth decay x vs Truth decay y
-        data_type: MC
-        x: {variable: truth_dec_x_nu, bins: 200, min: -300, max: 300}
-        y: {variable: truth_dec_y_nu, bins: 200, min: -300, max: 300}
-      - name: truth_dec_z_nu_vs_truth_dec_x_nu
-        title: Truth decay z vs Truth decay x
-        data_type: MC
-        x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: 4000}
-        y: {variable: truth_dec_x_nu, bins: 200, min: -300, max: 300}
-      - name: truth_dec_z_nu_vs_truth_dec_y_nu
-        title: Truth decay z vs Truth decay y
-        data_type: MC
-        x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: 4000}
-        y: {variable: truth_dec_y_nu, bins: 200, min: -300, max: 300}
-      - name: truth_dec_r
-        title: Truth decay r
-        data_type: MC
-        x: {variable: truth_dec_r, bins: 200, min: 0, max: 300}
-      - name: truth_pz_nu
-        title: Truth pz
-        data_type: MC
-        x: {variable: truth_pz_nu, bins: 200, min: 0, max: 10000}
-      - name: longTracks
-        title: NlongTracks
-        x: {variable: longTracks, bins: 5, min: 0, max: 5}
-      - name: nClusters0_preLongTracks
-        title: nClusters0
-        x: {variable: nClusters0, bins: 100, min: 0, max: 1000}
-      - name: nClusters1_preLongTracks
-        title: nClusters1
-        x: {variable: nClusters1, bins: 100, min: 0, max: 400}
-      - name: nClusters2_preLongTracks
-        title: nClusters2
-        x: {variable: nClusters2, bins: 100, min: 0, max: 300}
-      - name: nClusters3_preLongTracks
-        title: nClusters3
-        x: {variable: nClusters3, bins: 100, min: 0, max: 200}
-      - name: SpacePoints_preLongTracks
-        title: SpacePoints
-        x: {variable: SpacePoints, bins: 100, min: 0, max: 1000}
-      - name: TrackSegments_preLongTracks
-        title: TrackSegments
-        x: {variable: TrackSegments, bins: 50, min: 0, max: 50}
-
-  # isDimuonn:
-  #   expression: "isTwoTrackDimuon"
-  #   data_type: ASIMOV
-    
+        
   # ── Reconstruction selection ──────────────────────────────────────────────
   # At least 30 space points:
   #   expression: "SpacePoints >= 30"
 
 
-  At least two long tracks:
+  At least one long track:
     expression: "longTracks > 0"
     
   CaloNu status cleaning:
@@ -189,8 +117,8 @@ Cuts:
   Preshower Charge > 2.5 pC:
     expression: "Preshower0_charge > 2.5 && Preshower1_charge > 2.5"
 
-  Track pz > 50 GeV:
-    expression: "LeadTrack_pz0 > 50"
+  Track pz > 100 GeV:
+    expression: "LeadTrack_pz0 > 100"
 
   Leading track has at >= 7 layers:
     expression: "LeadTrack_nLayers >= 7"
@@ -219,41 +147,6 @@ Cuts:
   Sanity cut to remove events with missing aux data:
     expression: "AuxLookupSuccess"
     requires: [aux_reduced_charge]
-    histograms:
-      - name: VetoNu0_reduced_charge
-        title: VetoNu0 reduced charge
-        requires: [reduced_charge]
-        x: {variable: VetoNu0_reduced_charge, bins: 2501, min: -1, max: 2500}
-      - name: VetoNu1_reduced_charge
-        title: VetoNu1 reduced charge
-        requires: [reduced_charge]
-        x: {variable: VetoNu1_reduced_charge, bins: 2501, min: -1, max: 2500}
-      - name: VetoNu0_reduced_charge_vs_VetoNu1_reduced_charge
-        title: VetoNu0 reduced charge vs VetoNu1 reduced charge
-        requires: [reduced_charge]
-        x: {variable: VetoNu0_reduced_charge, bins: 2501, min: -1, max: 2500}
-        y: {variable: VetoNu1_reduced_charge, bins: 2501, min: -1, max: 2500}
-      - name: truth_dec_z_nu_vs_VetoNu0_reduced_charge
-        title: Truth decay z vs VetoNu0 reduced charge
-        data_type: MC
-        requires: [reduced_charge]
-        x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: -1500}
-        y: {variable: VetoNu0_reduced_charge, bins: 2501, min: -1, max: 2500}
-      - name: truth_dec_z_nu_vs_VetoNu1_reduced_charge
-        title: Truth decay z vs VetoNu1 reduced charge
-        data_type: MC
-        requires: [reduced_charge]
-        x: {variable: truth_dec_z_nu, bins: 500, min: -4000, max: -1500}
-        y: {variable: VetoNu1_reduced_charge, bins: 2501, min: -1, max: 2500}
-      - name: VetoNu0_raw_charge
-        title: VetoNu0 raw charge
-        requires: [no_reduced_charge]
-        x: {variable: VetoNu0_raw_charge, bins: 2501, min: -1, max: 2500}
-      - name: VetoNu1_raw_charge
-        title: VetoNu1 raw charge
-        requires: [no_reduced_charge]
-        x: {variable: VetoNu1_raw_charge, bins: 2501, min: -1, max: 2500}
-
   VetoNu0 reduced charge < 30 pC:
     expression: "VetoNu0_reduced_charge < 30"
     requires: [reduced_charge]

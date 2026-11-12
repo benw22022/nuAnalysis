@@ -48,51 +48,51 @@ Definitions:
 
   nu_interaction_type:
     expression: "getNeutrinoInteractionType(truth_pdg, truth_dec_z, truth_prod_z)"
-    data_type: ASIMOV
+    data_type: MC
 
   is_cc:
     expression: "nu_interaction_type > 0"
-    data_type: ASIMOV
+    data_type: MC
 
   is_nc:
     expression: "nu_interaction_type == 0"
-    data_type: ASIMOV
+    data_type: MC
 
   is_CC_nue:
     expression: "nu_interaction_type == 1 || nu_interaction_type == 4"
-    data_type: ASIMOV
+    data_type: MC
 
   is_CC_num:
     expression: "nu_interaction_type == 2 || nu_interaction_type == 5"
-    data_type: ASIMOV
+    data_type: MC
   
   is_CC_nut:
     expression: "nu_interaction_type == 3 || nu_interaction_type == 6"
-    data_type: ASIMOV
+    data_type: MC
 
   is_charmedEvent:
     expression: "containsCharmedHadron(truth_pdg)"
-    data_type: ASIMOV
+    data_type: MC
   
   n_charmMatchedMuonTracks:
     expression: "countCharmedMuonTracks(t_pdg, t_pdg_parent, t_truthHitRatio)"
-    data_type: ASIMOV
+    data_type: MC
 
   n_matchedMuonTracks:
     expression: "countMuonTracks(t_pdg, t_truthHitRatio)"
-    data_type: ASIMOV
+    data_type: MC
 
   decay_box:
     expression: "inFaserNuBox(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0), SafeAt(truth_dec_z, 0))"
-    data_type: Asimov
+    data_type: MC
 
   decay_lead:
     expression: "inLeadBlock(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0), SafeAt(truth_dec_z, 0))"
-    data_type: Asimov
+    data_type: MC
 
   inCaloNuPMT:    # always cut on in MC (material mismodelling); NaN-safe, also defined for data
     expression: "inCaloNuPMT(SafeAt(truth_dec_z, 0))"
-    data_type: ASIMOV
+    data_type: MC
 
   truth_pz_nu:    # GeV
     expression: "SafeAt(truth_pz, 0) / 1000"
@@ -100,24 +100,24 @@ Definitions:
 
   truth_dec_x_nu:
     expression: "SafeAt(truth_dec_x, 0)"
-    data_type: ASIMOV
+    data_type: MC
 
   truth_dec_y_nu:
     expression: "SafeAt(truth_dec_y, 0)"
-    data_type: ASIMOV
+    data_type: MC
 
   truth_dec_z_nu:
     expression: "SafeAt(truth_dec_z, 0)"
-    data_type: ASIMOV
+    data_type: MC
 
   # ── Dimuon signal definitions ────────────────────────
   truth_isCharmDimuon:
     expression: "is_CC_num && n_charmMatchedMuonTracks >= 1 && is_charmedEvent"
-    data_type: ASIMOV
+    data_type: MC
   
   truth_isCharm:
     expression: "is_charmedEvent && is_CC_num"
-    data_type: ASIMOV
+    data_type: MC
 
   # ── CaloNu period scintillator status cleaning (data) ────────────────────────
   caloNuVeto2StatusBug:
@@ -278,6 +278,6 @@ Definitions:
   #     if (std::find(muonBarcodes.begin(), muonBarcodes.end(), t_barcode[i]) == muonBarcodes.end())
   #       muonBarcodes.push_back(t_barcode[i]);
   #   } return muonBarcodes.size() >= 2; )"
-  #   data_type: ASIMOV
+  #   data_type: MC
 
   
