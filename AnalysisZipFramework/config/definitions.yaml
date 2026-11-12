@@ -110,6 +110,10 @@ Definitions:
     expression: "SafeAt(truth_dec_z, 0)"
     data_type: MC
 
+  truth_nu_E_GeV:
+    expression: "SafeAt(truth_p, 0) / 1000"
+    data_type: MC
+
   # ── Dimuon signal definitions ────────────────────────
   truth_isCharmDimuon:
     expression: "is_CC_num && n_charmMatchedMuonTracks >= 1 && is_charmedEvent"

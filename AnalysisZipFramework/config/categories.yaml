@@ -43,14 +43,14 @@ Categories:
 
   # Signal: CC nu_mu in the fiducial volume with truth neutrino pz > 100 GeV
   CC_nu_mu_fiducial:
-    expression: "is_CC_num && (decay_box || decay_lead) && truth_dec_r < 100 && truth_pz_nu > 100"
+    expression: "is_CC_num && (decay_box || decay_lead) && truth_dec_r < 100 && truth_nu_E_GeV > 100"
     type: signal
     latex: 'CC $\nu_\mu$ fid.'
     colour: red
 
   # All other CC nu_mu: outside the fiducial volume, or truth pz <= 100 GeV
   CC_nu_mu_non_fiducial:
-    expression: "is_CC_num && !((decay_box || decay_lead) && truth_dec_r < 100 && truth_pz_nu > 100)"
+    expression: "is_CC_num && !((decay_box || decay_lead) && truth_dec_r < 100 && truth_nu_E_GeV > 100)"
     type: background
     latex: 'CC $\nu_\mu$ non-fid.'
     colour: brown
