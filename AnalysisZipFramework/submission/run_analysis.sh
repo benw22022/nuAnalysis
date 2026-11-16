@@ -66,15 +66,20 @@ fi
 STATUS=$?
 echo "analysis exit code: ${STATUS}"
 
-if [ ${STATUS} -eq 0 ] && [ "${WORK_OUTPUT}" != "${OUTPUT}" ]; then
-    # copy under a temporary name, then rename: the final name only appears when the copy is complete
-    if cp "${WORK_OUTPUT}" "${OUTPUT}.part" && mv -f "${OUTPUT}.part" "${OUTPUT}"; then
-        echo "Copied output to ${OUTPUT}"
-    else
-        echo "ERROR: could not copy ${WORK_OUTPUT} to ${OUTPUT}" >&2
-        rm -f "${OUTPUT}.part"
-        STATUS=4
+if [ "${WORK_OUTPUT}" != "${OUTPUT}" ]; then
+    if [ ${STATUS} -eq 0 ]; then
+        # copy under a temporary name, then rename: the final name only appears when the copy is complete
+        if cp "${WORK_OUTPUT}" "${OUTPUT}.part" && mv -f "${OUTPUT}.part" "${OUTPUT}"; then
+            echo "Copied output to ${OUTPUT}"
+        else
+            echo "ERROR: could not copy ${WORK_OUTPUT} to ${OUTPUT}" >&2
+            rm -f "${OUTPUT}.part"
+            STATUS=4
+        fi
     fi
+    # Remove the scratch copy (also after a failure): HTCondor transfers every new file left in the
+    # scratch directory back to the submit (job) directory, which would duplicate the output there
+    rm -f "${WORK_OUTPUT}" "${WORK_OUTPUT}.eventID_pass.tmp.root"
 fi
 
 echo "Finished at $(date) with exit code ${STATUS}"
