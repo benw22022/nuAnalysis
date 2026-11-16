@@ -139,7 +139,14 @@ i=0
 while [ $i -lt ${#ANALYSIS_ARGS[@]} ]; do
     arg=${ANALYSIS_ARGS[$i]}
     case "${arg}" in
-        --run|-r|--output|-o)
+        # Options of this script given after -- by mistake (e.g. "-- --cuts-config x.yaml -n") would be
+        # passed to ./analysis and every job would fail: stop here instead
+        -n|--dry-run|-h|--help|--only-missing|--overwrite|--no-proxy|-b|--build-dir|-w|--job-dir|\
+        --run-list|--output-dir|--lcg-setup|--flavour|--memory|--disk)
+            die "${arg} is an option of $(basename "$0"), but it comes after --, so it would be passed to ./analysis. Put it before the --" ;;
+        -o|-r)
+            die "${arg} comes after --, so it would be passed to ./analysis. Put it before the -- (the run list and output directory are options of $(basename "$0"))" ;;
+        --run|--output)
             die "do not pass ${arg} as an analysis argument: the run comes from the run list and the output from -o" ;;
         --input-dir|--aux-dir)
             die "${arg} is not supported by this script (jobs are one run number each)" ;;
