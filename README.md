@@ -106,9 +106,21 @@ On MC with categories (see below) there is also:
 - `categories`: name, type, LaTeX label, colour and expression of each category
 - `mc_category` in `nt` and `eventID_pass`: index of the event's category (-1: none, -2: more than one)
 
-## Batch submission 
+## Batch submission
 
-An example condor submission script can be found here `AnalysisZipFramework/submission/run_submission.sh`. This file, and `AnalysisZipFramework/submission/run_analysis.sh` need to be modified so that file paths align with your own.
+`AnalysisZipFramework/submission/run_submission.sh` submits one HTCondor job per run number (no paths to edit; it finds the repository from its own location):
+
+```bash
+cd AnalysisZipFramework/submission
+./run_submission.sh -o /path/to/output_v1                                   # runs in run_list.txt
+./run_submission.sh -o /path/to/mc_v1 -r mc_runs.txt -- --isMC -j 4        # analysis arguments after --
+./run_submission.sh -o /path/to/output_v1 --only-missing                    # resubmit failed / missing runs
+./run_submission.sh -o /path/to/output_v1 -n                                # dry run: checks only
+```
+
+Each job writes `<output_dir>/<run>.root`. Everything after `--` is passed to `./analysis` (`-j N` also sets `request_cpus`). Run with `-h` for all options (build directory, LCG setup, memory, job flavour, grid proxy, ...).
+
+Before submitting, the script checks that `build/config` matches `AnalysisZipFramework/config` (re-run `cmake` otherwise) and warns if sources are newer than the binary or the repository has uncommitted changes. For every submission it makes a job directory (default `<output_dir>/submission_<date>_<time>`) with a snapshot of the binary, `build/config` and any config passed as an argument (so rebuilding or editing configs does not affect running jobs), the run list, the generated submit file, `submission_info.txt` (command, git commit, binary checksum, ...), `git_diff.patch` for uncommitted changes, and the job logs. Jobs write to the worker node's scratch disk and copy the output only if `analysis` succeeded, so failed jobs leave no partial files.
 
 ## Cuts and histograms
 
