@@ -35,6 +35,7 @@ FLAVOUR="espresso"
 MEMORY_MB=8000      # measured peak ~6.5 GB on a data run, plus ~20% headroom
 DISK_MB=2000
 USE_PROXY=1
+PROXY=""            # default: ${SCRIPT_DIR}/x509up_u<uid> (shared filesystem, ignored by git)
 DRY_RUN=0
 ONLY_MISSING=0
 OVERWRITE=0
@@ -65,7 +66,10 @@ Options:
       --disk MB           request_disk in MB (default: ${DISK_MB})
       --only-missing      only submit runs whose output file does not exist yet (resubmission)
       --overwrite         submit even if output files already exist (they are replaced)
-      --no-proxy          do not create / use a grid proxy (x509)
+      --proxy FILE        grid proxy (x509) file, created with voms-proxy-init if missing or valid for
+                          less than 24 h. It must be on a shared filesystem the worker nodes can read
+                          (default: ${SCRIPT_DIR}/x509up_u<uid>)
+      --no-proxy          do not create / use a grid proxy
   -n, --dry-run           do all checks and print the first job, but submit nothing
   -h, --help              show this help
 
@@ -95,6 +99,7 @@ while [ $# -gt 0 ]; do
         --disk)          DISK_MB=${2:?"$1 needs a value"}; shift 2 ;;
         --only-missing)  ONLY_MISSING=1; shift ;;
         --overwrite)     OVERWRITE=1; shift ;;
+        --proxy)         PROXY=${2:?"$1 needs a value"}; shift 2 ;;
         --no-proxy)      USE_PROXY=0; shift ;;
         -n|--dry-run)    DRY_RUN=1; shift ;;
         -h|--help)       usage; exit 0 ;;
@@ -141,7 +146,7 @@ while [ $i -lt ${#ANALYSIS_ARGS[@]} ]; do
     case "${arg}" in
         # Options of this script given after -- by mistake (e.g. "-- --cuts-config x.yaml -n") would be
         # passed to ./analysis and every job would fail: stop here instead
-        -n|--dry-run|-h|--help|--only-missing|--overwrite|--no-proxy|-b|--build-dir|-w|--job-dir|\
+        -n|--dry-run|-h|--help|--only-missing|--overwrite|--no-proxy|--proxy|-b|--build-dir|-w|--job-dir|\
         --run-list|--output-dir|--lcg-setup|--flavour|--memory|--disk)
             die "${arg} is an option of $(basename "$0"), but it comes after --, so it would be passed to ./analysis. Put it before the --" ;;
         -o|-r)
@@ -198,9 +203,15 @@ fi
 
 # ── HTCondor and grid proxy ──────────────────────────────────────────────────
 command -v condor_submit > /dev/null || die "condor_submit not found (run this on a submission node)"
-PROXY=""
-if [ ${USE_PROXY} -eq 1 ]; then
-    PROXY=${X509_USER_PROXY:-/tmp/x509up_u$(id -u)}
+if [ ${USE_PROXY} -eq 0 ]; then
+    PROXY=""
+else
+    # The jobs fall back to this file if HTCondor's copy of the proxy is missing on the worker node
+    # (e.g. no file transfer on a shared filesystem), so it must be readable from the worker nodes
+    PROXY=$(realpath -m "${PROXY:-${SCRIPT_DIR}/x509up_u$(id -u)}")
+    case "${PROXY}" in
+        /tmp/*|/var/tmp/*) warn "the grid proxy ${PROXY} is in a local directory of this node: jobs may not be able to read it (use --proxy)" ;;
+    esac
     if voms-proxy-info -file "${PROXY}" -exists -valid 24:00 > /dev/null 2>&1; then
         echo "Using the existing grid proxy ${PROXY} (valid for more than 24 h)."
     elif [ ${DRY_RUN} -eq 1 ]; then
@@ -265,6 +276,7 @@ SUB="${JOB_DIR}/analysis.sub"
     if [ -n "${PROXY}" ]; then
         echo "use_x509userproxy = True"
         echo "x509userproxy  = ${PROXY}"
+        echo "environment    = \"X509_USER_PROXY_SHARED=${PROXY}\""
     fi
     echo ""
     echo "queue runNumber from ${JOB_DIR}/run_list.txt"
