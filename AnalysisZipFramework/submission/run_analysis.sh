@@ -37,6 +37,21 @@ if [ "${LCG_SETUP}" != "none" ]; then
 fi
 export ROOT_RDF_SNAPSHOT_INFO=0   # suppress RDataFrame snapshot info messages
 
+# Grid proxy (for xrootd input): HTCondor copies it into the job's sandbox and sets X509_USER_PROXY.
+# If that copy is missing (e.g. no file transfer on a shared filesystem), use the proxy file on the
+# shared filesystem that run_submission.sh passes in X509_USER_PROXY_SHARED
+if [ -n "${X509_USER_PROXY_SHARED:-}" ] && { [ -z "${X509_USER_PROXY:-}" ] || [ ! -f "${X509_USER_PROXY}" ]; }; then
+    echo "Grid proxy ${X509_USER_PROXY:-(X509_USER_PROXY not set)} not found, using ${X509_USER_PROXY_SHARED}"
+    export X509_USER_PROXY=${X509_USER_PROXY_SHARED}
+fi
+if [ -n "${X509_USER_PROXY:-}" ]; then
+    if [ -f "${X509_USER_PROXY}" ]; then
+        echo "Grid proxy:    ${X509_USER_PROXY}$(command -v voms-proxy-info > /dev/null && echo " (time left: $(voms-proxy-info -file "${X509_USER_PROXY}" -timeleft 2>/dev/null) s)")"
+    else
+        echo "WARNING: grid proxy ${X509_USER_PROXY} does not exist: reading files over xrootd will fail" >&2
+    fi
+fi
+
 # The binary reads its configs relative to the working directory (config/...)
 cd "${JOB_DIR}" || { echo "ERROR: cannot cd to ${JOB_DIR}" >&2; exit 3; }
 
