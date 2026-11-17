@@ -1149,11 +1149,13 @@ void Analysis::Run(TString outputFileName) {
         const std::string eventIDTmpFile = std::string(outputFileName.Data()) + ".eventID_pass.tmp.root";
         m_passedCutColNames.push_back("run");
         m_passedCutColNames.push_back("eventID");
-        m_passedCutColNames.push_back("truth_isCharm");
-        m_passedCutColNames.push_back("truth_isCharmDimuon");
-        m_passedCutColNames.push_back("nu_interaction_type");
-        m_passedCutColNames.push_back("n_matchedMuonTracks");
-        m_passedCutColNames.push_back("n_charmMatchedMuonTracks");
+        if (isMC){
+            m_passedCutColNames.push_back("truth_isCharm");
+            m_passedCutColNames.push_back("truth_isCharmDimuon");
+            m_passedCutColNames.push_back("nu_interaction_type");
+            m_passedCutColNames.push_back("n_matchedMuonTracks");
+            m_passedCutColNames.push_back("n_charmMatchedMuonTracks");
+        }
         if (useCategories()) m_passedCutColNames.push_back("mc_category");
         auto eventIDSnapshot = m_eventIDNode->Snapshot("eventID_pass", eventIDTmpFile, m_passedCutColNames, opts);
 

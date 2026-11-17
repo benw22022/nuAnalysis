@@ -4,6 +4,7 @@
 # is now done with the MC categories (config/categories.yaml), so one MC mode covers both.
 
 cd build
+cmake ../AnalysisZipFramework
 make
 
 # Each run appears once (two parallel jobs writing the same output file would corrupt it)

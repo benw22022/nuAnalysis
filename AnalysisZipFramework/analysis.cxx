@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     std::string fileConfigPath = "config/file_config.yaml";
     std::string grlConfigPath  = "config/grl_config.yaml";
     std::string outputConfigPath = "config/output_columns.yaml";
-    std::string cutsConfigPath   = "config/cuts.yaml";
+    std::string cutsConfigPath   = "config/cuts_muon_neutrino.yaml";
     std::string definitionsConfigPath = "config/definitions.yaml";
     std::string categoriesConfigPath  = "config/categories.yaml";
     // Alternative to --run: take all .root files in these directories (file config not used)
