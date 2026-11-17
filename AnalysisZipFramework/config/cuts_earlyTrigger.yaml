@@ -1,0 +1,93 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nuAnalysis selection config: cuts and histograms
+#
+# Histograms:            histograms booked on all events, before the first cut
+#   - <histogram>
+#
+# Cuts:                  applied in the order of this file
+#   <cut name>:          name in the cutflow; the eventID_pass flag is 'passed_<cut name>'
+#     expression:        RDataFrame filter expression (required)
+#     data_type:         ALL (default), DATA, MC or an MC category type (optional, see below)
+#     requires:          [conditions] (optional, see below)
+#     histograms:        [<histogram>, ...] booked after this cut (optional)
+#     n_minus_1:         [<histogram>, ...] N-1 histograms (optional, see below)
+#
+# <histogram>:
+#   name:       unique name of the histogram in the output file (required)
+#   title:      optional, defaults to the name
+#   data_type:  ALL (default), DATA, MC or an MC category type (optional)
+#   requires:   [conditions] (optional)
+#   split:      true (default) / false: on MC, also book one copy per MC category (categories.yaml)
+#   x:          {variable: <column>, bins: <n>, min: <low>, max: <high>}   fixed binning
+#           or  {variable: <column>, edges: [e0, e1, ..., eN]}            variable binning
+#   y:          same as x; if present the histogram is 2D (y vs x)
+#
+# data_type (for cuts and histograms):
+#   ALL     every sample
+#   DATA    data only
+#   MC      MC only
+# MC category types (only with MC categories in config/categories.yaml; event level, never on data):
+#   signal, background   events of the signal / background categories (background includes 'other')
+#   The MC truth selection (e.g. CC nu_mu in the fiducial volume) is done with the categories, not with cuts.
+#   other                events in no category
+#   <category name>      events of that category, e.g. NC_nu
+#   On a cut: the cut only applies to events of those categories, all other events pass it.
+#   On a histogram: filled only with events of those categories (and split into them).
+#
+# requires (for cuts and histograms): skipped (with an INFO / debug message) unless ALL are met
+#   reduced_charge          VetoNu reduced charge available (from aux files or the input NTuple)
+#   aux_reduced_charge      reduced charge taken from aux (waveform) files
+#   native_reduced_charge   reduced charge taken from branches in the input NTuple
+#   no_reduced_charge       reduced charge disabled (--no-reduced-charge)
+#
+# Histograms attached to a cut are booked at that point of the selection even if the cut
+# itself is not applied to the current sample: they only follow their own data_type/requires.
+# A histogram whose variable does not exist in the dataframe gives a WARNING and is not booked.
+#
+# N-1 histograms (n_minus_1): filled with the events that pass every OTHER cut applied to the
+# sample (before and after this one), i.e. only this cut is removed. Same options as <histogram>,
+# names unique together with all other histograms. Written to histograms/n_minus_1/ in the output.
+# Skipped if the cut itself is not applied to the sample. They do not change the cutflow.
+# On MC with categories, all histograms (incl. N-1) are also written per category, see
+# config/categories.yaml for the output structure. Use split: false for large histograms that
+# are not needed per category (each copy costs memory, more with -j).
+# Example:
+#   Track R at IFT < 95 mm:
+#     expression: "LeadTrack_rIFT < 95"
+#     n_minus_1:
+#       - name: LeadTrack_rIFT_Nminus1
+#         x: {variable: LeadTrack_rIFT, bins: 100, min: 0, max: 200}
+#
+# YAML tips: quote expressions (e.g. "!ExcludedTimes": an unquoted value starting with '!'
+# means something else in YAML); cut names can contain spaces and symbols but not ': '.
+#
+# Select a different config with: ./analysis --cuts-config <path>
+# ─────────────────────────────────────────────────────────────────────────────
+
+Histograms: []    # booked before the first cut
+
+Cuts:
+
+  Good times:
+    expression: "GoodTimes"
+    data_type: DATA
+
+  Excluded times:
+    expression: "!ExcludedTimes"
+    data_type: DATA
+
+  VetcNu0 one MiP signal:
+    expression: "VetoNu0_raw_charge < 150 && VetoNu0_raw_charge > 60"
+    data_type: DATA
+  
+  VetcNu1 one MiP signal:
+    expression: "VetoNu0_raw_charge < 150 && VetoNu0_raw_charge > 60"
+    data_type: DATA
+  
+  VetoNu layers in time:
+    expression: "abs(VetoNu0_bcidtime - VetoNu1_bcidtime) < 3"
+    data_type: DATA
+  
+  Early Veto Trigger:
+    expression: "Veto1_TriggeredEarly || Veto2_TriggeredEarly"
+    data_type: DATA
