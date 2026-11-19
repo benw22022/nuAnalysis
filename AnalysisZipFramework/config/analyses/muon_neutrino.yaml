@@ -34,16 +34,21 @@ file_configs:
 - ../files/mc/2024_calonu.yaml
 
 GRL:
-- ../grl_config.yaml
+- ../grl/grl_v10_physics.yaml
 
 Output:
-- ../output_columns.yaml
+- ../outputs/output_columns.yaml
 
 Definitions:
-- ../definitions.yaml
+- ../definitions/common_definitions.yaml
+- ../definitions/truth_definitions.yaml
+- reco_pseudorapidity:
+    expression: "getRecoPseudorapidity(LeadTrack_X_atVetoStation2, LeadTrack_Y_atVetoStation2, LeadTrack_X_atVetoNu, LeadTrack_Y_atVetoNu, crossingAngle)"
+- reco_qop:
+    expression: "LeadTrack_charge / SafeAt(Track_pz0, LeadTrack_Idx)"
 
 Categories:
-- ../categories.yaml
+- ../categories/muon_neutrino_categories.yaml/
 
 Cuts:
 - ../cuts_muon_neutrino.yaml

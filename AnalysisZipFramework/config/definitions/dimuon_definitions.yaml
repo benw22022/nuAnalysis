@@ -1,0 +1,101 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nuAnalysis definitions config: new columns defined at runtime
+#
+# Definitions:
+#   <column name>:       name of the new column (letters, digits and '_' only)
+#     expression:        RDataFrame Define expression (required), e.g. "LeadTrack_pz0 / 1000"
+#     data_type:         ALL (default), DATA or MC (optional)
+#     requires:          [conditions] (optional)
+#
+# Definitions are created in the order of this file, so each one can use the input branches,
+# the built-in columns (below) and the definitions above it.
+#
+# data_type (same meaning as in cuts.yaml):
+#   ALL     every sample
+#   DATA    data only
+#   MC      MC only (use this for truth variables)
+#
+# requires: skipped unless ALL are met
+#   reduced_charge          VetoNu reduced charge available (from aux files or the input NTuple)
+#   aux_reduced_charge      reduced charge taken from aux (waveform) files
+#   native_reduced_charge   reduced charge taken from branches in the input NTuple
+#   no_reduced_charge       reduced charge disabled (--no-reduced-charge)
+#
+# Built-in columns (defined in Analysis::BuildDataFrame before this file, can be used here):
+#   isCaloNuPeriod, is2024Period                         run periods (data and MC)
+#   BadVetoStatus, GoodVetoNuStatus                      scintillator status flags (data)
+#   Veto<N>_* aliases for old VetoSt<N>_* branches, Veto11_* -> Veto10_* fallback if no Veto11
+#   Calo<N>_*, Calo_total_* -> CaloLo<N>_*, CaloLo_total_* for 2024 data (dual calorimeter readout)
+#   VetoNu0/1_reduced_charge (from aux files), AuxLookupSuccess, TimingOK, GoodVeto2?Hit,
+#   GoodPreshower?Hit, GoodScintillatorStatus, validReducedVetoNu?Charge, fallbackVetoNu?Charge
+#   GoodTimes, ExcludedTimes                             GRL (data)
+#
+# Helper functions usable in expressions (SafeAt, Radius, Theta, inFaserNuBox, ...) are in
+# include/RDFDefines.h; add new C++ helper functions there if an expression gets complicated.
+#
+# YAML tips: quote expressions; an unquoted value starting with '!' is read as a YAML tag.
+# Long expressions can be split over several lines inside the quotes.
+#
+# Select a different config with: ./analysis --definitions-config <path>
+# ─────────────────────────────────────────────────────────────────────────────
+
+Definitions:
+
+  # ── Dimuon signal definitions ────────────────────────
+  is_charmedEvent:
+    expression: "containsCharmedHadron(truth_pdg)"
+    data_type: MC
+  
+  n_charmMatchedMuonTracks:
+    expression: "countCharmedMuonTracks(t_pdg, t_pdg_parent, t_truthHitRatio)"
+    data_type: MC
+
+  n_matchedMuonTracks:
+    expression: "countMuonTracks(t_pdg, t_truthHitRatio)"
+    data_type: MC
+
+  truth_isCharmDimuon:
+    expression: "is_CC_num && n_charmMatchedMuonTracks >= 1 && is_charmedEvent"
+    data_type: MC
+  
+  truth_isCharm:
+    expression: "is_charmedEvent && is_CC_num"
+    data_type: MC
+
+  # ── Tracks ───────────────────────────────────────────────────────────────────
+  # Leading track = highest pz track. LeadTrack_Idx = -1 if the event has no tracks.
+  # All LeadTrack_* variables use SafeAt, so events without a track get NaN and fail every
+  # lead-track cut instead of reading out of bounds (matters for the eventID_pass flags).
+  # Subleading track = second highest pz track. SubLeadTrack_Idx = -1 if the event has less than two tracks.
+  # All SubLeadTrack_* variables use SafeAt, so events without a subleading track get NaN and fail every
+  # subleading-track cut instead of reading out of bounds (matters for the eventID_pass flags).
+
+  SubLeadTrack_Idx:
+    expression: "Track_pz0.size() < 2 ? -1 : static_cast<int>(ROOT::VecOps::Argsort(Track_pz0)[Track_pz0.size() - 2])"
+
+  LeadSubLeadTrack_chargeProduct:
+    expression: "SafeAt(Track_charge, LeadTrack_Idx) * SafeAt(Track_charge, SubLeadTrack_Idx)"
+
+  SubLeadTrack_X_atVetoNu:
+    expression: "SafeAt(Track_X_atVetoNu, SubLeadTrack_Idx)"
+
+  SubLeadTrack_Y_atVetoNu:
+    expression: "SafeAt(Track_Y_atVetoNu, SubLeadTrack_Idx)"
+
+  SubLeadTrack_ThetaX_atVetoNu:
+    expression: "SafeAt(Track_ThetaX_atVetoNu, SubLeadTrack_Idx)"
+
+  SubLeadTrack_ThetaY_atVetoNu:
+    expression: "SafeAt(Track_ThetaY_atVetoNu, SubLeadTrack_Idx)"
+
+  LeadSubLeadTrack_ca_vars:
+    expression: "getTrackcCAVars(LeadTrack_X_atVetoNu, LeadTrack_Y_atVetoNu, LeadTrack_ThetaX_atVetoNu, LeadTrack_ThetaY_atVetoNu, SubLeadTrack_X_atVetoNu, SubLeadTrack_Y_atVetoNu, SubLeadTrack_ThetaX_atVetoNu, SubLeadTrack_ThetaY_atVetoNu)"
+
+  LeadSubLeadTrack_zca_avg:
+    expression: "LeadSubLeadTrack_ca_vars[0]"
+
+  LeadSubLeadTrack_zca_abs:
+    expression: "LeadSubLeadTrack_ca_vars[1]"
+
+  LeadSubLeadTrack_distance:
+    expression: "LeadSubLeadTrack_ca_vars[2]"

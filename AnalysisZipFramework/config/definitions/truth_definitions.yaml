@@ -1,0 +1,103 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nuAnalysis definitions config: new columns defined at runtime
+#
+# Definitions:
+#   <column name>:       name of the new column (letters, digits and '_' only)
+#     expression:        RDataFrame Define expression (required), e.g. "LeadTrack_pz0 / 1000"
+#     data_type:         ALL (default), DATA or MC (optional)
+#     requires:          [conditions] (optional)
+#
+# Definitions are created in the order of this file, so each one can use the input branches,
+# the built-in columns (below) and the definitions above it.
+#
+# data_type (same meaning as in cuts.yaml):
+#   ALL     every sample
+#   DATA    data only
+#   MC      MC only (use this for truth variables)
+#
+# requires: skipped unless ALL are met
+#   reduced_charge          VetoNu reduced charge available (from aux files or the input NTuple)
+#   aux_reduced_charge      reduced charge taken from aux (waveform) files
+#   native_reduced_charge   reduced charge taken from branches in the input NTuple
+#   no_reduced_charge       reduced charge disabled (--no-reduced-charge)
+#
+# Built-in columns (defined in Analysis::BuildDataFrame before this file, can be used here):
+#   isCaloNuPeriod, is2024Period                         run periods (data and MC)
+#   BadVetoStatus, GoodVetoNuStatus                      scintillator status flags (data)
+#   Veto<N>_* aliases for old VetoSt<N>_* branches, Veto11_* -> Veto10_* fallback if no Veto11
+#   Calo<N>_*, Calo_total_* -> CaloLo<N>_*, CaloLo_total_* for 2024 data (dual calorimeter readout)
+#   VetoNu0/1_reduced_charge (from aux files), AuxLookupSuccess, TimingOK, GoodVeto2?Hit,
+#   GoodPreshower?Hit, GoodScintillatorStatus, validReducedVetoNu?Charge, fallbackVetoNu?Charge
+#   GoodTimes, ExcludedTimes                             GRL (data)
+#
+# Helper functions usable in expressions (SafeAt, Radius, Theta, inFaserNuBox, ...) are in
+# include/RDFDefines.h; add new C++ helper functions there if an expression gets complicated.
+#
+# YAML tips: quote expressions; an unquoted value starting with '!' is read as a YAML tag.
+# Long expressions can be split over several lines inside the quotes.
+#
+# Select a different config with: ./analysis --definitions-config <path>
+# ─────────────────────────────────────────────────────────────────────────────
+
+Definitions:
+
+  # ── MC truth ([0] is the incoming neutrino; SafeAt guards against empty truth vectors) ──
+  truth_dec_r:
+    expression: "Radius(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0))"
+    data_type: MC
+
+  nu_interaction_type:
+    expression: "getNeutrinoInteractionType(truth_pdg, truth_dec_z, truth_prod_z)"
+    data_type: MC
+
+  is_cc:
+    expression: "nu_interaction_type > 0"
+    data_type: MC
+
+  is_nc:
+    expression: "nu_interaction_type == 0"
+    data_type: MC
+
+  is_CC_nue:
+    expression: "nu_interaction_type == 1 || nu_interaction_type == 4"
+    data_type: MC
+
+  is_CC_num:
+    expression: "nu_interaction_type == 2 || nu_interaction_type == 5"
+    data_type: MC
+  
+  is_CC_nut:
+    expression: "nu_interaction_type == 3 || nu_interaction_type == 6"
+    data_type: MC
+
+  decay_box:
+    expression: "inFaserNuBox(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0), SafeAt(truth_dec_z, 0))"
+    data_type: MC
+
+  decay_lead:
+    expression: "inLeadBlock(SafeAt(truth_dec_x, 0), SafeAt(truth_dec_y, 0), SafeAt(truth_dec_z, 0))"
+    data_type: MC
+
+  inCaloNuPMT:    # always cut on in MC (material mismodelling); NaN-safe, also defined for data
+    expression: "inCaloNuPMT(SafeAt(truth_dec_z, 0))"
+    data_type: MC
+
+  truth_pz_nu:    # GeV
+    expression: "SafeAt(truth_pz, 0) / 1000"
+    data_type: MC
+
+  truth_dec_x_nu:
+    expression: "SafeAt(truth_dec_x, 0)"
+    data_type: MC
+
+  truth_dec_y_nu:
+    expression: "SafeAt(truth_dec_y, 0)"
+    data_type: MC
+
+  truth_dec_z_nu:
+    expression: "SafeAt(truth_dec_z, 0)"
+    data_type: MC
+
+  truth_nu_E_GeV:
+    expression: "SafeAt(truth_P, 0) / 1000"
+    data_type: MC

@@ -25,24 +25,23 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 file_configs:
-- ../files/backward/2022.yaml
-- ../files/backward/2023.yaml
-- ../files/backward/2024.yaml
 - ../files/mc/2022_23.yaml
 - ../files/mc/2024_fasernu.yaml
 - ../files/mc/2024_calonu.yaml
 
 GRL:
-- ../grl_config.yaml
+- ../grl/grl_v10_physics.yaml
 
 Output:
-- ../output_columns.yaml
+- ../outputs/output_columns.yaml
 
 Definitions:
-- ../definitions.yaml
+- ../definitions/common_definitions.yaml
+- ../definitions/truth_definitions.yaml
+- ../definitions/dimuon_definitions.yaml
 
 Categories:
-- ../categories.yaml
+- ../categories/dimuon_categories.yaml
 
 Cuts:
-- ../cuts_dimuon_full.yaml
+- ../cuts/cuts_dimuon_full.yaml
