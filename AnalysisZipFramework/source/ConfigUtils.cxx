@@ -4,11 +4,38 @@
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
+#include <fstream>
 #include <set>
+#include <sstream>
 #include <fnmatch.h>
 #include <regex>
 
 namespace ConfigUtils {
+
+    namespace {
+        std::string lineOf(const YAML::Node& n) { return " (line " + std::to_string(n.Mark().line + 1) + ")"; }
+        std::string toUpper(std::string s) { std::transform(s.begin(), s.end(), s.begin(), ::toupper); return s; }
+        std::string toLower(std::string s) { std::transform(s.begin(), s.end(), s.begin(), ::tolower); return s; }
+
+        std::string readText(const std::string& path) {
+            std::ifstream in(path);
+            std::stringstream ss;
+            ss << in.rdbuf();
+            return ss.str();
+        }
+
+        // For "defined more than once" errors: where the first definition is
+        std::string alsoIn(const std::string& first, const std::string& current) {
+            return first != current ? " (also in " + first + ")" : " (twice in this file, or this file is listed more than once)";
+        }
+
+        // A config file must contain a map (or nothing)
+        void requireMapOrEmpty(const ConfigPart& p) {
+            if (p.isFile && !p.node.IsNull() && !p.node.IsMap()) {
+                throw std::runtime_error(p.origin + ": expected a YAML map at the top level of the file");
+            }
+        }
+    }
 
     YAML::Node loadYAML(const std::string& path) {
         if (!std::filesystem::exists(path)) {
@@ -36,87 +63,128 @@ namespace ConfigUtils {
         }
     }
 
+    // ── Config parts ────────────────────────────────────────────────────────
+    ConfigPart configFilePart(const std::string& path) {
+        ConfigPart part;
+        part.node   = loadYAML(path);
+        part.origin = path;
+        part.isFile = true;
+        part.text   = readText(path);
+        return part;
+    }
+
+    std::string describeParts(const std::vector<ConfigPart>& parts) {
+        if (parts.empty()) return "(none)";
+        std::string out;
+        for (const auto& p : parts) out += (out.empty() ? "" : " + ") + (p.isFile ? p.origin : "<inline entry>");
+        return out;
+    }
+
     // ── GRL config ──────────────────────────────────────────────────────────
-    GRLConfig readGRLConfig(const std::string& configPath) {
-        INFO("Reading GRL config from ", configPath, "...");
-        const YAML::Node root = loadYAML(configPath);
-        warnUnknownKeys(root, {"grl_jsons", "grl_csvs"}, configPath);
+    GRLConfig readGRLConfig(const std::string& configPath) { return readGRLConfig({configFilePart(configPath)}); }
 
+    GRLConfig readGRLConfig(const std::vector<ConfigPart>& parts) {
         GRLConfig config;
-        config.grlJsons = getRequired<std::vector<std::string>>(root, "grl_jsons", configPath);
-        config.grlCsvs  = getRequired<std::vector<std::string>>(root, "grl_csvs",  configPath);
-
-        INFO("Read GRL config: ", config.grlJsons.size(), " JSON files, ", config.grlCsvs.size(), " CSV files.");
+        for (const auto& p : parts) {
+            INFO("Reading GRL config from ", p.origin, "...");
+            if (!p.node.IsMap()) throw std::runtime_error(p.origin + ": expected a map with grl_jsons and/or grl_csvs" + lineOf(p.node));
+            warnUnknownKeys(p.node, {"grl_jsons", "grl_csvs"}, p.origin);
+            const auto jsons = getOptional<std::vector<std::string>>(p.node, "grl_jsons", {}, p.origin);
+            const auto csvs  = getOptional<std::vector<std::string>>(p.node, "grl_csvs",  {}, p.origin);
+            if (jsons.empty() && csvs.empty()) WARNING(p.origin, ": no grl_jsons or grl_csvs given");
+            config.grlJsons.insert(config.grlJsons.end(), jsons.begin(), jsons.end());
+            config.grlCsvs.insert(config.grlCsvs.end(), csvs.begin(), csvs.end());
+        }
+        INFO("GRL config: ", config.grlJsons.size(), " JSON files, ", config.grlCsvs.size(), " CSV files.");
         return config;
     }
 
     // ── File config ─────────────────────────────────────────────────────────
-    FileConfig readFileConfig(const std::string& configPath) {
-        INFO("Reading file config from ", configPath, "...");
-        const YAML::Node root = loadYAML(configPath);
-        warnUnknownKeys(root, {"runs"}, configPath);
+    FileConfig readFileConfig(const std::string& configPath) { return readFileConfig({configFilePart(configPath)}); }
 
-        const YAML::Node runs = root["runs"];
-        if (!runs || !runs.IsMap()) {
-            throw std::runtime_error(configPath + ": expected a 'runs:' map of run number -> {data_paths, waveform_paths}");
-        }
-
+    FileConfig readFileConfig(const std::vector<ConfigPart>& parts) {
         FileConfig fileConfig;
-        for (const auto& kv : runs) {
-            int runNumber;
-            try {
-                runNumber = kv.first.as<int>();
-            } catch (const YAML::Exception&) {
-                throw std::runtime_error(configPath + ": run key '" + kv.first.as<std::string>() + "' (line " +
-                                         std::to_string(kv.first.Mark().line + 1) + ") is not an integer run number");
+        std::map<int, std::string> origins;   // where each run was defined (for the duplicate error)
+        for (const auto& p : parts) {
+            INFO("Reading file config from ", p.origin, "...");
+            requireMapOrEmpty(p);
+            YAML::Node runs = p.node;           // inline entry: run number -> {data_paths, waveform_paths}
+            if (p.isFile) {
+                warnUnknownKeys(p.node, {"runs"}, p.origin);
+                runs = p.node["runs"];
+            }
+            if (!runs || !runs.IsMap()) {
+                throw std::runtime_error(p.origin + ": expected " + (p.isFile ? "a 'runs:' map of " : "a map of ") +
+                                         "run number -> {data_paths, waveform_paths}");
             }
 
-            const std::string context = configPath + ": run " + std::to_string(runNumber);
-            if (fileConfig.count(runNumber)) {
-                throw std::runtime_error(context + " is defined more than once");
-            }
+            for (const auto& kv : runs) {
+                int runNumber;
+                try {
+                    runNumber = kv.first.as<int>();
+                } catch (const YAML::Exception&) {
+                    throw std::runtime_error(p.origin + ": run key '" + kv.first.as<std::string>() + "'" + lineOf(kv.first) +
+                                             " is not an integer run number");
+                }
 
-            const YAML::Node& cfg = kv.second;
-            if (!cfg.IsMap()) {
-                throw std::runtime_error(context + ": expected a map with data_paths / waveform_paths");
-            }
-            warnUnknownKeys(cfg, {"data_paths", "waveform_paths"}, context);
+                const std::string context = p.origin + ": run " + std::to_string(runNumber);
+                if (fileConfig.count(runNumber)) {
+                    throw std::runtime_error(context + lineOf(kv.first) + " is defined more than once" +
+                                             alsoIn(origins[runNumber], p.origin));
+                }
 
-            RunFiles files;
-            files.dataPaths     = getRequired<std::vector<std::string>>(cfg, "data_paths", context);
-            files.waveformPaths = getOptional<std::vector<std::string>>(cfg, "waveform_paths", {}, context);
+                const YAML::Node& cfg = kv.second;
+                if (!cfg.IsMap()) {
+                    throw std::runtime_error(context + ": expected a map with data_paths / waveform_paths");
+                }
+                warnUnknownKeys(cfg, {"data_paths", "waveform_paths"}, context);
 
-            if (files.dataPaths.empty()) {
-                throw std::runtime_error(context + ": data_paths is empty");
+                RunFiles files;
+                files.dataPaths     = getRequired<std::vector<std::string>>(cfg, "data_paths", context);
+                files.waveformPaths = getOptional<std::vector<std::string>>(cfg, "waveform_paths", {}, context);
+
+                if (files.dataPaths.empty()) {
+                    throw std::runtime_error(context + ": data_paths is empty");
+                }
+                fileConfig[runNumber] = files;
+                origins[runNumber] = p.origin;
             }
-            fileConfig[runNumber] = files;
         }
-
-        INFO("Read file config: ", fileConfig.size(), " runs.");
+        INFO("File config: ", fileConfig.size(), " runs.");
         return fileConfig;
     }
 
     // ── Output columns config ───────────────────────────────────────────────
     OutputColumnsConfig readOutputColumnsConfig(const std::string& configPath) {
-        INFO("Reading output columns config from ", configPath, "...");
-        const YAML::Node root = loadYAML(configPath);
-        warnUnknownKeys(root, {"nt"}, configPath);
+        return readOutputColumnsConfig(std::vector<ConfigPart>{configFilePart(configPath)});
+    }
 
-        const YAML::Node nt = root["nt"];
-        if (!nt || !nt.IsMap()) {
-            throw std::runtime_error(configPath + ": expected an 'nt:' map (settings for the output nt tree)");
-        }
-        const std::string context = configPath + ": nt";
-        warnUnknownKeys(nt, {"save_all_input_columns", "save_all_defined_columns", "keep", "keep_mc", "keep_data", "drop"}, context);
-
+    OutputColumnsConfig readOutputColumnsConfig(const std::vector<ConfigPart>& parts) {
         OutputColumnsConfig config;
-        config.saveAllInputColumns   = getOptional<bool>(nt, "save_all_input_columns",   false, context);
-        config.saveAllDefinedColumns = getOptional<bool>(nt, "save_all_defined_columns", false, context);
-        config.keep     = getOptional<std::vector<std::string>>(nt, "keep",      {}, context);
-        config.keepMC   = getOptional<std::vector<std::string>>(nt, "keep_mc",   {}, context);
-        config.keepData = getOptional<std::vector<std::string>>(nt, "keep_data", {}, context);
-        config.drop     = getOptional<std::vector<std::string>>(nt, "drop",      {}, context);
-        config.sourcePath = configPath;
+        for (const auto& p : parts) {
+            INFO("Reading output columns config from ", p.origin, "...");
+            requireMapOrEmpty(p);
+            YAML::Node nt = p.node;             // inline entry: the settings of the nt tree
+            if (p.isFile) {
+                warnUnknownKeys(p.node, {"nt"}, p.origin);
+                nt = p.node["nt"];
+            }
+            if (!nt || !nt.IsMap()) {
+                throw std::runtime_error(p.origin + (p.isFile ? ": expected an 'nt:' map (settings for the output nt tree)"
+                                                              : ": expected the settings of the nt tree (save_all_input_columns, keep, ...)"));
+            }
+            const std::string context = p.origin + (p.isFile ? ": nt" : "");
+            warnUnknownKeys(nt, {"save_all_input_columns", "save_all_defined_columns", "keep", "keep_mc", "keep_data", "drop"}, context);
+
+            config.saveAllInputColumns   = config.saveAllInputColumns   || getOptional<bool>(nt, "save_all_input_columns",   false, context);
+            config.saveAllDefinedColumns = config.saveAllDefinedColumns || getOptional<bool>(nt, "save_all_defined_columns", false, context);
+            for (auto [key, list] : {std::pair{"keep", &config.keep}, {"keep_mc", &config.keepMC},
+                                     {"keep_data", &config.keepData}, {"drop", &config.drop}}) {
+                const auto entries = getOptional<std::vector<std::string>>(nt, key, {}, context);
+                list->insert(list->end(), entries.begin(), entries.end());
+            }
+        }
+        config.sourcePath = describeParts(parts);
 
         INFO("Output columns config: save_all_input_columns=", config.saveAllInputColumns,
              ", save_all_defined_columns=", config.saveAllDefinedColumns,
@@ -137,10 +205,6 @@ namespace ConfigUtils {
     }
 
     namespace {
-        std::string lineOf(const YAML::Node& n) { return " (line " + std::to_string(n.Mark().line + 1) + ")"; }
-
-        std::string toUpper(std::string s) { std::transform(s.begin(), s.end(), s.begin(), ::toupper); return s; }
-        std::string toLower(std::string s) { std::transform(s.begin(), s.end(), s.begin(), ::tolower); return s; }
 
         // ALL, DATA, MC (any case, returned upper case) or, if allowed, an MC category
         // data type: signal / background / other (any case, returned lower case) or a category name (exact)
@@ -232,24 +296,36 @@ namespace ConfigUtils {
     }
 
     SelectionConfig readSelectionConfig(const std::string& configPath, const std::vector<std::string>& categoryTypes) {
-        INFO("Reading selection (cuts and histograms) config from ", configPath, "...");
-        const YAML::Node root = loadYAML(configPath);
-        warnUnknownKeys(root, {"Cuts", "Histograms"}, configPath);
+        return readSelectionConfig(std::vector<ConfigPart>{configFilePart(configPath)}, categoryTypes);
+    }
 
+    SelectionConfig readSelectionConfig(const std::vector<ConfigPart>& parts, const std::vector<std::string>& categoryTypes) {
         SelectionConfig config;
-        config.sourcePath = configPath;
-        std::set<std::string> histNames;
-        config.histograms = readHistograms(root["Histograms"], configPath + ": Histograms", histNames, categoryTypes);
-
-        const YAML::Node cuts = root["Cuts"];
-        if (cuts && !cuts.IsNull()) {
-            if (!cuts.IsMap()) throw std::runtime_error(configPath + ": 'Cuts' must be a map of <cut name>: {expression, ...}" + lineOf(cuts));
-            std::set<std::string> cutNames;
+        config.sourcePath = describeParts(parts);
+        std::set<std::string> histNames;                 // unique across all parts
+        std::map<std::string, std::string> cutOrigins;   // cut name -> where it was defined
+        for (const auto& p : parts) {
+            INFO("Reading selection (cuts and histograms) config from ", p.origin, "...");
+            requireMapOrEmpty(p);
+            YAML::Node cuts = p.node;                    // inline entry: <cut name>: {expression, ...}
+            if (p.isFile) {
+                warnUnknownKeys(p.node, {"Cuts", "Histograms"}, p.origin);
+                const auto hists = readHistograms(p.node["Histograms"], p.origin + ": Histograms", histNames, categoryTypes);
+                config.histograms.insert(config.histograms.end(), hists.begin(), hists.end());
+                cuts = p.node["Cuts"];
+            }
+            if (!cuts || cuts.IsNull()) continue;
+            if (!cuts.IsMap()) throw std::runtime_error(p.origin + ": " + (p.isFile ? "'Cuts' must be " : "expected ") +
+                                                        "a map of <cut name>: {expression, ...}" + lineOf(cuts));
             for (const auto& kv : cuts) {   // yaml-cpp keeps the order of the file
                 CutConfig cut;
                 cut.name = kv.first.as<std::string>();
-                const std::string ctx = configPath + ": cut '" + cut.name + "'";
-                if (!cutNames.insert(cut.name).second) throw std::runtime_error(ctx + lineOf(kv.first) + " is defined more than once");
+                const std::string ctx = p.origin + ": cut '" + cut.name + "'";
+                if (cutOrigins.count(cut.name)) {
+                    throw std::runtime_error(ctx + lineOf(kv.first) + " is defined more than once" +
+                                             alsoIn(cutOrigins[cut.name], p.origin));
+                }
+                cutOrigins[cut.name] = p.origin;
                 const YAML::Node& c = kv.second;
                 if (!c.IsMap()) throw std::runtime_error(ctx + ": expected a map with at least 'expression'" + lineOf(c));
                 warnUnknownKeys(c, {"expression", "data_type", "requires", "histograms", "n_minus_1"}, ctx);
@@ -265,108 +341,221 @@ namespace ConfigUtils {
             }
         }
 
-        INFO("Read selection config: ", config.cuts.size(), " cuts, ", histNames.size(), " histograms (",
+        INFO("Selection config: ", config.cuts.size(), " cuts, ", histNames.size(), " histograms (",
              config.histograms.size(), " before the first cut).");
         return config;
     }
 
     // ── Definitions config ──────────────────────────────────────────────────
     DefinitionsConfig readDefinitionsConfig(const std::string& configPath) {
-        INFO("Reading definitions config from ", configPath, "...");
-        const YAML::Node root = loadYAML(configPath);
-        warnUnknownKeys(root, {"Definitions"}, configPath);
+        return readDefinitionsConfig(std::vector<ConfigPart>{configFilePart(configPath)});
+    }
 
+    DefinitionsConfig readDefinitionsConfig(const std::vector<ConfigPart>& parts) {
         DefinitionsConfig config;
-        config.sourcePath = configPath;
-        const YAML::Node defs = root["Definitions"];
-        if (!defs || defs.IsNull()) {
-            WARNING(configPath, ": no 'Definitions' found, no columns will be defined from this file.");
-            return config;
-        }
-        if (!defs.IsMap()) throw std::runtime_error(configPath + ": 'Definitions' must be a map of <column name>: {expression, ...}" + lineOf(defs));
-
+        config.sourcePath = describeParts(parts);
         static const std::regex identifier("^[A-Za-z_][A-Za-z0-9_]*$");
-        std::set<std::string> names;
-        for (const auto& kv : defs) {   // yaml-cpp keeps the order of the file
-            DefinitionConfig d;
-            d.name = kv.first.as<std::string>();
-            const std::string ctx = configPath + ": definition '" + d.name + "'";
-            if (!std::regex_match(d.name, identifier)) {
-                throw std::runtime_error(ctx + lineOf(kv.first) + ": the name must be a valid C++ identifier (letters, digits, '_'; not starting with a digit), because expressions refer to columns by name");
+        std::map<std::string, std::string> origins;   // name -> where it was defined
+        for (const auto& p : parts) {
+            INFO("Reading definitions config from ", p.origin, "...");
+            requireMapOrEmpty(p);
+            YAML::Node defs = p.node;                 // inline entry: <column name>: {expression, ...}
+            if (p.isFile) {
+                warnUnknownKeys(p.node, {"Definitions"}, p.origin);
+                defs = p.node["Definitions"];
+                if (!defs || defs.IsNull()) {
+                    WARNING(p.origin, ": no 'Definitions' found, no columns will be defined from this file.");
+                    continue;
+                }
             }
-            if (!names.insert(d.name).second) throw std::runtime_error(ctx + lineOf(kv.first) + " is defined more than once");
-            const YAML::Node& c = kv.second;
-            if (!c.IsMap()) throw std::runtime_error(ctx + ": expected a map with at least 'expression'" + lineOf(c));
-            warnUnknownKeys(c, {"expression", "data_type", "requires"}, ctx);
-            d.expression = getRequired<std::string>(c, "expression", ctx);
-            if (d.expression.find_first_not_of(" \t\n") == std::string::npos) {
-                throw std::runtime_error(ctx + ": expression is empty" + lineOf(c["expression"]));
+            if (!defs.IsMap()) throw std::runtime_error(p.origin + ": " + (p.isFile ? "'Definitions' must be " : "expected ") +
+                                                        "a map of <column name>: {expression, ...}" + lineOf(defs));
+
+            for (const auto& kv : defs) {   // yaml-cpp keeps the order of the file
+                DefinitionConfig d;
+                d.name   = kv.first.as<std::string>();
+                d.origin = p.origin;
+                const std::string ctx = p.origin + ": definition '" + d.name + "'";
+                if (!std::regex_match(d.name, identifier)) {
+                    throw std::runtime_error(ctx + lineOf(kv.first) + ": the name must be a valid C++ identifier (letters, digits, '_'; not starting with a digit), because expressions refer to columns by name");
+                }
+                if (origins.count(d.name)) {
+                    throw std::runtime_error(ctx + lineOf(kv.first) + " is defined more than once" +
+                                             alsoIn(origins[d.name], p.origin));
+                }
+                origins[d.name] = p.origin;
+                const YAML::Node& c = kv.second;
+                if (!c.IsMap()) throw std::runtime_error(ctx + ": expected a map with at least 'expression'" + lineOf(c));
+                warnUnknownKeys(c, {"expression", "data_type", "requires"}, ctx);
+                d.expression = getRequired<std::string>(c, "expression", ctx);
+                if (d.expression.find_first_not_of(" \t\n") == std::string::npos) {
+                    throw std::runtime_error(ctx + ": expression is empty" + lineOf(c["expression"]));
+                }
+                d.dataType     = readDataType(c, ctx);
+                d.requirements = readRequires(c, ctx);
+                config.definitions.push_back(d);
             }
-            d.dataType     = readDataType(c, ctx);
-            d.requirements = readRequires(c, ctx);
-            config.definitions.push_back(d);
         }
-        INFO("Read definitions config: ", config.definitions.size(), " definitions.");
+        INFO("Definitions config: ", config.definitions.size(), " definitions.");
         return config;
     }
 
     // ── MC categories config ────────────────────────────────────────────────
     CategoriesConfig readCategoriesConfig(const std::string& configPath) {
-        INFO("Reading MC categories config from ", configPath, "...");
-        const YAML::Node root = loadYAML(configPath);
-        warnUnknownKeys(root, {"Categories"}, configPath);
+        return readCategoriesConfig(std::vector<ConfigPart>{configFilePart(configPath)});
+    }
 
+    CategoriesConfig readCategoriesConfig(const std::vector<ConfigPart>& parts) {
         CategoriesConfig config;
-        config.sourcePath = configPath;
-        const YAML::Node cats = root["Categories"];
-        if (!cats || cats.IsNull()) {
-            INFO(configPath, ": no 'Categories': histograms and cutflows will not be split by MC category.");
-            return config;
-        }
-        if (!cats.IsMap()) throw std::runtime_error(configPath + ": 'Categories' must be a map of <category name>: {expression, type, ...}" + lineOf(cats));
-
+        config.sourcePath = describeParts(parts);
         static const std::regex identifier("^[A-Za-z_][A-Za-z0-9_]*$");
         // Data type keywords and output directory names
         static const std::vector<std::string> reserved{"ALL", "DATA", "MC", "SIGNAL", "BACKGROUND", "OTHER", "N_MINUS_1"};
-        std::set<std::string> names;
+        std::map<std::string, std::string> origins;   // name -> where it was defined
         std::size_t nSignal = 0;
-        for (const auto& kv : cats) {   // yaml-cpp keeps the order of the file
-            CategoryConfig c;
-            c.name = kv.first.as<std::string>();
-            const std::string ctx = configPath + ": category '" + c.name + "'";
-            if (!std::regex_match(c.name, identifier)) {
-                throw std::runtime_error(ctx + lineOf(kv.first) + ": the name must be a valid C++ identifier (letters, digits, '_'; not starting with a digit), "
-                                         "it is used for the flag column category_<name> and as a directory name in the output");
+        for (const auto& p : parts) {
+            INFO("Reading MC categories config from ", p.origin, "...");
+            requireMapOrEmpty(p);
+            YAML::Node cats = p.node;                 // inline entry: <category name>: {expression, type, ...}
+            if (p.isFile) {
+                warnUnknownKeys(p.node, {"Categories"}, p.origin);
+                cats = p.node["Categories"];
+                if (!cats || cats.IsNull()) {
+                    INFO(p.origin, ": no 'Categories' in this file.");
+                    continue;
+                }
             }
-            if (std::find(reserved.begin(), reserved.end(), toUpper(c.name)) != reserved.end()) {
-                throw std::runtime_error(ctx + lineOf(kv.first) + ": '" + c.name + "' is a reserved name (ALL, DATA, MC, signal, background, other, n_minus_1)");
+            if (!cats.IsMap()) throw std::runtime_error(p.origin + ": " + (p.isFile ? "'Categories' must be " : "expected ") +
+                                                        "a map of <category name>: {expression, type, ...}" + lineOf(cats));
+
+            for (const auto& kv : cats) {   // yaml-cpp keeps the order of the file
+                CategoryConfig c;
+                c.name   = kv.first.as<std::string>();
+                c.origin = p.origin;
+                const std::string ctx = p.origin + ": category '" + c.name + "'";
+                if (!std::regex_match(c.name, identifier)) {
+                    throw std::runtime_error(ctx + lineOf(kv.first) + ": the name must be a valid C++ identifier (letters, digits, '_'; not starting with a digit), "
+                                             "it is used for the flag column category_<name> and as a directory name in the output");
+                }
+                if (std::find(reserved.begin(), reserved.end(), toUpper(c.name)) != reserved.end()) {
+                    throw std::runtime_error(ctx + lineOf(kv.first) + ": '" + c.name + "' is a reserved name (ALL, DATA, MC, signal, background, other, n_minus_1)");
+                }
+                if (origins.count(c.name)) {
+                    throw std::runtime_error(ctx + lineOf(kv.first) + " is defined more than once" +
+                                             alsoIn(origins[c.name], p.origin));
+                }
+                origins[c.name] = p.origin;
+                const YAML::Node& v = kv.second;
+                if (!v.IsMap()) throw std::runtime_error(ctx + ": expected a map with at least 'expression' and 'type'" + lineOf(v));
+                warnUnknownKeys(v, {"expression", "type", "latex", "colour"}, ctx);
+                c.expression = getRequired<std::string>(v, "expression", ctx);
+                if (c.expression.find_first_not_of(" \t\n") == std::string::npos) {
+                    throw std::runtime_error(ctx + ": expression is empty" + lineOf(v["expression"]));
+                }
+                c.type = toLower(getRequired<std::string>(v, "type", ctx));
+                if (c.type != "signal" && c.type != "background") {
+                    throw std::runtime_error(ctx + ": type '" + c.type + "'" + lineOf(v["type"]) + " must be signal or background");
+                }
+                if (c.type == "signal") ++nSignal;
+                c.latex  = getOptional<std::string>(v, "latex", c.name, ctx);
+                c.colour = getOptional<std::string>(v, "colour", "", ctx);
+                // In double quotes YAML reads \t, \n, \b, ... as escapes, e.g. "$\nu_\tau$" -> newline + "u_" + tab + "au"
+                if (std::any_of(c.latex.begin(), c.latex.end(), [](char ch) { return static_cast<unsigned char>(ch) < 0x20; })) {
+                    throw std::runtime_error(ctx + ": latex" + lineOf(v["latex"]) + " contains a tab or newline. In double quotes YAML reads \\t, \\n, \\b, ... "
+                                             "as escape sequences (e.g. \\tau, \\nu, \\bar). Use single quotes: latex: 'CC $\\nu_\\tau$'");
+                }
+                config.categories.push_back(c);
             }
-            if (!names.insert(c.name).second) throw std::runtime_error(ctx + lineOf(kv.first) + " is defined more than once");
-            const YAML::Node& v = kv.second;
-            if (!v.IsMap()) throw std::runtime_error(ctx + ": expected a map with at least 'expression' and 'type'" + lineOf(v));
-            warnUnknownKeys(v, {"expression", "type", "latex", "colour"}, ctx);
-            c.expression = getRequired<std::string>(v, "expression", ctx);
-            if (c.expression.find_first_not_of(" \t\n") == std::string::npos) {
-                throw std::runtime_error(ctx + ": expression is empty" + lineOf(v["expression"]));
-            }
-            c.type = toLower(getRequired<std::string>(v, "type", ctx));
-            if (c.type != "signal" && c.type != "background") {
-                throw std::runtime_error(ctx + ": type '" + c.type + "'" + lineOf(v["type"]) + " must be signal or background");
-            }
-            if (c.type == "signal") ++nSignal;
-            c.latex  = getOptional<std::string>(v, "latex", c.name, ctx);
-            c.colour = getOptional<std::string>(v, "colour", "", ctx);
-            // In double quotes YAML reads \t, \n, \b, ... as escapes, e.g. "$\nu_\tau$" -> newline + "u_" + tab + "au"
-            if (std::any_of(c.latex.begin(), c.latex.end(), [](char ch) { return static_cast<unsigned char>(ch) < 0x20; })) {
-                throw std::runtime_error(ctx + ": latex" + lineOf(v["latex"]) + " contains a tab or newline. In double quotes YAML reads \\t, \\n, \\b, ... "
-                                         "as escape sequences (e.g. \\tau, \\nu, \\bar). Use single quotes: latex: 'CC $\\nu_\\tau$'");
-            }
-            config.categories.push_back(c);
         }
         // Categories are combined into a 64-bit mask (bit i = category i) to check that they do not overlap
-        if (config.categories.size() > 63) throw std::runtime_error(configPath + ": at most 63 categories are supported");
-        INFO("Read MC categories config: ", config.categories.size(), " categories (", nSignal, " signal, ",
-             config.categories.size() - nSignal, " background).");
+        if (config.categories.size() > 63) throw std::runtime_error(config.sourcePath + ": at most 63 categories are supported");
+        if (config.categories.empty()) {
+            INFO("No MC categories: histograms and cutflows will not be split by MC category.");
+        } else {
+            INFO("MC categories config: ", config.categories.size(), " categories (", nSignal, " signal, ",
+                 config.categories.size() - nSignal, " background).");
+        }
+        return config;
+    }
+
+    // ── Analysis config ─────────────────────────────────────────────────────
+    const std::vector<std::string>& analysisConfigSections() {
+        static const std::vector<std::string> v{"file_configs", "grl", "output", "definitions", "categories", "cuts"};
+        return v;
+    }
+
+    std::optional<std::vector<ConfigPart>> AnalysisConfig::section(const std::string& name) const {
+        const auto it = sections.find(name);
+        if (it == sections.end()) return std::nullopt;
+        return it->second;
+    }
+
+    AnalysisConfig readAnalysisConfig(const std::string& configPath) {
+        INFO("Reading analysis config from ", configPath, "...");
+        const YAML::Node root = loadYAML(configPath);
+        AnalysisConfig config;
+        config.path = configPath;
+        config.text = readText(configPath);
+        if (root.IsNull()) {
+            WARNING(configPath, ": the analysis config is empty, no configs will be used.");
+            return config;
+        }
+        if (!root.IsMap()) throw std::runtime_error(configPath + ": expected a map of <section>: [config files and inline entries]");
+
+        // Config files are looked up relative to the directory of the analysis config
+        const std::filesystem::path dir = std::filesystem::path(configPath).parent_path();
+        const auto& known = analysisConfigSections();
+        std::string knownList;
+        for (const auto& k : known) knownList += (knownList.empty() ? "" : ", ") + k;
+
+        for (const auto& kv : root) {
+            const std::string key = kv.first.as<std::string>();
+            const std::string name = toLower(key);
+            const std::string ctx = configPath + ": " + key;
+            // An unknown (e.g. misspelt) section is an error: it would otherwise be ignored, and with it its configs
+            if (std::find(known.begin(), known.end(), name) == known.end()) {
+                throw std::runtime_error(ctx + lineOf(kv.first) + ": unknown section. Allowed (any case): " + knownList);
+            }
+            if (config.sections.count(name)) throw std::runtime_error(ctx + lineOf(kv.first) + ": section given more than once");
+
+            const YAML::Node& list = kv.second;
+            std::vector<ConfigPart> parts;
+            if (!list.IsNull()) {
+                if (!list.IsSequence()) {
+                    throw std::runtime_error(ctx + lineOf(list) + ": expected a list of config files and/or inline entries (each starting with '- ')");
+                }
+                for (std::size_t i = 0; i < list.size(); ++i) {
+                    const YAML::Node& item = list[i];
+                    if (item.IsScalar()) {
+                        std::filesystem::path file(item.as<std::string>());
+                        if (file.is_relative()) file = dir / file;
+                        file = file.lexically_normal();
+                        if (!std::filesystem::exists(file)) {
+                            throw std::runtime_error(ctx + lineOf(item) + ": config file '" + item.as<std::string>() + "' not found (looked for " +
+                                                     file.string() + "; relative paths are relative to the directory of the analysis config)");
+                        }
+                        parts.push_back(configFilePart(file.string()));
+                    } else if (item.IsMap()) {
+                        ConfigPart part;
+                        part.node   = item;
+                        part.origin = configPath + ": " + key + " entry " + std::to_string(i + 1) + " (inline, line " + std::to_string(item.Mark().line + 1) + ")";
+                        part.isFile = false;
+                        YAML::Emitter out;
+                        out << item;
+                        part.text = out.c_str();
+                        parts.push_back(part);
+                    } else {
+                        throw std::runtime_error(ctx + lineOf(item) + ": each entry must be a config file name or an inline map of entries");
+                    }
+                }
+            }
+            config.sections[name] = parts;
+        }
+        INFO("Read analysis config: sections ", [&] {
+            std::string s;
+            for (const auto& [n, p] : config.sections) s += (s.empty() ? "" : ", ") + n + " (" + std::to_string(p.size()) + ")";
+            return s.empty() ? std::string("(none)") : s;
+        }(), ".");
         return config;
     }
 

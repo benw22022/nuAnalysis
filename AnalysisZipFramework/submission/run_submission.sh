@@ -77,6 +77,8 @@ Analysis arguments (everything after --) are passed to ./analysis, e.g.
   -- --isMC --cuts-config my_cuts.yaml -j 4
   - Config files (--*-config) are copied into the job directory. Relative paths are looked up in
     the build directory first (as when running ./analysis from build/), then in the current directory.
+  - --analysis-config must be in build/config (e.g. config/analyses/x.yaml): the jobs use the copy in
+    the job directory, so the configs it lists with relative paths are the copied ones too.
   - -j N also sets request_cpus = N. A bare -j (all cores) is not allowed on the batch system.
   - --run, -r, --output, -o, --input-dir and --aux-dir are set by this script / not supported.
 EOF
@@ -122,14 +124,14 @@ BUILD_DIR=$(realpath -m "${BUILD_DIR}")
 
 # The jobs use build/config, which cmake copies from AnalysisZipFramework/config: check it is up to date
 CONFIG_PROBLEM=0
-for src in "${FRAMEWORK_DIR}"/config/*.yaml; do
-    name=$(basename "${src}")
+while IFS= read -r -d '' src; do
+    name=${src#"${FRAMEWORK_DIR}/config/"}   # path inside config/, e.g. analyses/x.yaml
     if [ ! -f "${BUILD_DIR}/config/${name}" ]; then
         echo "ERROR: ${name} is missing in ${BUILD_DIR}/config" >&2; CONFIG_PROBLEM=1
     elif ! cmp -s "${src}" "${BUILD_DIR}/config/${name}"; then
         echo "ERROR: ${BUILD_DIR}/config/${name} differs from AnalysisZipFramework/config/${name}" >&2; CONFIG_PROBLEM=1
     fi
-done
+done < <(find "${FRAMEWORK_DIR}/config" -name '*.yaml' -print0)
 [ ${CONFIG_PROBLEM} -eq 0 ] || die "build/config is not up to date: re-run cmake in ${BUILD_DIR} (it copies the configs)"
 
 # Sources newer than the binary: probably not rebuilt
@@ -138,6 +140,7 @@ NEWER=$(find "${FRAMEWORK_DIR}" \( -name '*.cxx' -o -name '*.h' -o -name '*.hpp'
 
 # ── Analysis arguments ───────────────────────────────────────────────────────
 REQUEST_CPUS=1
+ANALYSIS_CONFIG_REL=""   # --analysis-config: its path inside build/config (the jobs use the copy in the job directory)
 FINAL_ARGS=()
 CONFIG_ARG_SRC=()   # (option, resolved source path) of configs given as arguments, copied below
 i=0
@@ -162,6 +165,21 @@ while [ $i -lt ${#ANALYSIS_ARGS[@]} ]; do
             [[ "${next}" =~ ^[0-9]+$ ]] && [ "${next}" -gt 0 ] || die "give the number of threads with -j (e.g. -j 4): a bare -j would use every core of the worker node"
             REQUEST_CPUS=${next}
             FINAL_ARGS+=(-j "${next}"); i=$((i + 2)); continue ;;
+        --analysis-config)
+            value=${ANALYSIS_ARGS[$((i + 1))]:-}
+            [ -n "${value}" ] || die "${arg} needs a file"
+            if   [[ "${value}" = /* ]];          then path=${value}
+            elif [ -f "${BUILD_DIR}/${value}" ]; then path="${BUILD_DIR}/${value}"
+            else                                      path="${PWD}/${value}"
+            fi
+            [ -f "${path}" ] || die "${arg} ${value}: file not found (looked in ${BUILD_DIR} and ${PWD})"
+            path=$(realpath "${path}")
+            case "${path}" in
+                "${BUILD_DIR}/config/"*) ANALYSIS_CONFIG_REL=${path#"${BUILD_DIR}/config/"} ;;
+                *) die "${arg} ${value}: the analysis config must be in ${BUILD_DIR}/config, so that it and the configs it lists are copied into the job directory. Put it in AnalysisZipFramework/config (e.g. config/analyses/) and re-run cmake" ;;
+            esac
+            FINAL_ARGS+=("${arg}" "@ANALYSIS_CONFIG@")
+            i=$((i + 2)); continue ;;
         --*-config)
             value=${ANALYSIS_ARGS[$((i + 1))]:-}
             [ -n "${value}" ] || die "${arg} needs a file"
@@ -249,6 +267,13 @@ while [ $n -lt ${#CONFIG_ARG_SRC[@]} ]; do
     done
     n=$((n + 2))
 done
+
+# The analysis config: use its copy in the job directory (configs it lists relative to itself are copied too)
+if [ -n "${ANALYSIS_CONFIG_REL}" ]; then
+    for k in "${!FINAL_ARGS[@]}"; do
+        [ "${FINAL_ARGS[$k]}" = "@ANALYSIS_CONFIG@" ] && FINAL_ARGS[$k]="${JOB_DIR}/config/${ANALYSIS_CONFIG_REL}"
+    done
+fi
 
 # ── Submit file ──────────────────────────────────────────────────────────────
 # New-style HTCondor arguments: the whole list in double quotes, each argument in single quotes

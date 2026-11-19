@@ -31,6 +31,23 @@ namespace ConfigUtils {
     // Print a warning for every key in `node` that is not in `allowedKeys` (catches typos)
     void warnUnknownKeys(const YAML::Node& node, const std::vector<std::string>& allowedKeys, const std::string& context);
 
+    // ── Config parts ─────────────────────────────────────────────────────────
+    // Each config type can be put together from several parts, concatenated in order: config files
+    // and inline entries of an analysis config (see readAnalysisConfig). Names (cuts, definitions,
+    // categories, histograms, runs) must be unique across all parts of a config.
+    struct ConfigPart {
+        YAML::Node node;     // file: the whole file; inline: the entries, as under the section key of that file type
+        std::string origin;  // file path, or "<analysis config>: <section> entry <n> (inline, line <l>)"
+        bool isFile{true};
+        std::string text;    // the file as read, or the inline entry as YAML (stored in the output file)
+    };
+
+    // Load a config file as a part (throws if it does not exist or cannot be parsed)
+    ConfigPart configFilePart(const std::string& path);
+
+    // "a.yaml", "a.yaml + b.yaml + <inline entry>", or "(none)": for log messages
+    std::string describeParts(const std::vector<ConfigPart>& parts);
+
     // ── GRL config (config/grl_config.yaml) ─────────────────────────────────
     struct GRLConfig {
         std::vector<std::string> grlJsons;  // official FASER GRLs: stable-beam / excluded periods per run
@@ -38,6 +55,7 @@ namespace ConfigUtils {
     };
 
     GRLConfig readGRLConfig(const std::string& configPath);
+    GRLConfig readGRLConfig(const std::vector<ConfigPart>& parts);      // lists of all parts concatenated
 
     // ── File config (config/file_config.yaml) ───────────────────────────────
     struct RunFiles {
@@ -48,6 +66,7 @@ namespace ConfigUtils {
     using FileConfig = std::map<int, RunFiles>;  // run number -> files
 
     FileConfig readFileConfig(const std::string& configPath);
+    FileConfig readFileConfig(const std::vector<ConfigPart>& parts);    // runs of all parts (unique run numbers)
 
     // ── Output columns config (config/output_columns.yaml) ──────────────────
     // Which columns of the dataframe are written to the output 'nt' tree.
@@ -60,10 +79,12 @@ namespace ConfigUtils {
         std::vector<std::string> keepMC;    // extra columns for MC only (e.g. truth)
         std::vector<std::string> keepData;  // extra columns for data only
         std::vector<std::string> drop;      // removed from the selection (applied last)
-        std::string sourcePath;             // config file this was read from (for log messages)
+        std::string sourcePath;             // config file(s) this was read from (for log messages)
     };
 
     OutputColumnsConfig readOutputColumnsConfig(const std::string& configPath);
+    // save_all_* switches: true if true in any part; keep / drop lists: concatenated
+    OutputColumnsConfig readOutputColumnsConfig(const std::vector<ConfigPart>& parts);
 
     // ── Selection config (config/cuts.yaml): cuts and histograms ─────────────
     // One histogram axis: a column and EITHER a fixed binning (bins, min, max) OR bin edges
@@ -104,6 +125,9 @@ namespace ConfigUtils {
     // (from categoryDataTypes(CategoriesConfig); empty if no MC categories are defined)
     SelectionConfig readSelectionConfig(const std::string& configPath,
                                         const std::vector<std::string>& categoryDataTypes = {});
+    // Cuts and Histograms of all parts concatenated (inline entries: cuts only, as under 'Cuts:')
+    SelectionConfig readSelectionConfig(const std::vector<ConfigPart>& parts,
+                                        const std::vector<std::string>& categoryDataTypes = {});
 
     // ── MC categories config (config/categories.yaml) ───────────────────────
     // Event-level MC categories (e.g. signal / background components). On MC, histograms are
@@ -114,6 +138,7 @@ namespace ConfigUtils {
         std::string type;        // "signal" or "background"
         std::string latex;       // label for plots (defaults to the name)
         std::string colour;      // colour for plots (free text, may be empty)
+        std::string origin;      // config file or inline entry it comes from
     };
 
     struct CategoriesConfig {
@@ -122,6 +147,7 @@ namespace ConfigUtils {
     };
 
     CategoriesConfig readCategoriesConfig(const std::string& configPath);
+    CategoriesConfig readCategoriesConfig(const std::vector<ConfigPart>& parts);
 
     // data_type values that select MC categories on cuts and histograms: "signal", "background",
     // "other" and the category names (empty if there are no categories)
@@ -133,6 +159,7 @@ namespace ConfigUtils {
         std::string expression;             // RDataFrame Define expression
         std::string dataType{"ALL"};        // same meaning as for cuts
         std::vector<std::string> requirements;
+        std::string origin;                 // config file or inline entry it comes from
     };
 
     struct DefinitionsConfig {
@@ -141,6 +168,26 @@ namespace ConfigUtils {
     };
 
     DefinitionsConfig readDefinitionsConfig(const std::string& configPath);
+    DefinitionsConfig readDefinitionsConfig(const std::vector<ConfigPart>& parts);
+
+    // ── Analysis config: which configs an analysis uses ─────────────────────
+    // A YAML file with up to six sections (keys are case-insensitive):
+    //   file_configs, cuts, definitions, categories, output, grl
+    // Each section is a list of config files (paths relative to the analysis config's directory, or
+    // absolute) and/or inline entries, written as under the section key of that file type. A section
+    // that is left out means no config of that type.
+    struct AnalysisConfig {
+        std::string path;
+        std::string text;                                     // the file as read
+        std::map<std::string, std::vector<ConfigPart>> sections;  // only the sections that are given
+        // Parts of a section, or nullopt if the analysis config does not have that section
+        std::optional<std::vector<ConfigPart>> section(const std::string& name) const;
+    };
+
+    // Section names, in the order they are listed in log messages
+    const std::vector<std::string>& analysisConfigSections();
+
+    AnalysisConfig readAnalysisConfig(const std::string& configPath);
 
     // Allowed values for data_type and requires
     const std::vector<std::string>& knownDataTypes();

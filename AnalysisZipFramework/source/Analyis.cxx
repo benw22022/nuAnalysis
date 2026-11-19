@@ -380,12 +380,12 @@ void Analysis::applyDefinitions() {
             const std::string token = it->str();
             auto pos = position.find(token);
             if (pos != position.end() && pos->second > i && !isColumnDefined(token)) {
-                throw std::runtime_error(m_definitions->sourcePath + ": definition '" + d.name + "' uses '" + token +
-                                         "', which is defined further down the file. Definitions are created in file order: move '" +
-                                         token + "' above '" + d.name + "'.");
+                throw std::runtime_error(d.origin + ": definition '" + d.name + "' uses '" + token +
+                                         "', which is defined further down (in " + defs[pos->second].origin + "). Definitions are created "
+                                         "in order (files and inline entries in the order they are listed): move '" + token + "' above '" + d.name + "'.");
             }
         }
-        if (Define(d.name, d.expression, parseDataType(d.dataType), m_definitions->sourcePath)) ++nDefined;
+        if (Define(d.name, d.expression, parseDataType(d.dataType), d.origin)) ++nDefined;
         else ++nSkipped;
     }
     INFO("Defined ", nDefined, " columns from ", m_definitions->sourcePath, " (", nSkipped,
@@ -497,7 +497,7 @@ void Analysis::defineCategories() {
         const auto& c = cfgs[i];
         Category cat{c.name, c.type, c.latex, c.colour, c.expression, "category_" + c.name};
         // static_cast<bool>: the flag is always bool, so it can be used in compiled filters
-        Define(cat.flag, "static_cast<bool>(" + c.expression + ")", MC, src);
+        Define(cat.flag, "static_cast<bool>(" + c.expression + ")", MC, c.origin);
         mask += (mask.empty() ? "" : " | ") + std::string("(static_cast<ULong64_t>(") + cat.flag + ") << " + std::to_string(i) + ")";
         m_cats.push_back(cat);
     }
@@ -1209,6 +1209,21 @@ void Analysis::Run(TString outputFileName) {
         meta_tree->Fill();
         meta_tree->Write();
         INFO("Saved metadata tree with ", runBranch.size(), " run(s).");
+
+        // ── Config tree: every config used for this output (reproducibility) ──
+        if (!m_configRecord.empty()) {
+            TTree* configTree = new TTree("config", "Configuration used for this output");
+            std::string section, origin, content;
+            configTree->Branch("section", &section);
+            configTree->Branch("origin",  &origin);
+            configTree->Branch("content", &content);
+            for (const auto& r : m_configRecord) {
+                section = r.section; origin = r.origin; content = r.content;
+                configTree->Fill();
+            }
+            configTree->Write();
+            INFO("Saved config tree with ", m_configRecord.size(), " entries (command line, analysis config and config files).");
+        }
 
         // ── Cutflow tree (uses cached cutReport) ────────────────────────────
         TTree *cutflow_tree = new TTree("cutflow", "Cutflow tree");

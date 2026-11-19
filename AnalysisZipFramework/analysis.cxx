@@ -12,6 +12,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <set>
+#include <map>
+#include <optional>
 
 int main(int argc, char* argv[]) {
 
@@ -30,6 +33,10 @@ int main(int argc, char* argv[]) {
     std::string cutsConfigPath   = "config/cuts_muon_neutrino.yaml";
     std::string definitionsConfigPath = "config/definitions.yaml";
     std::string categoriesConfigPath  = "config/categories.yaml";
+    // Analysis config: which configs to use (see ConfigUtils::readAnalysisConfig). The options above
+    // override its sections; without an analysis config the defaults above are used.
+    std::string analysisConfigPath;
+    std::set<std::string> configsOnCommandLine;   // analysis config sections given as a command line option
     // Alternative to --run: take all .root files in these directories (file config not used)
     std::vector<std::string> inputDirs;
     std::vector<std::string> auxDirs;
@@ -76,6 +83,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             fileConfigPath = argv[++i];
+            configsOnCommandLine.insert("file_configs");
 
         } else if (arg == "--grl-config") {
             if (i + 1 >= argc) {
@@ -83,6 +91,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             grlConfigPath = argv[++i];
+            configsOnCommandLine.insert("grl");
 
         } else if (arg == "--output-config") {
             if (i + 1 >= argc) {
@@ -90,6 +99,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             outputConfigPath = argv[++i];
+            configsOnCommandLine.insert("output");
 
         } else if (arg == "--cuts-config") {
             if (i + 1 >= argc) {
@@ -97,6 +107,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             cutsConfigPath = argv[++i];
+            configsOnCommandLine.insert("cuts");
 
         } else if (arg == "--definitions-config") {
             if (i + 1 >= argc) {
@@ -104,6 +115,14 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             definitionsConfigPath = argv[++i];
+            configsOnCommandLine.insert("definitions");
+
+        } else if (arg == "--analysis-config") {
+            if (i + 1 >= argc) {
+                ERROR("Error: --analysis-config requires an argument.");
+                return 1;
+            }
+            analysisConfigPath = argv[++i];
 
         } else if (arg == "--categories-config") {
             if (i + 1 >= argc) {
@@ -111,6 +130,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             categoriesConfigPath = argv[++i];
+            configsOnCommandLine.insert("categories");
 
         } else if (arg == "--isMC") {
             isMC = true;
@@ -151,7 +171,7 @@ int main(int argc, char* argv[]) {
 
         } else {
             ERROR("Unknown argument: ", arg);
-            ERROR("Usage: ", argv[0], " (--run <run_number> | --input-dir <dir> [--aux-dir <dir>]) [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--categories-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--no-reduced-charge] [-v]");
+            ERROR("Usage: ", argv[0], " (--run <run_number> | --input-dir <dir> [--aux-dir <dir>]) [--output <file>] [--analysis-config <yaml>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--categories-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--no-reduced-charge] [-v]");
             return 1;
         }
     }
@@ -167,7 +187,7 @@ int main(int argc, char* argv[]) {
     }
     if (runNumber == -1 && !useInputDirs) {
         ERROR("Error: --run <number> or --input-dir <dir> is required.");
-        ERROR("Usage: ", argv[0], " (--run <run_number> | --input-dir <dir> [--aux-dir <dir>]) [--output <file>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--categories-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--no-reduced-charge] [-v]");
+        ERROR("Usage: ", argv[0], " (--run <run_number> | --input-dir <dir> [--aux-dir <dir>]) [--output <file>] [--analysis-config <yaml>] [--file-config <yaml>] [--grl-config <yaml>] [--output-config <yaml>] [--definitions-config <yaml>] [--categories-config <yaml>] [--cuts-config <yaml>] [-j [n]] [--isMC] [--no-reduced-charge] [-v]");
         return 1;
     }
 
@@ -189,28 +209,74 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (useInputDirs) INFO("File config: not used (--input-dir)");
-    else              INFO("File config: ", fileConfigPath);
-    INFO("GRL config:  ", grlConfigPath);
-    INFO("Output config: ", outputConfigPath);
-    INFO("Definitions config: ", definitionsConfigPath);
-    INFO("Categories config: ", categoriesConfigPath);
-    INFO("Cuts config:   ", cutsConfigPath);
-
     ConfigUtils::GRLConfig  grlConfig;
     ConfigUtils::FileConfig fileConfig;
     ConfigUtils::OutputColumnsConfig outputConfig;
     ConfigUtils::SelectionConfig selection;
     ConfigUtils::DefinitionsConfig definitions;
     ConfigUtils::CategoriesConfig categories;
+    // Everything used to configure this job, saved in the output file (config tree)
+    std::vector<Analysis::ConfigRecord> configRecord;
+    {
+        std::string commandLine;
+        for (int i = 0; i < argc; ++i) commandLine += (i ? " " : "") + std::string(argv[i]);
+        configRecord.push_back({"command_line", "", commandLine});
+    }
     try {
-        definitions  = ConfigUtils::readDefinitionsConfig(definitionsConfigPath);
-        categories   = ConfigUtils::readCategoriesConfig(categoriesConfigPath);
+        // Which config parts each section uses:
+        //   1. the command line option (--cuts-config, ...) if given,
+        //   2. otherwise the analysis config's section, if an analysis config is given
+        //      (a section missing from the analysis config means: no config of that type),
+        //   3. otherwise the default config file.
+        std::optional<ConfigUtils::AnalysisConfig> analysisConfig;
+        if (!analysisConfigPath.empty()) {
+            analysisConfig = ConfigUtils::readAnalysisConfig(analysisConfigPath);
+            configRecord.push_back({"analysis_config", analysisConfig->path, analysisConfig->text});
+        }
+        const std::map<std::string, std::string> pathOption{
+            {"file_configs", fileConfigPath}, {"grl", grlConfigPath}, {"output", outputConfigPath},
+            {"definitions", definitionsConfigPath}, {"categories", categoriesConfigPath}, {"cuts", cutsConfigPath}};
+        const std::map<std::string, std::string> optionName{
+            {"file_configs", "--file-config"}, {"grl", "--grl-config"}, {"output", "--output-config"},
+            {"definitions", "--definitions-config"}, {"categories", "--categories-config"}, {"cuts", "--cuts-config"}};
+        auto partsFor = [&](const std::string& section) -> std::vector<ConfigUtils::ConfigPart> {
+            std::vector<ConfigUtils::ConfigPart> parts;
+            std::string how;
+            if (section == "file_configs" && useInputDirs) {
+                how = "not used (--input-dir)";
+            } else if (configsOnCommandLine.count(section)) {
+                parts = {ConfigUtils::configFilePart(pathOption.at(section))};
+                how = "from " + optionName.at(section) + (analysisConfig ? " (overrides the analysis config)" : "");
+            } else if (analysisConfig) {
+                if (const auto p = analysisConfig->section(section)) {
+                    parts = *p;
+                    how = "from the analysis config";
+                } else {
+                    how = "none (not in the analysis config)";
+                }
+            } else {
+                parts = {ConfigUtils::configFilePart(pathOption.at(section))};
+                how = "default";
+            }
+            INFO("Config ", section, ": ", ConfigUtils::describeParts(parts), "  [", how, "]");
+            for (const auto& p : parts) configRecord.push_back({section, p.origin, p.text});
+            return parts;
+        };
+
+        definitions  = ConfigUtils::readDefinitionsConfig(partsFor("definitions"));
+        categories   = ConfigUtils::readCategoriesConfig(partsFor("categories"));
         // Before the cuts config: cuts and histograms can use the categories as data_type
-        selection    = ConfigUtils::readSelectionConfig(cutsConfigPath, ConfigUtils::categoryDataTypes(categories));
-        grlConfig    = ConfigUtils::readGRLConfig(grlConfigPath);
-        if (!useInputDirs) fileConfig = ConfigUtils::readFileConfig(fileConfigPath);
-        outputConfig = ConfigUtils::readOutputColumnsConfig(outputConfigPath);
+        selection    = ConfigUtils::readSelectionConfig(partsFor("cuts"), ConfigUtils::categoryDataTypes(categories));
+        grlConfig    = ConfigUtils::readGRLConfig(partsFor("grl"));
+        fileConfig   = ConfigUtils::readFileConfig(partsFor("file_configs"));
+        const auto outputParts = partsFor("output");
+        outputConfig = ConfigUtils::readOutputColumnsConfig(outputParts);
+        if (outputParts.empty()) {
+            WARNING("No output columns config: the nt tree will only contain the columns that are always saved (run, eventID, ...).");
+        }
+        if (!isMC && grlConfig.grlJsons.empty()) {
+            WARNING("No GRL: every event of this data run fails 'Good times' and the luminosity is set to -1.");
+        }
     } catch (const std::exception& e) {
         ERROR("Failed to read config: ", e.what());
         return 1;
@@ -252,7 +318,7 @@ int main(int argc, char* argv[]) {
         }
     } else {
         if (fileConfig.count(runNumber) == 0) {
-            ERROR("No file configuration found for run ", runNumber, " in ", fileConfigPath);
+            ERROR("No file configuration found for run ", runNumber, fileConfig.empty() ? " (no file config is used)" : " in the file config");
             return 1;
         }
         mainFiles  = GRLUtils::toTStringVector(fileConfig[runNumber].dataPaths);
@@ -274,6 +340,7 @@ int main(int argc, char* argv[]) {
     analysis.setDefinitions(definitions);
     analysis.setSelection(selection);
     analysis.setCategories(categories);
+    analysis.setConfigRecord(configRecord);
     // Catch exceptions so that buffered log messages are flushed and the job exits with a
     // non-zero code (an uncaught exception aborts before std::cout is flushed)
     try {

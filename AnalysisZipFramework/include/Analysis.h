@@ -63,6 +63,15 @@ class Analysis {
         // histograms and the cutflow are not split.
         void setCategories(const ConfigUtils::CategoriesConfig& categories) { m_categories = categories; }
 
+        // Configs used for this job, written to the 'config' tree of the output file for reproducibility:
+        // one entry per item (section, origin = file path or inline entry, content = its text)
+        struct ConfigRecord {
+            std::string section;
+            std::string origin;
+            std::string content;
+        };
+        void setConfigRecord(const std::vector<ConfigRecord>& record) { m_configRecord = record; }
+
         // ── Adding columns ───────────────────────────────────────────────────
         // All new columns (built-in C++ and config/definitions.yaml) go through these methods, so
         // they all get the same data_type handling, name checks, logging and bookkeeping.
@@ -219,6 +228,7 @@ class Analysis {
 
         // ── MC categories (config/categories.yaml) ──────────────────────────
         std::optional<ConfigUtils::CategoriesConfig> m_categories;
+        std::vector<ConfigRecord> m_configRecord;
         struct Category {
             std::string name, type, latex, colour, expression;
             std::string flag;    // bool column: event is in this category (category_<name>)

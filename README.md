@@ -53,18 +53,54 @@ Other options:
 |---|---|
 | `--input-dir <dir>` | Instead of `-r`: run on all `.root` files in this directory (not subdirectories; can be given more than once). The file config is not used and the run number(s) are read from the files |
 | `--aux-dir <dir>` | With `--input-dir`: aux (waveform) files for the reduced charge, for data that needs them. Only for input from a single run |
+| `--analysis-config <yaml>` | Analysis config: which configs to use (see [Analysis configs](#analysis-configs)). The `--*-config` options below override its sections |
 | `--file-config <yaml>` | File config to use (default `config/file_config.yaml`), e.g. `config/file_config_late_tracks.yaml` |
 | `--grl-config <yaml>` | GRL config to use (default `config/grl_config.yaml`) |
 | `--output-config <yaml>` | Which columns to save in the output `nt` tree (default `config/output_columns.yaml`) |
 | `--definitions-config <yaml>` | New column definitions (default `config/definitions.yaml`) |
 | `--categories-config <yaml>` | MC categories (signal / background components) used to split histograms and cutflows on MC (default `config/categories.yaml`) |
-| `--cuts-config <yaml>` | Cuts and histograms (default `config/cuts.yaml`) |
+| `--cuts-config <yaml>` | Cuts and histograms (default `config/cuts_muon_neutrino.yaml`) |
 | `--isMC` | MC mode: GRL, BCID and trigger cuts are skipped; the MC truth selection is done with the MC categories (see below) |
 | `--no-reduced-charge` | Do not use the VetoNu reduced charge; veto on the raw VetoNu charge instead |
 | `-j [n]` | Enable multithreading (all cores, or `n` threads) |
 | `-v` | Verbose output |
 
 *Note*: By default the configs are read from `build/config`. The `*.yaml` files are copied there from `AnalysisZipFramework/config` when `cmake` is run, so re-run `cmake` after editing them (or point `--file-config` / `--grl-config` at the source files).
+
+## Analysis configs
+
+An analysis config lists the configs an analysis uses, so one option selects a whole setup:
+
+```bash
+./analysis -r 16000 --analysis-config config/analyses/early_trigger.yaml -o out.root
+```
+
+```yaml
+file_configs:
+- ../file_config.yaml               # paths are relative to the analysis config's directory (or absolute)
+GRL:
+- ../grl_config.yaml
+Output:
+- ../output_columns.yaml
+- keep: [PS_TriggeredEarly]         # inline entry
+Definitions:
+- ../definitions.yaml
+- PS_TriggeredEarly:                # inline entry
+    expression: "((inputBits & 64) == 64) && ((inputBits & 4) == 0) && ((inputBitsNext & 4) == 4)"
+    data_type: DATA
+Categories:
+- ../categories.yaml
+Cuts:
+- ../cuts_earlyTrigger.yaml
+```
+
+- Sections: `file_configs`, `GRL`, `Output`, `Definitions`, `Categories`, `Cuts` (any case). Each is a list of config files and/or inline entries. An inline entry is written like the contents of that file type under its section key (`Cuts` / `Definitions` / `Categories`: `<name>: {...}`; `file_configs`: `<run>: {data_paths: ...}`; `Output`: the `nt:` settings; `GRL`: `grl_jsons` / `grl_csvs`).
+- Entries are concatenated in order (definitions are created in that order). Names must be unique across all entries of a section (cuts, histograms, definitions, categories, run numbers); a duplicate is an error. `Output`: the `save_all_*` switches are on if on in any entry, the `keep` / `drop` lists are concatenated.
+- A section that is left out means no config of that type (e.g. no `Categories`: no MC split; no `Output`: `nt` only has `run` and `eventID`). Without `--analysis-config` the default files are used.
+- A `--*-config` option on the command line replaces the whole section.
+- `config/analyses/` has one analysis config per setup: `muon_neutrino.yaml` (the defaults), `dimuon.yaml`, `dimuon_full.yaml`, `dimuon_signal_only.yaml`, `early_trigger.yaml`.
+
+Every config used (the command line, the analysis config, each config file as read and each inline entry) is saved in the `config` tree of the output file.
 
 The file config can be regenerated with `AnalysisZipFramework/scripts/make_fileconfig.py` (data runs only; MC runs are added by hand).
 
@@ -98,6 +134,7 @@ The output file contains the following trees:
 - `cutflow`: Contains the cutflow
 - `eventID_passed`: Contains run number, eventIDs and boolean flags for each cut defined in the analysis
 - `histograms/`: Histograms booked in the cuts config, with the N-1 histograms in `histograms/n_minus_1/`
+- `config`: every config used for this output (branches `section`, `origin`, `content`): the command line, the analysis config, and the full text of each config file and inline entry
 
 On MC with categories (see below) there is also:
 
@@ -118,13 +155,13 @@ cd AnalysisZipFramework/submission
 ./run_submission.sh -o /path/to/output_v1 -n                                # dry run: checks only
 ```
 
-Each job writes `<output_dir>/<run>.root`. Everything after `--` is passed to `./analysis` (`-j N` also sets `request_cpus`). Run with `-h` for all options (build directory, LCG setup, memory, job flavour, grid proxy, ...).
+Each job writes `<output_dir>/<run>.root`. Everything after `--` is passed to `./analysis` (`-j N` also sets `request_cpus`), e.g. `-- --analysis-config config/analyses/dimuon.yaml`. An analysis config must be in `build/config` (i.e. in `AnalysisZipFramework/config`, copied by `cmake`): the jobs use its copy in the job directory, together with the copies of the configs it lists. Run with `-h` for all options (build directory, LCG setup, memory, job flavour, grid proxy, ...).
 
 Before submitting, the script checks that `build/config` matches `AnalysisZipFramework/config` (re-run `cmake` otherwise) and warns if sources are newer than the binary or the repository has uncommitted changes. For every submission it makes a job directory (default `<output_dir>/submission_<date>_<time>`) with a snapshot of the binary, `build/config` and any config passed as an argument (so rebuilding or editing configs does not affect running jobs), the run list, the generated submit file, `submission_info.txt` (command, git commit, binary checksum, ...), `git_diff.patch` for uncommitted changes, and the job logs. Jobs write to the worker node's scratch disk and copy the output only if `analysis` succeeded, so failed jobs leave no partial files.
 
 ## Cuts and histograms
 
-Cuts and histograms are configured in `config/cuts.yaml` (select another file with `--cuts-config`). Cuts are applied in the order of the file:
+Cuts and histograms are configured in a cuts config, e.g. `config/cuts_muon_neutrino.yaml` (select one with `--cuts-config` or an analysis config). Cuts are applied in the order of the file:
 
 ```yaml
 Histograms:                       # booked on all events, before the first cut

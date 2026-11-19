@@ -1,0 +1,43 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nuAnalysis analysis config: which configs an analysis uses
+#
+# Use with: ./analysis --analysis-config config/analyses/dimuon_full.yaml ...
+#
+# Sections (keys are case-insensitive): file_configs, GRL, Output, Definitions, Categories, Cuts
+# Each section is a list. An entry is either
+#   - a config file: path relative to the directory of THIS file (here config/analyses/), or absolute
+#   - an inline entry: written like the contents of that file type under its section key, e.g.
+#       Definitions:                      Categories:                  Cuts:
+#       - my_column:                      - my_category:               - My extra cut:
+#           expression: "..."                 expression: "..."            expression: "..."
+#           data_type: DATA                   type: signal
+#       file_configs:                     Output:                      GRL:
+#       - 16000:                          - keep: [my_column]          - grl_jsons: [...]
+#           data_paths: ["root://..."]                                   grl_csvs: [...]
+# Entries are concatenated in order (definitions are created in this order). Names must be unique
+# across all entries of a section (cuts, histograms, definitions, categories, run numbers).
+# Output: save_all_* switches are on if on in any entry, keep / drop lists are concatenated.
+#
+# A section that is left out means NO config of that type (e.g. no Categories: no MC split).
+# Command line options (--cuts-config, --definitions-config, ...) replace the whole section.
+# Every config used is saved in the 'config' tree of the output file.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+file_configs:
+- ../file_config.yaml
+
+GRL:
+- ../grl_config.yaml
+
+Output:
+- ../output_columns.yaml
+
+Definitions:
+- ../definitions.yaml
+
+Categories:
+- ../categories.yaml
+
+Cuts:
+- ../cuts_dimuon_full.yaml
