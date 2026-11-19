@@ -7,7 +7,7 @@ Analysis framework for running the electron muon neutrino analysis without the n
 ## Getting started
 
 The framework creates an executable called `analysis` which is configured to run over one run at a time (TODO: add multirun functionality)
-The filepaths to the NTuple data and waveform data are defined in `AnalysisZipFramework/config/file_config.yaml` and the GRL files which are used to get the good times and the luminosity are listed in `AnalysisZipFramework/config/grl_config.yaml`. All framework configs are YAML (so they can contain comments) and are read with yaml-cpp; the official FASER GRL files themselves are JSON and are read with nlohmann_json. Both libraries come with the LCG view sourced by `setup.sh`.
+The filepaths to the NTuple data and waveform data are defined in the file configs in `AnalysisZipFramework/config/files/` (see [File configs](#file-configs)) and the GRL files which are used to get the good times and the luminosity are listed in `AnalysisZipFramework/config/grl_config.yaml`. All framework configs are YAML (so they can contain comments) and are read with yaml-cpp; the official FASER GRL files themselves are JSON and are read with nlohmann_json. Both libraries come with the LCG view sourced by `setup.sh`.
 
 To get started do:
 
@@ -53,8 +53,8 @@ Other options:
 |---|---|
 | `--input-dir <dir>` | Instead of `-r`: run on all `.root` files in this directory (not subdirectories; can be given more than once). The file config is not used and the run number(s) are read from the files |
 | `--aux-dir <dir>` | With `--input-dir`: aux (waveform) files for the reduced charge, for data that needs them. Only for input from a single run |
-| `--analysis-config <yaml>` | Analysis config: which configs to use (see [Analysis configs](#analysis-configs)). The `--*-config` options below override its sections |
-| `--file-config <yaml>` | File config to use (default `config/file_config.yaml`), e.g. `config/file_config_late_tracks.yaml` |
+| `--analysis-config <yaml>` | Analysis config: which configs to use (default `config/analyses/muon_neutrino.yaml`, see [Analysis configs](#analysis-configs)). The `--*-config` options below override its sections |
+| `--file-config <yaml>` | File config to use instead of the analysis config's file configs, e.g. `config/files/late_tracks/2024.yaml` |
 | `--grl-config <yaml>` | GRL config to use (default `config/grl_config.yaml`) |
 | `--output-config <yaml>` | Which columns to save in the output `nt` tree (default `config/output_columns.yaml`) |
 | `--definitions-config <yaml>` | New column definitions (default `config/definitions.yaml`) |
@@ -77,7 +77,8 @@ An analysis config lists the configs an analysis uses, so one option selects a w
 
 ```yaml
 file_configs:
-- ../file_config.yaml               # paths are relative to the analysis config's directory (or absolute)
+- ../files/backward/2024.yaml       # paths are relative to the analysis config's directory (or absolute)
+- ../files/mc/2024_calonu.yaml
 GRL:
 - ../grl_config.yaml
 Output:
@@ -96,13 +97,38 @@ Cuts:
 
 - Sections: `file_configs`, `GRL`, `Output`, `Definitions`, `Categories`, `Cuts` (any case). Each is a list of config files and/or inline entries. An inline entry is written like the contents of that file type under its section key (`Cuts` / `Definitions` / `Categories`: `<name>: {...}`; `file_configs`: `<run>: {data_paths: ...}`; `Output`: the `nt:` settings; `GRL`: `grl_jsons` / `grl_csvs`).
 - Entries are concatenated in order (definitions are created in that order). Names must be unique across all entries of a section (cuts, histograms, definitions, categories, run numbers); a duplicate is an error. `Output`: the `save_all_*` switches are on if on in any entry, the `keep` / `drop` lists are concatenated.
-- A section that is left out means no config of that type (e.g. no `Categories`: no MC split; no `Output`: `nt` only has `run` and `eventID`). Without `--analysis-config` the default files are used.
+- A section that is left out means no config of that type (e.g. no `Categories`: no MC split; no `Output`: `nt` only has `run` and `eventID`). Without `--analysis-config`, `config/analyses/muon_neutrino.yaml` is used.
 - A `--*-config` option on the command line replaces the whole section.
 - `config/analyses/` has one analysis config per setup: `muon_neutrino.yaml` (the defaults), `dimuon.yaml`, `dimuon_full.yaml`, `dimuon_signal_only.yaml`, `early_trigger.yaml`.
 
 Every config used (the command line, the analysis config, each config file as read and each inline entry) is saved in the `config` tree of the output file.
 
-The file config can be regenerated with `AnalysisZipFramework/scripts/make_fileconfig.py` (data runs only; MC runs are added by hand).
+## File configs
+
+The input files are listed in `config/files/`, one file config per data-taking year and reconstruction type, and one per MC geometry:
+
+| File configs | Content |
+|---|---|
+| `files/backward/{2022,2023,2024}.yaml` | Data: official reconstruction with backward tracking, preselection of at least one track |
+| `files/unfilt/{2022,2023,2024}.yaml` | Data: official reconstruction with forward tracking, no preselection (unfiltered) |
+| `files/late_tracks/{2022,2023,2024}.yaml` | Data: private reconstruction with tracks from late hits |
+| `files/mc/2022_23.yaml`, `files/mc/2024_fasernu.yaml`, `files/mc/2024_calonu.yaml` | GENIE MC for the 2022/23, 2024 FaserNu and 2024 CaloNu geometries (FaserMC TWiki) |
+
+An analysis config lists the ones it uses (the same run number must not appear twice, so use one reconstruction type per job). Each run has `data_paths`, and optionally `waveform_paths` (aux NTuples with the VetoNu reduced charge, data only), `description`, `is_nominal` (nominal MC sample or a variation) and `lumi_sample` (generated luminosity of an MC sample in fb^-1):
+
+```yaml
+runs:
+  200139:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200139/bck/s0015/*"
+    description: "2024 CaloNu EPOS pi"
+    is_nominal: true
+    lumi_sample: 10000   # fb^-1
+```
+
+`description`, `is_nominal` and `lumi_sample` are written to the `meta` tree (`""` / -1 if not given). The nominal MC samples are EPOS pi, EPOS K and POWHEG+Pythia charm central (default flux prediction); all GENIE samples have 10 ab^-1 = 10,000 fb^-1.
+
+The data file configs are regenerated with `AnalysisZipFramework/scripts/make_fileconfig.py` (run where `/eos` is mounted, e.g. lxplus; `--types` selects reconstruction types). The MC file configs are written by hand.
 
 ## NTuple compatibility (older and 2024 NTuples)
 
@@ -130,7 +156,7 @@ A warning is printed for any entry that matches no column. `run` and `eventID` a
 The output file contains the following trees:
 
 - `nt`: Contains the kinematics from the physics NTuples as well as any additional variable definitions
-- `meta`: Contains run number and luminosity
+- `meta`: Contains run number, luminosity (`lumi`, from the GRL, pb^-1), number of input events, and from the file config `description`, `is_nominal` (1/0, -1 if not given) and `lumi_sample` (generated MC luminosity, fb^-1, -1 if not given)
 - `cutflow`: Contains the cutflow
 - `eventID_passed`: Contains run number, eventIDs and boolean flags for each cut defined in the analysis
 - `histograms/`: Histograms booked in the cuts config, with the N-1 histograms in `histograms/n_minus_1/`

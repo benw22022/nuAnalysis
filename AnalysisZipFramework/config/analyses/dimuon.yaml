@@ -25,7 +25,12 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 file_configs:
-- ../file_config.yaml
+- ../files/backward/2022.yaml
+- ../files/backward/2023.yaml
+- ../files/backward/2024.yaml
+- ../files/mc/2022_23.yaml
+- ../files/mc/2024_fasernu.yaml
+- ../files/mc/2024_calonu.yaml
 
 GRL:
 - ../grl_config.yaml

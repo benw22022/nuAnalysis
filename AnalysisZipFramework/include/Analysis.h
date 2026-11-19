@@ -49,6 +49,9 @@ class Analysis {
         // independently of whether any events pass the cuts.
         void setRunNumbers(const std::vector<int>& runs) { m_runNumbers = runs; }
 
+        // File config of the runs: its description / is_nominal / lumi_sample are written to the meta tree
+        void setRunFiles(const ConfigUtils::FileConfig& files) { m_runFiles = files; }
+
         // Which columns to write to the output nt tree (see config/output_columns.yaml).
         // If not set, all columns are written.
         void setOutputColumns(const ConfigUtils::OutputColumnsConfig& config) { m_outputColumnsConfig = config; }
@@ -146,6 +149,7 @@ class Analysis {
         std::vector<std::string> m_passedCutColNames;
 
         std::vector<int> m_runNumbers;
+        ConfigUtils::FileConfig m_runFiles;
 
         std::optional<ConfigUtils::OutputColumnsConfig> m_outputColumnsConfig;
         std::vector<std::string> selectOutputColumns();

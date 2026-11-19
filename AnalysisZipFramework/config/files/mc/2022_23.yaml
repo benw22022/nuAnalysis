@@ -1,0 +1,187 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nuAnalysis file config: input files for each run
+#
+# runs:
+#   <run number>:
+#     data_paths:      physics NTuples (tree 'nt'). Wildcards are expanded by TChain.
+#     waveform_paths:  aux NTuples (tree 'tree') with the VetoNu reduced charge, looked up
+#                      by eventID. Only for data NTuples that predate the reduced charge
+#                      branches (optional).
+#     description:     what the sample is (optional, saved in the meta tree)
+#     is_nominal:      true for the nominal MC samples, false for variations (optional, saved in the meta tree)
+#     lumi_sample:     generated luminosity of an MC sample in fb^-1 (optional, saved in the meta tree)
+#
+# File configs are listed in an analysis config (config/analyses/*.yaml), or given with
+# ./analysis --file-config <path>. A run number must not appear in two file configs of one job.
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# 2022/23 MC: GENIE neutrino samples, 2022/23 crossing angle distribution (FaserMC TWiki).
+# Nominal: EPOS pi, EPOS K and POWHEG+Pythia charm central (default flux prediction).
+# Written by hand: add new MC samples here.
+
+runs:
+
+  # ── Production modes and flux variations ──────────────────────────────────
+  # MC24_Genie_sibyll_pi
+  200080:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200080/bck/s0014/*"
+    description: "2022/23 SIBYLL pi"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_sibyll_k
+  200081:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200081/bck/s0014/*"
+    description: "2022/23 SIBYLL K"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_epos_pi
+  200082:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200082/bck/s0014/*"
+    description: "2022/23 EPOS pi"
+    is_nominal: true
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_epos_k
+  200083:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200083/bck/s0014/*"
+    description: "2022/23 EPOS K"
+    is_nominal: true
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_qgsjet_pi
+  200084:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200084/bck/s0014/*"
+    description: "2022/23 QGSJET pi"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_qgsjet_k
+  200085:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200085/bck/s0014/*"
+    description: "2022/23 QGSJET K"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_pythia_forward_pi
+  200086:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200086/bck/s0014/*"
+    description: "2022/23 Pythia forward pi"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_pythia_forward_k
+  200087:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200087/bck/s0014/*"
+    description: "2022/23 Pythia forward K"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_powheg_pythia_charm_min
+  200088:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200088/bck/s0014/*"
+    description: "2022/23 POWHEG+Pythia charm min"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_powheg_pythia_charm_central
+  200089:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200089/bck/s0014/*"
+    description: "2022/23 POWHEG+Pythia charm central"
+    is_nominal: true
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_powheg_pythia_charm_max
+  200090:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200090/bck/s0014/*"
+    description: "2022/23 POWHEG+Pythia charm max"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+
+  # ── Geant4 physics list variations ────────────────────────────────────────
+  # MC24_Genie_epos_pi_FTF_BIC
+  200104:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200104/bck/master_dev/*"
+    description: "2022/23 EPOS pi, Geant4 FTF_BIC"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_epos_k_FTF_BIC
+  200105:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200105/bck/master_dev/*"
+    description: "2022/23 EPOS K, Geant4 FTF_BIC"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_charm_central_FTF_BIC
+  200106:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200106/bck/master_dev/*"
+    description: "2022/23 POWHEG+Pythia charm central, Geant4 FTF_BIC"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_epos_pi_FTFP_INCLXX
+  200107:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200107/bck/master_dev/*"
+    description: "2022/23 EPOS pi, Geant4 FTFP_INCLXX"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_epos_k_FTFP_INCLXX
+  200108:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200108/bck/master_dev/*"
+    description: "2022/23 EPOS K, Geant4 FTFP_INCLXX"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_charm_central_FTFP_INCLXX
+  200109:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200109/bck/master_dev/*"
+    description: "2022/23 POWHEG+Pythia charm central, Geant4 FTFP_INCLXX"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_epos_pi_FTFP_BERT_HP_JEFF33
+  200110:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200110/bck/master_dev/*"
+    description: "2022/23 EPOS pi, Geant4 FTFP_BERT_HP_JEFF33"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_epos_k_FTFP_BERT_HP_JEFF33
+  200111:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200111/bck/master_dev/*"
+    description: "2022/23 EPOS K, Geant4 FTFP_BERT_HP_JEFF33"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_charm_central_FTFP_BERT_HP_JEFF33
+  200112:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200112/bck/master_dev/*"
+    description: "2022/23 POWHEG+Pythia charm central, Geant4 FTFP_BERT_HP_JEFF33"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_epos_pi_FTFP_BERT_HP_ENDFB8
+  200113:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200113/bck/master_dev/*"
+    description: "2022/23 EPOS pi, Geant4 FTFP_BERT_HP_ENDFB8"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_epos_k_FTFP_BERT_HP_ENDFB8
+  200114:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200114/bck/master_dev/*"
+    description: "2022/23 EPOS K, Geant4 FTFP_BERT_HP_ENDFB8"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1
+  # MC24_Genie_charm_central_FTFP_BERT_HP_ENDFB8
+  200115:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200115/bck/master_dev/*"
+    description: "2022/23 POWHEG+Pythia charm central, Geant4 FTFP_BERT_HP_ENDFB8"
+    is_nominal: false
+    lumi_sample: 10000   # fb^-1

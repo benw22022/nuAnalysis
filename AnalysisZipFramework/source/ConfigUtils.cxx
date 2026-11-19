@@ -137,11 +137,19 @@ namespace ConfigUtils {
                 if (!cfg.IsMap()) {
                     throw std::runtime_error(context + ": expected a map with data_paths / waveform_paths");
                 }
-                warnUnknownKeys(cfg, {"data_paths", "waveform_paths"}, context);
+                warnUnknownKeys(cfg, {"data_paths", "waveform_paths", "description", "is_nominal", "lumi_sample"}, context);
 
                 RunFiles files;
                 files.dataPaths     = getRequired<std::vector<std::string>>(cfg, "data_paths", context);
                 files.waveformPaths = getOptional<std::vector<std::string>>(cfg, "waveform_paths", {}, context);
+                files.description   = getOptional<std::string>(cfg, "description", "", context);
+                if (cfg["is_nominal"] && !cfg["is_nominal"].IsNull()) files.isNominal = getRequired<bool>(cfg, "is_nominal", context);
+                if (cfg["lumi_sample"] && !cfg["lumi_sample"].IsNull()) {
+                    files.lumiSample = getRequired<double>(cfg, "lumi_sample", context);
+                    if (!(*files.lumiSample > 0)) {
+                        throw std::runtime_error(context + ": lumi_sample" + lineOf(cfg["lumi_sample"]) + " must be a positive number (fb^-1)");
+                    }
+                }
 
                 if (files.dataPaths.empty()) {
                     throw std::runtime_error(context + ": data_paths is empty");

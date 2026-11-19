@@ -1,9 +1,92 @@
-import os 
-import json
-import glob
+"""
+Write the data file configs: one per data-taking year and reconstruction type
 
-# Run ranges used to group runs (with comment headers) in the YAML file config
+    config/files/<type>/<year>.yaml      type: backward, unfilt, late_tracks; year: 2022, 2023, 2024
+
+by scanning the run directories on EOS, and config/run_list.txt (all runs with backward-tracking
+data). The MC file configs (config/files/mc/*.yaml) are written by hand.
+
+Run where /eos is mounted (e.g. lxplus), from this directory:
+
+    python3 make_fileconfig.py                      # writes ../config/files/... and ../config/run_list.txt
+    python3 make_fileconfig.py --types unfilt       # only one reconstruction type
+
+Options --eos-mount and --output-dir are for testing (scan a copy of the directory tree, write elsewhere).
+"""
+import argparse
+import glob
+import json
+import os
+
+# Runs of the 2024 CaloNu period (the waveform NTuples are in a different directory for these)
 CALONU_RUN_RANGE = (15821, 16924)
+
+# Reconstruction types: description (for the file header), xrootd server and the run directories per year.
+# Each run directory (e.g. .../007729) contains the NTuples of that run.
+RECO_TYPES = {
+    "backward": {
+        "description": "Official reconstruction with backward tracking, preselection: at least one track",
+        "server": "root://eospublic.cern.ch/",
+        "dirs": {
+            2022: "/eos/experiment/faser/data0/phys/2022_back/r0021",
+            2023: "/eos/experiment/faser/data0/phys/2023_back/r0021",
+            2024: "/eos/experiment/faser/data0/phys/2024_back/r0022",
+        },
+    },
+    "unfilt": {
+        "description": "Official reconstruction with forward tracking, no preselection (unfiltered)",
+        "server": "root://eospublic.cern.ch/",
+        "dirs": {
+            2022: "/eos/experiment/faser/data0/phys/2022_unfilt/r0021-r0023",
+            2023: "/eos/experiment/faser/data0/phys/2023_unfilt/r0021-r0023",
+            2024: "/eos/experiment/faser/data0/phys/2024_unfilt/r0022-r0023",
+        },
+    },
+    "late_tracks": {
+        "description": "Private reconstruction with tracks from late hits",
+        "server": "root://eosuser.cern.ch/",
+        "dirs": {
+            2022: "/eos/user/b/bewilson/LateTracks/NTuples-Full/2022",
+            2023: "/eos/user/b/bewilson/LateTracks/NTuples-Full/2023",
+            2024: "/eos/user/b/bewilson/LateTracks/NTuples-Full/2024",
+        },
+    },
+}
+
+# Aux (waveform) NTuples with the VetoNu reduced charge: (directory, server, runs it is used for).
+# The same for every reconstruction type.
+WAVEFORMS = [
+    ("/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-2022", "root://eosuser.cern.ch/",
+     lambda run: run < 10000),
+    ("/eos/user/b/bewilson/El9CalypsoForWaveForm/Waveforms-2023", "root://eosuser.cern.ch/",
+     lambda run: 10000 <= run < 14000),
+    ("/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk", "root://eosuser.cern.ch/",
+     lambda run: 14000 <= run < CALONU_RUN_RANGE[0]),
+    ("/eos/user/b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod", "root://eosuser.cern.ch/",
+     lambda run: CALONU_RUN_RANGE[0] <= run <= CALONU_RUN_RANGE[1]),
+    ("/eos/user/b/bewilson/El9CalypsoForWaveForm/waveforms_postCaloNu", "root://eosuser.cern.ch/",
+     lambda run: run > CALONU_RUN_RANGE[1]),
+]
+
+FILE_CONFIG_HEADER = """\
+# ─────────────────────────────────────────────────────────────────────────────
+# nuAnalysis file config: input files for each run
+#
+# runs:
+#   <run number>:
+#     data_paths:      physics NTuples (tree 'nt'). Wildcards are expanded by TChain.
+#     waveform_paths:  aux NTuples (tree 'tree') with the VetoNu reduced charge, looked up
+#                      by eventID. Only for data NTuples that predate the reduced charge
+#                      branches (optional).
+#     description:     what the sample is (optional, saved in the meta tree)
+#     is_nominal:      true for the nominal MC samples, false for variations (optional, saved in the meta tree)
+#     lumi_sample:     generated luminosity of an MC sample in fb^-1 (optional, saved in the meta tree)
+#
+# File configs are listed in an analysis config (config/analyses/*.yaml), or given with
+# ./analysis --file-config <path>. A run number must not appear in two file configs of one job.
+# ─────────────────────────────────────────────────────────────────────────────
+"""
+
 
 def run_period(run_number):
     """Human-readable data-taking period for a run number (used for comments in the YAML)."""
@@ -20,25 +103,12 @@ def run_period(run_number):
     return "2024 data (after CaloNu period)"
 
 
-FILE_CONFIG_HEADER = """\
-# ─────────────────────────────────────────────────────────────────────────────
-# nuAnalysis file config: input files for each run
-#
-# runs:
-#   <run number>:
-#     data_paths:      physics NTuples (tree 'nt'). Wildcards are expanded by TChain.
-#     waveform_paths:  aux NTuples (tree 'tree') with the VetoNu reduced charge, looked up
-#                      by eventID. Only needed for data NTuples that predate the reduced
-#                      charge branches; leave empty ([]) otherwise.
-#
-# Select a different file config with: ./analysis --file-config <path>
-# ─────────────────────────────────────────────────────────────────────────────
-"""
-
-
-def write_file_config_yaml(run_cfg, path, header=FILE_CONFIG_HEADER, extra_comment=None):
+def write_file_config_yaml(groups, path, header=FILE_CONFIG_HEADER, extra_comment=None):
     """
-    Write the file config as YAML, grouped by data-taking period with comment headers.
+    Write a file config as YAML.
+      groups: list of (group comment, {run number: run config}); each group gets a comment header.
+      run config: data_paths (list); optional waveform_paths (list, omitted if empty), description (str),
+                  is_nominal (bool), lumi_sample (number, fb^-1) and comment (str, written above the run).
     Written by hand (no PyYAML needed) so that the comments and layout are preserved.
     Strings are double-quoted (json.dumps quoting is valid YAML).
     """
@@ -47,185 +117,89 @@ def write_file_config_yaml(run_cfg, path, header=FILE_CONFIG_HEADER, extra_comme
         lines += ["#", *[f"# {l}" if l else "#" for l in extra_comment.splitlines()]]
     lines += ["", "runs:"]
 
-    def fmt_list(key, values):
-        if not values:
-            return [f"    {key}: []"]
-        return [f"    {key}:"] + [f"      - {json.dumps(v)}" for v in values]
+    for group, runs in groups:
+        if not runs:
+            continue
+        lines += ["", f"  # ── {group} " + "─" * max(3, 70 - len(group))]
+        for run_number in sorted(runs, key=int):
+            cfg = runs[run_number]
+            if cfg.get("comment"):
+                lines.append(f"  # {cfg['comment']}")
+            lines.append(f"  {int(run_number)}:")
+            lines.append("    data_paths:")
+            lines += [f"      - {json.dumps(p)}" for p in cfg["data_paths"]]
+            if cfg.get("waveform_paths"):
+                lines.append("    waveform_paths:")
+                lines += [f"      - {json.dumps(p)}" for p in cfg["waveform_paths"]]
+            if "description" in cfg:
+                lines.append(f"    description: {json.dumps(cfg['description'])}")
+            if "is_nominal" in cfg:
+                lines.append(f"    is_nominal: {'true' if cfg['is_nominal'] else 'false'}")
+            if "lumi_sample" in cfg:
+                lines.append(f"    lumi_sample: {cfg['lumi_sample']:g}   # fb^-1")
 
-    current_period = None
-    for run_number in sorted(run_cfg, key=int):
-        period = run_period(int(run_number))
-        if period != current_period:
-            lines += ["", f"  # ── {period} " + "─" * max(3, 70 - len(period))]
-            current_period = period
-        cfg = run_cfg[run_number]
-        lines.append(f"  {int(run_number)}:")
-        lines += fmt_list("data_paths", cfg["data_paths"])
-        lines += fmt_list("waveform_paths", cfg["waveform_paths"])
-
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     with open(path, "w") as f:
         f.write("\n".join(lines) + "\n")
 
-def preappend_to_filepaths(paths, preappend=""):
-    if isinstance(paths, str):
-        return (preappend + paths).replace("/eos/home-b/", "/eos/user/b/")
-    elif isinstance(paths, list):
-        return [(preappend + path).replace("/eos/home-b/", "/eos/user/b/") for path in paths]
-    return paths
+
+def group_by_period(run_cfg):
+    """Groups for write_file_config_yaml: data runs grouped by data-taking period."""
+    groups = {}
+    for run_number in sorted(run_cfg, key=int):
+        groups.setdefault(run_period(int(run_number)), {})[run_number] = run_cfg[run_number]
+    return list(groups.items())
 
 
-def get_parse_GRL(grl_path):
+def run_dirs(directory, eos_mount=""):
+    """{run number: directory} for the run directories (named by run number) in `directory`."""
+    runs = {}
+    for d in glob.glob(eos_mount + directory + "/*"):
+        name = os.path.basename(d)
+        if os.path.isdir(d) and name.isdigit():
+            runs[int(name)] = directory + "/" + name   # path on EOS (without the test mount prefix)
+    return runs
 
-    run_lumi_dict = {}
-    with open(grl_path, 'r') as f:
-        for i, line in enumerate(f):
-            if i == 0: continue
-            if line.startswith('#'): continue
 
-            spline = line.split(',')
-            run_number = int(spline[0])
-            lumi_rec = float(spline[3])
-
-            run_lumi_dict[run_number] = lumi_rec / 1000 # pb^-1 -> fb^-1
-    
-    return run_lumi_dict
+def scan_waveforms(eos_mount=""):
+    """{run number: xrootd path of the aux NTuples}"""
+    waveforms = {}
+    for directory, server, used_for in WAVEFORMS:
+        for run, d in run_dirs(directory, eos_mount).items():
+            if used_for(run):
+                waveforms[run] = server + d + "/*.root"
+    return waveforms
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--types", nargs="+", choices=list(RECO_TYPES), default=list(RECO_TYPES),
+                        help="reconstruction types to write (default: all)")
+    parser.add_argument("--output-dir", default="../config", help="config directory (default: ../config)")
+    parser.add_argument("--eos-mount", default="", help="prefix of a copy of the EOS directory tree (testing)")
+    args = parser.parse_args()
 
+    waveforms = scan_waveforms(args.eos_mount)
 
-    data_2022_files = "/eos/experiment/faser/data0/phys/2022_back/r0021/*"
-    data_2023_files = "/eos/experiment/faser/data0/phys/2023_back/r0021/*"
-    data_2024_files = "/eos/experiment/faser/data0/phys/2024_back/r0022/*"
+    for reco_type in args.types:
+        info = RECO_TYPES[reco_type]
+        for year, directory in info["dirs"].items():
+            run_cfg = {}
+            for run, d in run_dirs(directory, args.eos_mount).items():
+                run_cfg[run] = {"data_paths": [info["server"] + d + "/*.root"],
+                                "waveform_paths": [waveforms[run]] if run in waveforms else []}
+                if run not in waveforms:
+                    print(f"Warning: no waveform (aux) files for {reco_type} run {run}")
+            path = os.path.join(args.output_dir, "files", reco_type, f"{year}.yaml")
+            write_file_config_yaml(group_by_period(run_cfg), path,
+                                   extra_comment=f"{year} data: {info['description']}.\n"
+                                                 "Generated by scripts/make_fileconfig.py")
+            print(f"Wrote {path}: {len(run_cfg)} runs")
 
-    waveforms_2022_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/waveforms-2022/*"
-    waveforms_2023_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/Waveforms-2023/*"
+            if reco_type == "backward":
+                with open(os.path.join(args.output_dir, "run_list.txt"), "a" if year != min(info["dirs"]) else "w") as f:
+                    f.writelines(f"{run}\n" for run in sorted(run_cfg))
 
-    waveforms_2024_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/waveforms-5FilesPerChunk/*"
-    waveforms_2024_CaloNu_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/WaveformsCaloNuPeriod/*"
-    waveforms_2024_postCaloNu_files = "/eos/home-b/bewilson/El9CalypsoForWaveForm/waveforms_postCaloNu/*"
-
-    caloNu_run_range = CALONU_RUN_RANGE
-
-
-    data_2022_cfg = {}
-    data_2023_cfg = {}
-    data_2024_CaloNu_cfg = {}
-    data_2024_NoCaloNu_cfg = {}
-
-    waveforms_2022_cfg = {}
-    waveforms_2023_cfg = {}
-    waveforms_2024_NoCaloNu_cfg = {}
-    waveforms_2024_CaloNu_cfg = {}
-    waveforms_2024_PostCaloNu_cfg = {}
-
-    for file in glob.glob(data_2022_files):
-
-        if not os.path.isdir(file):
-            continue
-
-        run_number = int(file.split("/")[-1])
-        files = os.path.join(file, "*.root")
-        data_2022_cfg[run_number] = preappend_to_filepaths(files, "root://eospublic.cern.ch/")
-
-    for file in glob.glob(data_2023_files):
-        run_number = int(file.split("/")[-1])
-        files = os.path.join(file, "*.root")
-        data_2023_cfg[run_number] = preappend_to_filepaths(files, "root://eospublic.cern.ch/")
-
-    for file in glob.glob(data_2024_files):
-        if not os.path.isdir(file):
-            continue
-
-        run_number = int(file.split("/")[-1])
-        files = os.path.join(file, "*.root")
-
-        if caloNu_run_range[0] <= run_number <= caloNu_run_range[1]:
-            data_2024_CaloNu_cfg[run_number] = preappend_to_filepaths(files, "root://eospublic.cern.ch/")
-        else:
-            data_2024_NoCaloNu_cfg[run_number] = preappend_to_filepaths(files, "root://eospublic.cern.ch/")
-        
-    
-    for file in glob.glob(waveforms_2022_files):
-        if not os.path.isdir(file):
-            continue
-        
-        run_number = int(file.split("/")[-1])
-        files = os.path.join(file, "*.root")
-        waveforms_2022_cfg[run_number] = preappend_to_filepaths(files, "root://eosuser.cern.ch/")
-    
-    for file in glob.glob(waveforms_2023_files):
-        if not os.path.isdir(file):
-            continue
-        run_number = int(file.split("/")[-1])
-        files = os.path.join(file, "*.root")
-        waveforms_2023_cfg[run_number] = preappend_to_filepaths(files, "root://eosuser.cern.ch/")
-    
-    for file in glob.glob(waveforms_2024_files):
-        if not os.path.isdir(file):
-            continue
-        run_number = int(file.split("/")[-1])
-        files = os.path.join(file, "*.root")
-
-        if caloNu_run_range[0] > run_number:
-            waveforms_2024_NoCaloNu_cfg[run_number] = preappend_to_filepaths(files, "root://eosuser.cern.ch/")
-        else:
-            continue
-
-    for file in glob.glob(waveforms_2024_CaloNu_files):
-        if not os.path.isdir(file):
-            continue
-        run_number = int(file.split("/")[-1])
-        files = os.path.join(file, "*.root")
-
-        if caloNu_run_range[0] <= run_number <= caloNu_run_range[1]:
-            waveforms_2024_CaloNu_cfg[run_number] = preappend_to_filepaths(files, "root://eosuser.cern.ch/")
-        else:
-            continue
-
-    for file in glob.glob(waveforms_2024_postCaloNu_files):
-        if not os.path.isdir(file):
-            continue
-        run_number = int(file.split("/")[-1])
-        files = os.path.join(file, "*.root")
-
-        if run_number > caloNu_run_range[1]:
-            waveforms_2024_PostCaloNu_cfg[run_number] = preappend_to_filepaths(files, "root://eosuser.cern.ch/")
-        else:
-            continue
-
-    data_all = data_2022_cfg | data_2023_cfg | data_2024_CaloNu_cfg | data_2024_NoCaloNu_cfg
-    waveforms_all = waveforms_2022_cfg | waveforms_2023_cfg | waveforms_2024_CaloNu_cfg | waveforms_2024_NoCaloNu_cfg | waveforms_2024_PostCaloNu_cfg
-
-    run_cfg = {}
-
-    for run_number in data_all.keys():
-        run_cfg[run_number] = {
-            "data_paths": [data_all[run_number]],
-            # [] if there are no waveform files for this run (previously this gave [[]])
-            "waveform_paths": [waveforms_all[run_number]] if run_number in waveforms_all else []
-        }
-
-    for run_number, cfg in run_cfg.items():
-        
-        data_paths = cfg["data_paths"]
-        waveform_paths = cfg["waveform_paths"]
-
-        if len(data_paths) == 0:
-            print(f"Warning: No data paths for run {run_number}")
-        if len(waveform_paths) == 0:
-            print(f"Warning: No waveform paths for run {run_number}")
-
-
-    run_list = list(run_cfg.keys())
-    with open("../config/run_list.txt", "w") as f:
-        for run_number in run_list:
-            f.write(f"{run_number}\n")
-
-    # NOTE: only data runs are found by the directory scan above. MC runs (2000xx) in the
-    # existing config/file_config.yaml were added by hand and must be copied across.
-    write_file_config_yaml(run_cfg, "../config/file_config.yaml",
-                           extra_comment="Generated by scripts/make_fileconfig.py")
 
 if __name__ == "__main__":
     main()

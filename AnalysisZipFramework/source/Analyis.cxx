@@ -1203,9 +1203,25 @@ void Analysis::Run(TString outputFileName) {
         float totalLumi = std::accumulate(lumiBranch.begin(), lumiBranch.end(), 0.f);
         INFO("Total integrated luminosity for this job: ", totalLumi, " /pb");
 
+        // Sample information from the file config (MC): description, nominal or variation, generated luminosity
+        std::vector<std::string> descriptionBranch;
+        std::vector<int>   isNominalBranch;      // 1 / 0, -1 if not given (e.g. data)
+        std::vector<float> lumiSampleBranch;     // fb^-1, -1 if not given (e.g. data)
+        for (const auto& run : runBranch) {
+            const auto it = m_runFiles.find(run);
+            const bool known = it != m_runFiles.end();
+            descriptionBranch.push_back(known ? it->second.description : "");
+            isNominalBranch.push_back(known && it->second.isNominal ? static_cast<int>(*it->second.isNominal) : -1);
+            lumiSampleBranch.push_back(known && it->second.lumiSample ? static_cast<float>(*it->second.lumiSample) : -1.f);
+            if (known && !it->second.description.empty()) INFO("Run ", run, ": ", it->second.description);
+        }
+
         meta_tree->Branch("run_number",     &runBranch);
-        meta_tree->Branch("lumi",           &lumiBranch);
+        meta_tree->Branch("lumi",           &lumiBranch);         // recorded luminosity from the GRL, pb^-1 (-1 for MC)
         meta_tree->Branch("n_events_input", &nEventsInput);
+        meta_tree->Branch("description",    &descriptionBranch);
+        meta_tree->Branch("is_nominal",     &isNominalBranch);
+        meta_tree->Branch("lumi_sample",    &lumiSampleBranch);   // generated luminosity of MC samples, fb^-1
         meta_tree->Fill();
         meta_tree->Write();
         INFO("Saved metadata tree with ", runBranch.size(), " run(s).");

@@ -25,17 +25,13 @@ int main(int argc, char* argv[]) {
     bool        verbose    = false;
     bool        useMT      = false;
     int         nThreads   = 0; // 0 = all available cores (ROOT::EnableImplicitMT() default)
-    // Config file paths (relative to the working directory, normally the build directory,
-    // where cmake copies the config/ folder)
-    std::string fileConfigPath = "config/file_config.yaml";
-    std::string grlConfigPath  = "config/grl_config.yaml";
-    std::string outputConfigPath = "config/output_columns.yaml";
-    std::string cutsConfigPath   = "config/cuts_muon_neutrino.yaml";
-    std::string definitionsConfigPath = "config/definitions.yaml";
-    std::string categoriesConfigPath  = "config/categories.yaml";
-    // Analysis config: which configs to use (see ConfigUtils::readAnalysisConfig). The options above
-    // override its sections; without an analysis config the defaults above are used.
-    std::string analysisConfigPath;
+    // Config files (paths relative to the working directory, normally the build directory, where
+    // cmake copies the config/ folder). The analysis config lists the configs to use (see
+    // ConfigUtils::readAnalysisConfig); the --*-config options replace its sections.
+    const std::string defaultAnalysisConfig = "config/analyses/muon_neutrino.yaml";
+    std::string analysisConfigPath = defaultAnalysisConfig;
+    bool analysisConfigGiven = false;
+    std::string fileConfigPath, grlConfigPath, outputConfigPath, cutsConfigPath, definitionsConfigPath, categoriesConfigPath;
     std::set<std::string> configsOnCommandLine;   // analysis config sections given as a command line option
     // Alternative to --run: take all .root files in these directories (file config not used)
     std::vector<std::string> inputDirs;
@@ -123,6 +119,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             analysisConfigPath = argv[++i];
+            analysisConfigGiven = true;
 
         } else if (arg == "--categories-config") {
             if (i + 1 >= argc) {
@@ -225,14 +222,11 @@ int main(int argc, char* argv[]) {
     try {
         // Which config parts each section uses:
         //   1. the command line option (--cuts-config, ...) if given,
-        //   2. otherwise the analysis config's section, if an analysis config is given
-        //      (a section missing from the analysis config means: no config of that type),
-        //   3. otherwise the default config file.
-        std::optional<ConfigUtils::AnalysisConfig> analysisConfig;
-        if (!analysisConfigPath.empty()) {
-            analysisConfig = ConfigUtils::readAnalysisConfig(analysisConfigPath);
-            configRecord.push_back({"analysis_config", analysisConfig->path, analysisConfig->text});
-        }
+        //   2. otherwise the analysis config's section (default analysis config: config/analyses/muon_neutrino.yaml;
+        //      a section missing from the analysis config means: no config of that type).
+        if (!analysisConfigGiven) INFO("Analysis config: ", analysisConfigPath, " (default, no --analysis-config given)");
+        const ConfigUtils::AnalysisConfig analysisConfig = ConfigUtils::readAnalysisConfig(analysisConfigPath);
+        configRecord.push_back({"analysis_config", analysisConfig.path, analysisConfig.text});
         const std::map<std::string, std::string> pathOption{
             {"file_configs", fileConfigPath}, {"grl", grlConfigPath}, {"output", outputConfigPath},
             {"definitions", definitionsConfigPath}, {"categories", categoriesConfigPath}, {"cuts", cutsConfigPath}};
@@ -246,17 +240,12 @@ int main(int argc, char* argv[]) {
                 how = "not used (--input-dir)";
             } else if (configsOnCommandLine.count(section)) {
                 parts = {ConfigUtils::configFilePart(pathOption.at(section))};
-                how = "from " + optionName.at(section) + (analysisConfig ? " (overrides the analysis config)" : "");
-            } else if (analysisConfig) {
-                if (const auto p = analysisConfig->section(section)) {
-                    parts = *p;
-                    how = "from the analysis config";
-                } else {
-                    how = "none (not in the analysis config)";
-                }
+                how = "from " + optionName.at(section) + " (overrides the analysis config)";
+            } else if (const auto p = analysisConfig.section(section)) {
+                parts = *p;
+                how = "from the analysis config";
             } else {
-                parts = {ConfigUtils::configFilePart(pathOption.at(section))};
-                how = "default";
+                how = "none (not in the analysis config)";
             }
             INFO("Config ", section, ": ", ConfigUtils::describeParts(parts), "  [", how, "]");
             for (const auto& p : parts) configRecord.push_back({section, p.origin, p.text});
@@ -336,6 +325,7 @@ int main(int argc, char* argv[]) {
     analysis.isMC = isMC;
     analysis.useReducedCharge = useReducedCharge;
     analysis.setRunNumbers(runNumbers);
+    analysis.setRunFiles(fileConfig);   // description / is_nominal / lumi_sample for the meta tree
     analysis.setOutputColumns(outputConfig);
     analysis.setDefinitions(definitions);
     analysis.setSelection(selection);

@@ -61,6 +61,10 @@ namespace ConfigUtils {
     struct RunFiles {
         std::vector<std::string> dataPaths;      // physics NTuples (wildcards allowed)
         std::vector<std::string> waveformPaths;  // aux NTuples with the VetoNu reduced charge (may be empty)
+        // Optional information about the sample (written to the meta tree)
+        std::string description;                 // e.g. "2024 CaloNu EPOS pi"
+        std::optional<bool> isNominal;           // nominal MC sample (true) or a variation (false)
+        std::optional<double> lumiSample;        // generated luminosity of an MC sample, fb^-1
     };
 
     using FileConfig = std::map<int, RunFiles>;  // run number -> files
