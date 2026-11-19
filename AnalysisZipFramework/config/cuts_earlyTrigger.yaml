@@ -76,18 +76,22 @@ Cuts:
     expression: "!ExcludedTimes"
     data_type: DATA
 
-  VetcNu0 one MiP signal:
+  VetoNu0 one MiP signal:
     expression: "VetoNu0_raw_charge < 150 && VetoNu0_raw_charge > 60"
     data_type: DATA
   
-  VetcNu1 one MiP signal:
+  VetoNu1 one MiP signal:
     expression: "VetoNu0_raw_charge < 150 && VetoNu0_raw_charge > 60"
     data_type: DATA
   
   VetoNu layers in time:
     expression: "abs(VetoNu0_bcidtime - VetoNu1_bcidtime) < 3"
     data_type: DATA
-  
+
   Early Veto Trigger:
     expression: "Veto1_TriggeredEarly || Veto2_TriggeredEarly"
     data_type: DATA
+
+  # Veto is saturated:
+  #   expression: "Veto10_status == 4 || Veto11_status == 4 || Veto20_status == 4 || Veto20_status == 4"
+  #   data_type: DATA
