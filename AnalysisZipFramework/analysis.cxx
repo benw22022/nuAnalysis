@@ -212,6 +212,7 @@ int main(int argc, char* argv[]) {
     ConfigUtils::SelectionConfig selection;
     ConfigUtils::DefinitionsConfig definitions;
     ConfigUtils::CategoriesConfig categories;
+    ConfigUtils::EventIDColumnsConfig eventIDColumns;
     // Everything used to configure this job, saved in the output file (config tree)
     std::vector<Analysis::ConfigRecord> configRecord;
     {
@@ -258,13 +259,11 @@ int main(int argc, char* argv[]) {
         selection    = ConfigUtils::readSelectionConfig(partsFor("cuts"), ConfigUtils::categoryDataTypes(categories));
         grlConfig    = ConfigUtils::readGRLConfig(partsFor("grl"));
         fileConfig   = ConfigUtils::readFileConfig(partsFor("file_configs"));
+        eventIDColumns = ConfigUtils::readEventIDColumnsConfig(partsFor("eventid_pass"));
         const auto outputParts = partsFor("output");
         outputConfig = ConfigUtils::readOutputColumnsConfig(outputParts);
         if (outputParts.empty()) {
             WARNING("No output columns config: the nt tree will only contain the columns that are always saved (run, eventID, ...).");
-        }
-        if (!isMC && grlConfig.grlJsons.empty()) {
-            WARNING("No GRL: every event of this data run fails 'Good times' and the luminosity is set to -1.");
         }
     } catch (const std::exception& e) {
         ERROR("Failed to read config: ", e.what());
@@ -325,7 +324,8 @@ int main(int argc, char* argv[]) {
     analysis.isMC = isMC;
     analysis.useReducedCharge = useReducedCharge;
     analysis.setRunNumbers(runNumbers);
-    analysis.setRunFiles(fileConfig);   // description / is_nominal / lumi_sample for the meta tree
+    analysis.setRunFiles(fileConfig);
+    analysis.setEventIDColumns(eventIDColumns);   // description / is_nominal / lumi_sample for the meta tree
     analysis.setOutputColumns(outputConfig);
     analysis.setDefinitions(definitions);
     analysis.setSelection(selection);

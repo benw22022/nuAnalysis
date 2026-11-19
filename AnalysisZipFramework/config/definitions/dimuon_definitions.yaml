@@ -73,6 +73,9 @@ Definitions:
   SubLeadTrack_Idx:
     expression: "Track_pz0.size() < 2 ? -1 : static_cast<int>(ROOT::VecOps::Argsort(Track_pz0)[Track_pz0.size() - 2])"
 
+  SubLeadTrack_pz0:   # GeV
+    expression: "SafeAt(Track_pz0, SubLeadTrack_Idx) / 1000"
+
   LeadSubLeadTrack_chargeProduct:
     expression: "SafeAt(Track_charge, LeadTrack_Idx) * SafeAt(Track_charge, SubLeadTrack_Idx)"
 

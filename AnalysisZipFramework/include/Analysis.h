@@ -52,6 +52,9 @@ class Analysis {
         // File config of the runs: its description / is_nominal / lumi_sample are written to the meta tree
         void setRunFiles(const ConfigUtils::FileConfig& files) { m_runFiles = files; }
 
+        // Extra columns for the eventID_pass tree (analysis config section EventID_pass)
+        void setEventIDColumns(const ConfigUtils::EventIDColumnsConfig& config) { m_eventIDColumns = config; }
+
         // Which columns to write to the output nt tree (see config/output_columns.yaml).
         // If not set, all columns are written.
         void setOutputColumns(const ConfigUtils::OutputColumnsConfig& config) { m_outputColumnsConfig = config; }
@@ -150,6 +153,7 @@ class Analysis {
 
         std::vector<int> m_runNumbers;
         ConfigUtils::FileConfig m_runFiles;
+        std::optional<ConfigUtils::EventIDColumnsConfig> m_eventIDColumns;
 
         std::optional<ConfigUtils::OutputColumnsConfig> m_outputColumnsConfig;
         std::vector<std::string> selectOutputColumns();
@@ -165,6 +169,8 @@ class Analysis {
         // Good / excluded time ranges per run from the GRL (used by the GoodTimes / ExcludedTimes columns)
         std::shared_ptr<const GRLUtils::GRLTimes> m_grlTimes;
         void defineGRLTimeColumns();
+        // Throws if a data job without GRL uses GoodTimes / ExcludedTimes in `expression`
+        void checkGRLColumnsAvailable(const std::string& expression, const std::string& what) const;
 
         // Compatibility between NTuple versions (see Analyis.cxx):
         //   setupVetoCompatibility: old VetoSt* naming, missing Veto11 (2022-2023)

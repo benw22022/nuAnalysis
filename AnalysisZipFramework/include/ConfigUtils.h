@@ -175,8 +175,8 @@ namespace ConfigUtils {
     DefinitionsConfig readDefinitionsConfig(const std::vector<ConfigPart>& parts);
 
     // ── Analysis config: which configs an analysis uses ─────────────────────
-    // A YAML file with up to six sections (keys are case-insensitive):
-    //   file_configs, cuts, definitions, categories, output, grl
+    // A YAML file with up to seven sections (keys are case-insensitive):
+    //   file_configs, cuts, definitions, categories, output, eventid_pass, grl
     // Each section is a list of config files (paths relative to the analysis config's directory, or
     // absolute) and/or inline entries, written as under the section key of that file type. A section
     // that is left out means no config of that type.
@@ -187,6 +187,23 @@ namespace ConfigUtils {
         // Parts of a section, or nullopt if the analysis config does not have that section
         std::optional<std::vector<ConfigPart>> section(const std::string& name) const;
     };
+
+    // ── Extra eventID_pass columns (analysis config section EventID_pass) ───
+    // Columns written to the eventID_pass tree in addition to run, eventID, the passed_<cut> flags and
+    // mc_category. Entries are exact column names or glob patterns (as in the output columns config).
+    // File form: eventID_pass: {keep: [...], keep_mc: [...], keep_data: [...]}; inline entry: the map itself.
+    struct EventIDColumnsConfig {
+        std::vector<std::string> keep;      // for all samples
+        std::vector<std::string> keepMC;    // MC only
+        std::vector<std::string> keepData;  // data only
+        std::string sourcePath;
+    };
+
+    EventIDColumnsConfig readEventIDColumnsConfig(const std::vector<ConfigPart>& parts);
+
+    // The extra columns for this sample, in the order of allColumns. WARNING for entries matching no column.
+    std::vector<std::string> selectEventIDColumns(const std::vector<std::string>& allColumns,
+                                                  const EventIDColumnsConfig& config, bool isMC);
 
     // Section names, in the order they are listed in log messages
     const std::vector<std::string>& analysisConfigSections();

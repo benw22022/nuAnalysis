@@ -138,9 +138,24 @@ void Analysis::addAuxFiles(TString auxFileTreeName, std::vector<TString> auxFile
 
 // }
 
+// The GRL is optional: without JSON files there are no GoodTimes / ExcludedTimes columns (an error
+// if a data job uses them), without CSV files the luminosity in the meta tree is -1
 void Analysis::setGRL(const std::vector<TString>& grlJsons, const std::vector<TString>& grlCSVs) {
-    m_runLumiDict = GRLUtils::getRunNumberLumiDict(grlCSVs);
-    m_grlTimes = std::make_shared<const GRLUtils::GRLTimes>(GRLUtils::readGRLTimes(grlJsons));
+    m_runLumiDict.clear();
+    m_grlTimes.reset();
+    if (!grlCSVs.empty())  m_runLumiDict = GRLUtils::getRunNumberLumiDict(grlCSVs);
+    if (!grlJsons.empty()) m_grlTimes = std::make_shared<const GRLUtils::GRLTimes>(GRLUtils::readGRLTimes(grlJsons));
+}
+
+// Without a GRL, data jobs must not use the GRL columns: stop with a clear message instead of a JIT error
+void Analysis::checkGRLColumnsAvailable(const std::string& expression, const std::string& what) const {
+    if (isMC || m_grlTimes) return;
+    static const std::regex grlColumn(R"(\b(GoodTimes|ExcludedTimes)\b)");
+    std::smatch m;
+    if (std::regex_search(expression, m, grlColumn)) {
+        throw std::runtime_error(what + " uses '" + m.str(1) + "', which needs the GRL, but no GRL (grl_jsons) is given for this "
+                                 "data job. Add a GRL section to the analysis config (or use --grl-config), or do not use this column.");
+    }
 }
 
 namespace {
@@ -161,7 +176,9 @@ namespace {
 void Analysis::defineGRLTimeColumns() {
     if (isMC) return;  // GRL time cuts are data only
     if (!m_grlTimes) {
-        throw std::runtime_error("GRL not set: call Analysis::setGRL() before Run()");
+        WARNING("No GRL (grl_jsons) given for this data job: the GoodTimes and ExcludedTimes columns are not defined "
+                "(using them is an error) and the luminosity in the meta tree is -1.");
+        return;
     }
     for (int run : m_runNumbers) {
         if (!m_grlTimes->stable.hasRun(run)) {
@@ -385,6 +402,7 @@ void Analysis::applyDefinitions() {
                                          "in order (files and inline entries in the order they are listed): move '" + token + "' above '" + d.name + "'.");
             }
         }
+        if (appliesTo(parseDataType(d.dataType))) checkGRLColumnsAvailable(d.expression, d.origin + ": definition '" + d.name + "'");
         if (Define(d.name, d.expression, parseDataType(d.dataType), d.origin)) ++nDefined;
         else ++nSkipped;
     }
@@ -430,6 +448,7 @@ void Analysis::applySelection() {
                 applyCut("!(" + categoryFlagsOr(*selected) + ") || (" + cut.expression + ")", cut.name, ALL);
             }
         } else {
+            if (appliesTo(parseDataType(cut.dataType))) checkGRLColumnsAvailable(cut.expression, m_selection->sourcePath + ": cut '" + cut.name + "'");
             applyCut(cut.expression, cut.name, parseDataType(cut.dataType));
         }
         // Histograms attached to a cut are booked at this point of the selection even if the cut
@@ -1149,12 +1168,14 @@ void Analysis::Run(TString outputFileName) {
         const std::string eventIDTmpFile = std::string(outputFileName.Data()) + ".eventID_pass.tmp.root";
         m_passedCutColNames.push_back("run");
         m_passedCutColNames.push_back("eventID");
-        if (isMC){
-            m_passedCutColNames.push_back("truth_isCharm");
-            m_passedCutColNames.push_back("truth_isCharmDimuon");
-            m_passedCutColNames.push_back("nu_interaction_type");
-            m_passedCutColNames.push_back("n_matchedMuonTracks");
-            m_passedCutColNames.push_back("n_charmMatchedMuonTracks");
+        // Extra columns from the analysis config (EventID_pass section)
+        if (m_eventIDColumns) {
+            for (const auto& c : ConfigUtils::selectEventIDColumns(m_eventIDNode->GetColumnNames(), *m_eventIDColumns, isMC)) {
+                if (std::find(m_passedCutColNames.begin(), m_passedCutColNames.end(), c) == m_passedCutColNames.end()) {
+                    m_passedCutColNames.push_back(c);
+                    INFO("Saving extra column ", c, " to eventID_pass.");
+                }
+            }
         }
         if (useCategories()) m_passedCutColNames.push_back("mc_category");
         auto eventIDSnapshot = m_eventIDNode->Snapshot("eventID_pass", eventIDTmpFile, m_passedCutColNames, opts);
@@ -1195,8 +1216,9 @@ void Analysis::Run(TString outputFileName) {
             lumiBranch.push_back(it != m_runLumiDict.end() ? it->second : -1.f);
 
             if (it == m_runLumiDict.end()) {
-                if (isMC) INFO("MC run ", run, " has no GRL lumi. Setting lumi to -1.");
-                else      WARNING("Run ", run, " not found in GRL! Setting lumi to -1.");
+                if (isMC)                       INFO("MC run ", run, " has no GRL lumi. Setting lumi to -1.");
+                else if (m_runLumiDict.empty()) INFO("No GRL CSV given: setting the lumi of run ", run, " to -1.");
+                else                            WARNING("Run ", run, " not found in GRL! Setting lumi to -1.");
             }
         }
 

@@ -488,7 +488,7 @@ namespace ConfigUtils {
 
     // ── Analysis config ─────────────────────────────────────────────────────
     const std::vector<std::string>& analysisConfigSections() {
-        static const std::vector<std::string> v{"file_configs", "grl", "output", "definitions", "categories", "cuts"};
+        static const std::vector<std::string> v{"file_configs", "grl", "output", "eventid_pass", "definitions", "categories", "cuts"};
         return v;
     }
 
@@ -572,6 +572,36 @@ namespace ConfigUtils {
         std::vector<std::string> types{"signal", "background", "other"};
         for (const auto& c : config.categories) types.push_back(c.name);
         return types;
+    }
+
+    // ── Extra eventID_pass columns ──────────────────────────────────────────
+    EventIDColumnsConfig readEventIDColumnsConfig(const std::vector<ConfigPart>& parts) {
+        EventIDColumnsConfig config;
+        config.sourcePath = describeParts(parts);
+        for (const auto& p : parts) {
+            INFO("Reading eventID_pass columns config from ", p.origin, "...");
+            requireMapOrEmpty(p);
+            YAML::Node cols = p.node;           // inline entry: {keep, keep_mc, keep_data}
+            if (p.isFile) {
+                warnUnknownKeys(p.node, {"eventID_pass"}, p.origin);
+                cols = p.node["eventID_pass"];
+            }
+            if (!cols || !cols.IsMap()) {
+                throw std::runtime_error(p.origin + (p.isFile ? ": expected an 'eventID_pass:' map with keep / keep_mc / keep_data"
+                                                              : ": expected a map with keep / keep_mc / keep_data"));
+            }
+            const std::string context = p.origin + (p.isFile ? ": eventID_pass" : "");
+            warnUnknownKeys(cols, {"keep", "keep_mc", "keep_data"}, context);
+            for (auto [key, list] : {std::pair{"keep", &config.keep}, {"keep_mc", &config.keepMC}, {"keep_data", &config.keepData}}) {
+                const auto entries = getOptional<std::vector<std::string>>(cols, key, {}, context);
+                list->insert(list->end(), entries.begin(), entries.end());
+            }
+        }
+        if (!parts.empty()) {
+            INFO("eventID_pass columns config: keep: ", config.keep.size(), " (+", config.keepMC.size(), " MC, +",
+                 config.keepData.size(), " data)");
+        }
+        return config;
     }
 
     const std::vector<std::string>& mandatoryOutputColumns() {
@@ -658,6 +688,20 @@ namespace ConfigUtils {
             }
         }
 
+        std::vector<std::string> result;
+        for (const auto& c : allColumns) {
+            if (selected.count(c)) result.push_back(c);
+        }
+        return result;
+    }
+
+    std::vector<std::string> selectEventIDColumns(const std::vector<std::string>& allColumns,
+                                                  const EventIDColumnsConfig& config, bool isMC) {
+        std::set<std::string> selected;
+        const std::string src = config.sourcePath + " (eventID_pass)";
+        applyKeepList(config.keep, "keep", allColumns, selected, src);
+        if (isMC) applyKeepList(config.keepMC,   "keep_mc",   allColumns, selected, src);
+        else      applyKeepList(config.keepData, "keep_data", allColumns, selected, src);
         std::vector<std::string> result;
         for (const auto& c : allColumns) {
             if (selected.count(c)) result.push_back(c);

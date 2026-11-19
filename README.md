@@ -95,10 +95,12 @@ Cuts:
 - ../cuts_earlyTrigger.yaml
 ```
 
-- Sections: `file_configs`, `GRL`, `Output`, `Definitions`, `Categories`, `Cuts` (any case). Each is a list of config files and/or inline entries. An inline entry is written like the contents of that file type under its section key (`Cuts` / `Definitions` / `Categories`: `<name>: {...}`; `file_configs`: `<run>: {data_paths: ...}`; `Output`: the `nt:` settings; `GRL`: `grl_jsons` / `grl_csvs`).
+- Sections: `file_configs`, `GRL`, `Output`, `EventID_pass`, `Definitions`, `Categories`, `Cuts` (any case). Each is a list of config files and/or inline entries. An inline entry is written like the contents of that file type under its section key (`Cuts` / `Definitions` / `Categories`: `<name>: {...}`; `file_configs`: `<run>: {data_paths: ...}`; `Output`: the `nt:` settings; `GRL`: `grl_jsons` / `grl_csvs`).
 - Entries are concatenated in order (definitions are created in that order). Names must be unique across all entries of a section (cuts, histograms, definitions, categories, run numbers); a duplicate is an error. `Output`: the `save_all_*` switches are on if on in any entry, the `keep` / `drop` lists are concatenated.
 - A section that is left out means no config of that type (e.g. no `Categories`: no MC split; no `Output`: `nt` only has `run` and `eventID`). Without `--analysis-config`, `config/analyses/muon_neutrino.yaml` is used.
 - A `--*-config` option on the command line replaces the whole section.
+- `EventID_pass`: extra columns for the `eventID_pass` tree, e.g. `- keep_mc: [nu_interaction_type]` (`keep`: all samples, `keep_mc`: MC only, `keep_data`: data only; column names or glob patterns; a name matching no column gives a warning). Without it, `eventID_pass` has `run`, `eventID`, the `passed_<cut>` flags and `mc_category`.
+- `GRL` is only used for data and is optional: without it a data job gives a warning, the luminosity in `meta` is -1, and `GoodTimes` / `ExcludedTimes` are not defined, so a cut or definition using them stops the job with an error. MC jobs do not use the GRL. `Categories` are only used for MC, so data-only analyses (e.g. `early_trigger`) can leave them out.
 - `config/analyses/` has one analysis config per setup: `muon_neutrino.yaml` (the defaults), `dimuon.yaml`, `dimuon_full.yaml`, `dimuon_signal_only.yaml`, `early_trigger.yaml`.
 
 Every config used (the command line, the analysis config, each config file as read and each inline entry) is saved in the `config` tree of the output file.

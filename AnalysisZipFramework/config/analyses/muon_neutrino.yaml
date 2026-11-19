@@ -3,7 +3,7 @@
 #
 # Use with: ./analysis --analysis-config config/analyses/muon_neutrino.yaml ...
 #
-# Sections (keys are case-insensitive): file_configs, GRL, Output, Definitions, Categories, Cuts
+# Sections (keys are case-insensitive): file_configs, GRL, Output, EventID_pass, Definitions, Categories, Cuts
 # Each section is a list. An entry is either
 #   - a config file: path relative to the directory of THIS file (here config/analyses/), or absolute
 #   - an inline entry: written like the contents of that file type under its section key, e.g.
@@ -17,8 +17,13 @@
 # Entries are concatenated in order (definitions are created in this order). Names must be unique
 # across all entries of a section (cuts, histograms, definitions, categories, run numbers).
 # Output: save_all_* switches are on if on in any entry, keep / drop lists are concatenated.
+# EventID_pass: extra columns for the eventID_pass tree, e.g. - keep_mc: [nu_interaction_type]
+#   (keep: all samples, keep_mc: MC only, keep_data: data only; names or glob patterns).
+# GRL is only used for data: without it there are no GoodTimes / ExcludedTimes (an error if a cut
+#   uses them) and the luminosity is -1.
 #
-# A section that is left out means NO config of that type (e.g. no Categories: no MC split).
+# A section that is left out means NO config of that type (e.g. no Categories: no MC split;
+# no EventID_pass: only run, eventID, the passed_<cut> flags and mc_category).
 # Command line options (--cuts-config, --definitions-config, ...) replace the whole section.
 # Every config used is saved in the 'config' tree of the output file.
 #
@@ -39,6 +44,9 @@ GRL:
 Output:
 - ../outputs/output_columns.yaml
 
+EventID_pass:
+- keep_mc: [nu_interaction_type]
+
 Definitions:
 - ../definitions/common_definitions.yaml
 - ../definitions/truth_definitions.yaml
@@ -48,7 +56,7 @@ Definitions:
     expression: "LeadTrack_charge / SafeAt(Track_pz0, LeadTrack_Idx)"
 
 Categories:
-- ../categories/muon_neutrino_categories.yaml/
+- ../categories/muon_neutrino_categories.yaml
 
 Cuts:
-- ../cuts_muon_neutrino.yaml
+- ../cuts/cuts_muon_neutrino.yaml

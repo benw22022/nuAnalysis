@@ -3,7 +3,7 @@
 #
 # Use with: ./analysis --analysis-config config/analyses/early_trigger.yaml ...
 #
-# Sections (keys are case-insensitive): file_configs, GRL, Output, Definitions, Categories, Cuts
+# Sections (keys are case-insensitive): file_configs, GRL, Output, EventID_pass, Definitions, Categories, Cuts
 # Each section is a list. An entry is either
 #   - a config file: path relative to the directory of THIS file (here config/analyses/), or absolute
 #   - an inline entry: written like the contents of that file type under its section key, e.g.
@@ -17,8 +17,13 @@
 # Entries are concatenated in order (definitions are created in this order). Names must be unique
 # across all entries of a section (cuts, histograms, definitions, categories, run numbers).
 # Output: save_all_* switches are on if on in any entry, keep / drop lists are concatenated.
+# EventID_pass: extra columns for the eventID_pass tree, e.g. - keep_mc: [nu_interaction_type]
+#   (keep: all samples, keep_mc: MC only, keep_data: data only; names or glob patterns).
+# GRL is only used for data: without it there are no GoodTimes / ExcludedTimes (an error if a cut
+#   uses them) and the luminosity is -1.
 #
-# A section that is left out means NO config of that type (e.g. no Categories: no MC split).
+# A section that is left out means NO config of that type (e.g. no Categories: no MC split;
+# no EventID_pass: only run, eventID, the passed_<cut> flags and mc_category).
 # Command line options (--cuts-config, --definitions-config, ...) replace the whole section.
 # Every config used is saved in the 'config' tree of the output file.
 #
@@ -37,6 +42,14 @@ Output:
 
 Definitions:
 - ../definitions/common_definitions.yaml
+# Early veto trigger: a veto layer fired, the FaserNu veto (Tin2) did not fire in this bunch crossing
+# but fired in the next one
+- Veto1_TriggeredEarly:
+    expression: "((inputBits & 8) == 8) && ((inputBits & 4) == 0) && ((inputBitsNext & 4) == 4)"
+    data_type: DATA
+- Veto2_TriggeredEarly:
+    expression: "((inputBits & 128) == 128) && ((inputBits & 4) == 0) && ((inputBitsNext & 4) == 4)"
+    data_type: DATA
 
 Cuts:
 - ../cuts/cuts_earlyTrigger.yaml
