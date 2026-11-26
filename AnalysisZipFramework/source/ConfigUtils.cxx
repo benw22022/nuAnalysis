@@ -2,6 +2,7 @@
 #include "MessageService.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <cctype>
 #include <filesystem>
 #include <fstream>
@@ -254,14 +255,16 @@ namespace ConfigUtils {
         }
 
         AxisConfig readAxis(const YAML::Node& node, const std::string& context) {
-            if (!node.IsMap()) throw std::runtime_error(context + ": expected a map {variable, bins, min, max} or {variable, edges}" + lineOf(node));
-            warnUnknownKeys(node, {"variable", "bins", "min", "max", "edges"}, context);
+            if (!node.IsMap()) throw std::runtime_error(context + ": expected a map {variable, bins, min, max[, log]} or {variable, edges}" + lineOf(node));
+            warnUnknownKeys(node, {"variable", "bins", "min", "max", "log", "edges"}, context);
             AxisConfig axis;
             axis.variable = getRequired<std::string>(node, "variable", context);
             const bool fixed = node["bins"] || node["min"] || node["max"];
             const bool edges = static_cast<bool>(node["edges"]);
             if (fixed && edges) throw std::runtime_error(context + ": give EITHER bins/min/max OR edges, not both" + lineOf(node));
             if (!fixed && !edges) throw std::runtime_error(context + ": missing binning: give bins/min/max or edges" + lineOf(node));
+            const bool log = getOptional<bool>(node, "log", false, context);
+            if (log && edges) throw std::runtime_error(context + ": log only applies to bins/min/max (edges are used as given)" + lineOf(node["log"]));
             if (edges) {
                 axis.edges = getRequired<std::vector<double>>(node, "edges", context);
                 if (axis.edges.size() < 2) throw std::runtime_error(context + ": edges needs at least 2 values" + lineOf(node["edges"]));
@@ -274,6 +277,20 @@ namespace ConfigUtils {
                 axis.max   = getRequired<double>(node, "max", context);
                 if (axis.nBins <= 0)       throw std::runtime_error(context + ": bins must be > 0" + lineOf(node["bins"]));
                 if (!(axis.max > axis.min)) throw std::runtime_error(context + ": max must be greater than min" + lineOf(node["max"]));
+                if (log) {
+                    // Logarithmic binning: nBins bins of equal width in log10(x) between min and max, booked as variable
+                    // bin edges. Values <= 0 cannot be on a log axis: they (and values below min) go to the underflow bin.
+                    if (!(axis.min > 0)) {
+                        throw std::runtime_error(context + ": log binning needs min > 0 (got " + std::to_string(axis.min) + ")" + lineOf(node["min"]) +
+                                                 ". Values below min, including <= 0, go to the underflow bin");
+                    }
+                    axis.log = true;
+                    axis.edges.resize(axis.nBins + 1);
+                    const double lmin = std::log10(axis.min), lmax = std::log10(axis.max);
+                    for (int i = 0; i <= axis.nBins; ++i) axis.edges[i] = std::pow(10., lmin + (lmax - lmin) * i / axis.nBins);
+                    axis.edges.front() = axis.min;   // exact end points (no rounding from pow/log10)
+                    axis.edges.back()  = axis.max;
+                }
             }
             return axis;
         }

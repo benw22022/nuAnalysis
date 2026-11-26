@@ -96,7 +96,8 @@ namespace ConfigUtils {
         std::string variable;
         int nBins{0};
         double min{0.}, max{0.};
-        std::vector<double> edges;   // variable binning if not empty
+        std::vector<double> edges;   // variable binning if not empty (also filled for log binning)
+        bool log{false};             // log: nBins equal in log10 between min > 0 and max (stored as edges)
         bool hasEdges() const { return !edges.empty(); }
     };
 
