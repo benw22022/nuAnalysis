@@ -185,3 +185,10 @@ runs:
     description: "2024 FaserNu POWHEG+Pythia charm central, Geant4 FTFP_BERT_HP_ENDFB8"
     is_nominal: false
     lumi_sample: 10000   # fb^-1
+
+  2000931:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200093/bck/s0015a/*"
+    description: "2024 FaserNu EPOS pi Tobi"
+    is_nominal: true
+    lumi_sample: 10000   # fb^-1

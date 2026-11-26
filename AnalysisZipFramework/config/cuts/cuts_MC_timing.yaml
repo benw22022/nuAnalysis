@@ -1,0 +1,127 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nuAnalysis selection config: cuts and histograms
+#
+# Histograms:            histograms booked on all events, before the first cut
+#   - <histogram>
+#
+# Cuts:                  applied in the order of this file
+#   <cut name>:          name in the cutflow; the eventID_pass flag is 'passed_<cut name>'
+#     expression:        RDataFrame filter expression (required)
+#     data_type:         ALL (default), DATA, MC or an MC category type (optional, see below)
+#     requires:          [conditions] (optional, see below)
+#     histograms:        [<histogram>, ...] booked after this cut (optional)
+#     n_minus_1:         [<histogram>, ...] N-1 histograms (optional, see below)
+#
+# <histogram>:
+#   name:       unique name of the histogram in the output file (required)
+#   title:      optional, defaults to the name
+#   data_type:  ALL (default), DATA, MC or an MC category type (optional)
+#   requires:   [conditions] (optional)
+#   split:      true (default) / false: on MC, also book one copy per MC category (categories.yaml)
+#   x:          {variable: <column>, bins: <n>, min: <low>, max: <high>}   fixed binning
+#           or  {variable: <column>, edges: [e0, e1, ..., eN]}            variable binning
+#   y:          same as x; if present the histogram is 2D (y vs x)
+#
+# data_type (for cuts and histograms):
+#   ALL     every sample
+#   DATA    data only
+#   MC      MC only
+# MC category types (only with MC categories in config/categories.yaml; event level, never on data):
+#   signal, background   events of the signal / background categories (background includes 'other')
+#   The MC truth selection (e.g. CC nu_mu in the fiducial volume) is done with the categories, not with cuts.
+#   other                events in no category
+#   <category name>      events of that category, e.g. NC_nu
+#   On a cut: the cut only applies to events of those categories, all other events pass it.
+#   On a histogram: filled only with events of those categories (and split into them).
+#
+# requires (for cuts and histograms): skipped (with an INFO / debug message) unless ALL are met
+#   reduced_charge          VetoNu reduced charge available (from aux files or the input NTuple)
+#   aux_reduced_charge      reduced charge taken from aux (waveform) files
+#   native_reduced_charge   reduced charge taken from branches in the input NTuple
+#   no_reduced_charge       reduced charge disabled (--no-reduced-charge)
+#
+# Histograms attached to a cut are booked at that point of the selection even if the cut
+# itself is not applied to the current sample: they only follow their own data_type/requires.
+# A histogram whose variable does not exist in the dataframe gives a WARNING and is not booked.
+#
+# N-1 histograms (n_minus_1): filled with the events that pass every OTHER cut applied to the
+# sample (before and after this one), i.e. only this cut is removed. Same options as <histogram>,
+# names unique together with all other histograms. Written to histograms/n_minus_1/ in the output.
+# Skipped if the cut itself is not applied to the sample. They do not change the cutflow.
+# On MC with categories, all histograms (incl. N-1) are also written per category, see
+# config/categories.yaml for the output structure. Use split: false for large histograms that
+# are not needed per category (each copy costs memory, more with -j).
+# Example:
+#   Track R at IFT < 95 mm:
+#     expression: "LeadTrack_rIFT < 95"
+#     n_minus_1:
+#       - name: LeadTrack_rIFT_Nminus1
+#         x: {variable: LeadTrack_rIFT, bins: 100, min: 0, max: 200}
+#
+# YAML tips: quote expressions (e.g. "!ExcludedTimes": an unquoted value starting with '!'
+# means something else in YAML); cut names can contain spaces and symbols but not ': '.
+#
+# Select a different config with: ./analysis --cuts-config <path>
+# ─────────────────────────────────────────────────────────────────────────────
+
+Histograms: []    # booked before the first cut
+
+Cuts:
+
+  # ── Data quality (data only) ──────────────────────────────────────────────
+  Colliding:
+    expression: "distanceToCollidingBCID == 0"
+    data_type: DATA
+
+  Trigger:
+    expression: "(inputBits & 0x8) == 0x8 || (inputBits & 0x10) == 0x10 || (inputBits & 0x20) == 0x20 || (inputBits & 0x40) == 0x40"
+    data_type: DATA
+
+  Good times:
+    expression: "GoodTimes"
+    data_type: DATA
+
+  Excluded times:
+    expression: "!ExcludedTimes"
+    data_type: DATA
+
+  # Crossing angle selections (not used at the moment):
+  # Crossing angle = 150 in 2024 period:
+  #   expression: "(!is2024Period) || (crossingAngle == 150.0)"
+  # Crossing angle > 150 in 2024 period:
+  #   expression: "(!is2024Period) || (crossingAngle > 150.0)"
+
+  # ── MC (the truth selection is done with the MC categories, config/categories.yaml) ──
+  Remove CaloNu PMT region (truth):
+    expression: "(!isCaloNuPeriod) || (isCaloNuPeriod && !inCaloNuPMT)"
+    data_type: MC    # always applied to MC (material mismodelling)
+        
+  # ── Reconstruction selection ──────────────────────────────────────────────
+  
+  Good VetoNu status:
+    expression: "VetoNu0_status == 0 && VetoNu1_status == 0"
+  
+  Good Veto2 status:
+    expression: "Veto20_status == 0 && Veto21_status == 0"
+    histograms:
+      - name: Veto_VetoNu_time_diff
+        x: {variable: Veto_VetoNu_time_diff, bins: 400, min: -200, max: 200}
+      - name: Preshower_VetoNu_time_diff
+        x: {variable: Preshower_VetoNu_time_diff, bins: 400, min: -200, max: 200}
+      - name: Veto_average_localtime
+        x: {variable: Veto_average_localtime, bins: 400, min: 700, max: 1000}
+      - name: Preshower_average_localtime
+        x: {variable: Preshower_average_localtime, bins: 400, min: 600, max: 1000}
+      - name: VetoNu_average_localtime
+        x: {variable: VetoNu_average_localtime, bins: 400, min: 600, max: 1000}
+      - name: Veto21_localtime
+        x: {variable: Veto21_localtime, bins: 400, bins: 400, min: 600, max: 1000}
+      - name: Veto20_localtime
+        x: {variable: Veto20_localtime, bins: 400, bins: 400, min: 600, max: 1000}
+      - name: VetoNu1_localtime
+        x: {variable: VetoNu1_localtime, bins: 400, bins: 400, min: 600, max: 1000}
+      - name: VetoNu0_localtime
+        x: {variable: VetoNu0_localtime, bins: 400, bins: 400, min: 600, max: 1000}
+      - name: truth_dec_z_nu vs VetoNu0_localtime
+        x: {variable: truth_dec_z_nu, bins: 100, min: -3200, max: -1500}
+        y: {variable: VetoNu0_localtime, bins: 400, min: 600, max: 1000}

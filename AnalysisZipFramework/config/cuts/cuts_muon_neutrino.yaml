@@ -140,6 +140,18 @@ Cuts:
 
   Leading track theta < 25 mrad:
     expression: "LeadTrack_Theta < 25"
+    histograms:
+      - name: "VetoNu0_reduced_charge"
+        x: {variable: VetoNu0_reduced_charge, bins: 1000, min: 0, max: 2500}
+      - name: "VetoNu1_reduced_charge"
+        x: {variable: VetoNu1_reduced_charge, bins: 1000, min: 0, max: 2500}
+      - name: "VetoNu0_reduced_charge_log"
+        x: {variable: VetoNu0_reduced_charge, bins: 1000, min: 1e-3, max: 1e5, log: true}
+      - name: "VetoNu1_reduced_charge_log" 
+        x: {variable: VetoNu1_reduced_charge, bins: 1000, min: 1e-3, max: 1e5, log: true}
+      - name: "truth_dec_z_nu vs VetoNu0_reduced_charge"
+        x: {variable: truth_dec_z_nu, bins: 100, min: -3200, max: -1500}
+        y: {variable: VetoNu0_reduced_charge, bins: 1000, min: 0, max: 2500}
 
   # ── VetoNu veto ───────────────────────────────────────────────────────────
   # With the reduced charge: reduced charge < 30 pC (+ raw-charge fallback when the aux value

@@ -1,0 +1,72 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nuAnalysis analysis config: which configs an analysis uses
+#
+# Use with: ./analysis --analysis-config config/analyses/muon_neutrino.yaml ...
+#
+# Sections (keys are case-insensitive): file_configs, GRL, Output, EventID_pass, Definitions, Categories, Cuts
+# Each section is a list. An entry is either
+#   - a config file: path relative to the directory of THIS file (here config/analyses/), or absolute
+#   - an inline entry: written like the contents of that file type under its section key, e.g.
+#       Definitions:                      Categories:                  Cuts:
+#       - my_column:                      - my_category:               - My extra cut:
+#           expression: "..."                 expression: "..."            expression: "..."
+#           data_type: DATA                   type: signal
+#       file_configs:                     Output:                      GRL:
+#       - 16000:                          - keep: [my_column]          - grl_jsons: [...]
+#           data_paths: ["root://..."]                                   grl_csvs: [...]
+# Entries are concatenated in order (definitions are created in this order). Names must be unique
+# across all entries of a section (cuts, histograms, definitions, categories, run numbers).
+# Output: save_all_* switches are on if on in any entry, keep / drop lists are concatenated.
+# EventID_pass: extra columns for the eventID_pass tree, e.g. - keep_mc: [nu_interaction_type]
+#   (keep: all samples, keep_mc: MC only, keep_data: data only; names or glob patterns).
+# GRL is only used for data: without it there are no GoodTimes / ExcludedTimes (an error if a cut
+#   uses them) and the luminosity is -1.
+#
+# A section that is left out means NO config of that type (e.g. no Categories: no MC split;
+# no EventID_pass: only run, eventID, the passed_<cut> flags and mc_category).
+# Command line options (--cuts-config, --definitions-config, ...) replace the whole section.
+# Every config used is saved in the 'config' tree of the output file.
+#
+# This is the default analysis config, used when no --analysis-config is given.
+# ─────────────────────────────────────────────────────────────────────────────
+
+file_configs:
+- ../files/backward/2022.yaml
+- ../files/backward/2023.yaml
+- ../files/backward/2024.yaml
+- ../files/mc/2022_23.yaml
+- ../files/mc/2024_fasernu.yaml
+- ../files/mc/2024_calonu.yaml
+
+GRL:
+- ../grl/grl_v10_physics.yaml
+
+Output:
+- ../outputs/output_columns.yaml
+
+EventID_pass:
+- keep_mc: [nu_interaction_type]
+
+Definitions:
+- ../definitions/common_definitions.yaml
+- ../definitions/truth_definitions.yaml
+- reco_pseudorapidity:
+    expression: "getRecoPseudorapidity(LeadTrack_X_atVetoStation2, LeadTrack_Y_atVetoStation2, LeadTrack_X_atVetoNu, LeadTrack_Y_atVetoNu, crossingAngle)"
+- reco_qop:
+    expression: "LeadTrack_charge / SafeAt(Track_pz0, LeadTrack_Idx)"
+- VetoNu_average_localtime:
+    expression: "(VetoNu0_localtime + VetoNu1_localtime) / 2.0"
+- Veto_average_localtime:
+    expression: "(Veto20_localtime + Veto21_localtime) / 2.0"
+- Preshower_average_localtime:
+    expression: "(Preshower0_localtime + Preshower1_localtime) / 2.0"
+- Veto_VetoNu_time_diff:
+    expression: "Veto_average_localtime - VetoNu_average_localtime"
+- Preshower_VetoNu_time_diff:
+    expression: "Preshower_average_localtime - VetoNu_average_localtime"
+
+Categories:
+- ../categories/muon_neutrino_categories.yaml
+
+Cuts:
+- ../cuts/cuts_MC_timing.yaml

@@ -185,3 +185,17 @@ runs:
     description: "2024 CaloNu POWHEG+Pythia charm central, Geant4 FTFP_BERT_HP_ENDFB8"
     is_nominal: false
     lumi_sample: 10000   # fb^-1
+
+  2001391:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/faser/data0/sim/mc24/genie/200139/bck/caloNu/*"
+    description: "2024 CaloNu EPOS pi - Pawan's version"
+    is_nominal: true
+    lumi_sample: 10000   # fb^-1
+
+  2001392:
+    data_paths:
+      - "root://eospublic.cern.ch//eos/experiment/fasernu-data0/faser/sim/mc24/genie/200139/bck/s0015a/*"
+    description: "2024 CaloNu EPOS pi - Tobis's version"
+    is_nominal: true
+    lumi_sample: 10000   # fb^-1
