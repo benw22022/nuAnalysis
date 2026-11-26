@@ -7,6 +7,8 @@
 #include <map>
 #include <regex>
 #include <filesystem>
+#include <fstream>
+#include <sstream>
 #include <numeric>
 #include <cmath>
 #include "GRLUtils.h"
@@ -669,6 +671,27 @@ void Analysis::writeCategoryOutputs(TFile& file) {
     file.cd();
 }
 
+// RDFDefines.h (helper functions for the JIT-compiled expressions) is read at run time. Use the copy in
+// include/ of the working directory (the build directory, where cmake copies it, or the job directory of a
+// batch job), so that editing the source file does not affect running jobs. The source file in
+// PROJECT_INCLUDE_DIR is only a fallback. The file used is saved in the config tree.
+std::string Analysis::findRDFDefines() {
+    std::filesystem::path path = std::filesystem::absolute("include/RDFDefines.h");
+    if (std::filesystem::exists(path)) {
+        INFO("Helper functions for expressions: ", path.string());
+    } else {
+        path = std::filesystem::path(PROJECT_INCLUDE_DIR) / "RDFDefines.h";
+        WARNING("No include/RDFDefines.h in the working directory (cmake copies it to the build directory): using the "
+                "source file ", path.string(), ". Editing it while jobs are running will affect them.");
+        if (!std::filesystem::exists(path)) throw std::runtime_error("RDFDefines.h not found (" + path.string() + ")");
+    }
+    std::ifstream in(path);
+    std::stringstream text;
+    text << in.rdbuf();
+    m_configRecord.push_back({"rdf_defines", path.string(), text.str()});
+    return path.string();
+}
+
 // Main setup function that builds the dataframe and sets up the aux chain if present
 void Analysis::BuildDataFrame() {
 
@@ -681,9 +704,11 @@ void Analysis::BuildDataFrame() {
     // e.g. DeltaPhi rather than ROOT::VecOps::DeltaPhi 
     gInterpreter->Declare("using namespace ROOT::VecOps;");
 
-    // C++ defines (must not rely on anything defined below)
-    gInterpreter->AddIncludePath(PROJECT_INCLUDE_DIR);
-    gInterpreter->Declare("#include \"RDFDefines.h\"");
+    // C++ helper functions for the JIT-compiled expressions (must not rely on anything defined below)
+    const std::string rdfDefines = findRDFDefines();
+    if (!gInterpreter->Declare(("#include \"" + rdfDefines + "\"").c_str())) {
+        throw std::runtime_error("Could not compile " + rdfDefines + " (see the errors above)");
+    }
 
     m_df   = std::make_unique<ROOT::RDataFrame>(*m_mainChain);
     m_node = *m_df;

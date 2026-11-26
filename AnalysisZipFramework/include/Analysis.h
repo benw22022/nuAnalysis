@@ -169,6 +169,8 @@ class Analysis {
         // Good / excluded time ranges per run from the GRL (used by the GoodTimes / ExcludedTimes columns)
         std::shared_ptr<const GRLUtils::GRLTimes> m_grlTimes;
         void defineGRLTimeColumns();
+        // Path of the RDFDefines.h used for the JIT-compiled expressions (see Analyis.cxx); records it in the config tree
+        std::string findRDFDefines();
         // Throws if a data job without GRL uses GoodTimes / ExcludedTimes in `expression`
         void checkGRLColumnsAvailable(const std::string& expression, const std::string& what) const;
 

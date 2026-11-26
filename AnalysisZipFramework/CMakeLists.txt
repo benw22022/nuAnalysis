@@ -59,12 +59,21 @@ foreach(_file ${configs})
     #message(STATUS "Copying ${_file} in ${PROJECT_BINARY_DIR}/${_file}")
 endforeach()
 
+#----------------------------------------------------------------------------
+# Copy the helper functions for the JIT-compiled expressions (RDFDefines.h, read by the analysis
+# at run time) to build/include. The analysis uses this copy (and batch jobs a copy of it in their
+# job directory), so the source file can be edited while jobs are running. configure_file copies
+# it again at the next 'make' when the source file has changed.
+configure_file(${PROJECT_SOURCE_DIR}/include/RDFDefines.h ${PROJECT_BINARY_DIR}/include/RDFDefines.h COPYONLY)
+
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
 add_executable(analysis analysis.cxx ${sources})
 
+# Source include directory: only a fallback for RDFDefines.h if there is no include/RDFDefines.h in the
+# working directory (see Analysis::findRDFDefines)
 target_compile_definitions(analysis PRIVATE
     PROJECT_INCLUDE_DIR="${CMAKE_SOURCE_DIR}/include"
 )

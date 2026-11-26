@@ -10,7 +10,7 @@
 #   ./run_submission.sh -o /path/to/output_v1 -n                    # dry run: check, submit nothing
 #
 # For every submission a job directory is made (default <output_dir>/submission_<date>_<time>) with
-#   - a snapshot of the analysis binary, build/config/ and any config passed as an argument, so the
+#   - a snapshot of the analysis binary, build/config/, build/include/RDFDefines.h and any config passed as an argument, so the
 #     jobs are not affected by rebuilding or editing configs while they run
 #   - the run list, the generated submit file (analysis.sub) and the job script
 #   - submission_info.txt (command line, git commit, versions, ...) and git_diff.patch if the code
@@ -134,8 +134,15 @@ while IFS= read -r -d '' src; do
 done < <(find "${FRAMEWORK_DIR}/config" -name '*.yaml' -print0)
 [ ${CONFIG_PROBLEM} -eq 0 ] || die "build/config is not up to date: re-run cmake in ${BUILD_DIR} (it copies the configs)"
 
-# Sources newer than the binary: probably not rebuilt
-NEWER=$(find "${FRAMEWORK_DIR}" \( -name '*.cxx' -o -name '*.h' -o -name '*.hpp' \) -newer "${BUILD_DIR}/analysis" | head -5)
+# Helper functions for the expressions (read by the jobs at run time): cmake copies include/RDFDefines.h to
+# build/include at each make. The jobs use a copy in the job directory, so the file can be edited while they run.
+RDF_DEFINES="${BUILD_DIR}/include/RDFDefines.h"
+[ -f "${RDF_DEFINES}" ] || die "${RDF_DEFINES} not found (re-run cmake and make in ${BUILD_DIR})"
+cmp -s "${FRAMEWORK_DIR}/include/RDFDefines.h" "${RDF_DEFINES}" \
+    || die "${RDF_DEFINES} differs from AnalysisZipFramework/include/RDFDefines.h: run make in ${BUILD_DIR} (it copies it)"
+
+# Sources newer than the binary: probably not rebuilt (RDFDefines.h is not compiled in the binary: checked above)
+NEWER=$(find "${FRAMEWORK_DIR}" \( -name '*.cxx' -o -name '*.h' -o -name '*.hpp' \) ! -name RDFDefines.h -newer "${BUILD_DIR}/analysis" | head -5)
 [ -z "${NEWER}" ] || warn "these sources are newer than ${BUILD_DIR}/analysis (rebuild with make?):"$'\n'"${NEWER}"
 
 # ── Analysis arguments ───────────────────────────────────────────────────────
@@ -253,6 +260,8 @@ mkdir -p "${JOB_DIR}/logs" "${JOB_DIR}/config_args"
 
 cp -p "${BUILD_DIR}/analysis" "${JOB_DIR}/"
 cp -rp "${BUILD_DIR}/config" "${JOB_DIR}/config"
+mkdir -p "${JOB_DIR}/include"
+cp -p "${RDF_DEFINES}" "${JOB_DIR}/include/"
 cp -p "${SCRIPT_DIR}/run_analysis.sh" "${JOB_DIR}/"
 printf '%s\n' "${RUNS[@]}" > "${JOB_DIR}/run_list.txt"
 
